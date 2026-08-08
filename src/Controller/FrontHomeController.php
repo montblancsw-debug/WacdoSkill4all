@@ -13,7 +13,7 @@ final class FrontHomeController extends AbstractController
     public function index(): Response
     {
         return $this->render('front_home/index.html.twig', [
-            'controller_name' => 'FrontHomeController',
+            'variable' => 'jean',
         ]);
     }
 }
