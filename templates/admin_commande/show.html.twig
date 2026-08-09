@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Commande{% endblock %}
+
+{% block body %}
+    <h1>Commande</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ commande.id }}</td>
+            </tr>
+            <tr>
+                <th>Commande_statut</th>
+                <td>{{ commande.commandeStatut }}</td>
+            </tr>
+            <tr>
+                <th>Commande_date</th>
+                <td>{{ commande.commandeDate ? commande.commandeDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Commande_total</th>
+                <td>{{ commande.commandeTotal }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_admin_commande_index') }}">back to list</a>
+
+    <a href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}">edit</a>
+
+    {{ include('admin_commande/_delete_form.html.twig') }}
+{% endblock %}
