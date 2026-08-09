@@ -61,7 +61,7 @@ class Categorie
         return $this->categorie_description;
     }
 
-    public function setCategorieDescription(string $categorie_description): static
+    public function setCategorieDescription(?string $categorie_description): static
     {
         $this->categorie_description = $categorie_description;
 
@@ -73,7 +73,7 @@ class Categorie
         return $this->categorie_nomdefichier;
     }
 
-    public function setCategorieNomdefichier(string $categorie_nomdefichier): static
+    public function setCategorieNomdefichier(?string $categorie_nomdefichier): static
     {
         $this->categorie_nomdefichier = $categorie_nomdefichier;
 
@@ -85,7 +85,7 @@ class Categorie
         return $this->categorie_image;
     }
 
-    public function setCategorieImage(string $categorie_image): static
+    public function setCategorieImage(?string $categorie_image): static
     {
         $this->categorie_image = $categorie_image;
 
