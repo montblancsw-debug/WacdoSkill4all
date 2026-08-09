@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% block title %}
+            Administration Wacdo
+        {% endblock %}
+    </title>
+
+    {# Icône AdminKit #}
+    <link
+        rel="shortcut icon"
+        href="{{ asset('img/icons/icon-48x48.png') }}"
+    >
+
+    {# CSS principal du template AdminKit #}
+    <link
+        rel="stylesheet"
+        href="{{ asset('css/app.css') }}"
+    >
+
+    {# Police utilisée par AdminKit #}
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+        rel="stylesheet"
+    >
+
+    {# Permet l'ajout de la CSS spécifique dans certaines pages #}
+    {% block stylesheets %}
+    {% endblock %}
+</head>
+
+<body>
+
+    <div class="wrapper">
+
+        {# Menu latéral du back-office #}
+        {{ include('inc/_backend-left-nav.html.twig') }}
+
+        <div class="main">
+
+            {# Barre de navigation supérieure #}
+            {{ include('inc/_backend-top-nav.html.twig') }}
+
+            <main class="content">
+                <div class="container-fluid p-0">
+
+                    {# Affichage des éventuels messages Flash Symfony #}
+                    {% for label, messages in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ label }} alert-dismissible fade show">
+                                {{ message }}
+
+                                <button
+                                    type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Fermer"
+                                ></button>
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {# Contenu propre à chaque page du back-office #}
+                    {% block body %}
+                    {% endblock %}
+
+                </div>
+            </main>
+
+            <footer class="footer">
+                <div class="container-fluid">
+
+                    <div class="row text-muted">
+
+                        <div class="col-6 text-start">
+                            <p class="mb-0">
+                                <strong>Wacdo</strong>
+                                -
+                                Back-office
+                            </p>
+                        </div>
+
+                        <div class="col-6 text-end">
+                            <p class="mb-0">
+                                Administration Wacdo
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+            </footer>
+
+        </div>
+
+    </div>
+
+    {# JavaScript principal d'AdminKit #}
+    <script src="{{ asset('js/app.js') }}"></script>
+
+    {# Permet d'ajouter du JavaScript spécifique dans certaines pages #}
+    {% block javascripts %}
+    {% endblock %}
+
+</body>
+</html>
