@@ -84,7 +84,7 @@ class ProduitFixtures extends Fixture implements DependentFixtureInterface
             )
         );
 
-        $manager->persist($locococo);
+        $manager->persist($wacoco);
 
         // Référence vers le soda Wacoco.
         $this->addReference(self::WACOCO_REFERENCE, $wacoco);

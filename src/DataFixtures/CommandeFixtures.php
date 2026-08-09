@@ -30,7 +30,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
         $commande1->setCommandeTotal('19.50');
         $commande1->setUtilisateur(
             $this->getReference(
-                UtilisateurFixtures::CAISSE_REFERENCE,
+                UtilisateurFixtures::ACCUEIL_REFERENCE,
                 Utilisateur::class
             )
         );
@@ -50,7 +50,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
         $commande2->setCommandeTotal('9.00');
         $commande2->setUtilisateur(
             $this->getReference(
-                UtilisateurFixtures::CAISSE_REFERENCE,
+                UtilisateurFixtures::ACCUEIL_REFERENCE,
                 Utilisateur::class
             )
         );
@@ -70,7 +70,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
         $commande3->setCommandeTotal('10.00');
         $commande3->setUtilisateur(
             $this->getReference(
-                UtilisateurFixtures::CAISSE_REFERENCE,
+                UtilisateurFixtures::ACCUEIL_REFERENCE,
                 Utilisateur::class
             )
         );

@@ -12,7 +12,7 @@ class UtilisateurFixtures extends Fixture
 
     public const ADMIN_REFERENCE = 'utilisateur-admin';
     public const PREPARATEUR_REFERENCE = 'utilisateur-preparateur';
-    public const CAISSE_REFERENCE = 'utilisateur-caisse';
+    public const ACCUEIL_REFERENCE = 'utilisateur-acceuil';
 
     public function load(ObjectManager $manager): void
     {
@@ -52,20 +52,20 @@ class UtilisateurFixtures extends Fixture
         // Référence vers le compte de préparation.
         $this->addReference(self::PREPARATEUR_REFERENCE, $preparateur);
 
-        // 1. Le rôle Caisse :
-        $caisse = new Utilisateur();
-        $caisse->setUtilisateurNom('Caisse');
-        $caisse->setUtilisateurPrenom('Wacdo');
-        $caisse->setUtilisateurEmail('caisse@wacdo.fr');
-        $caisse->setUtilisateurPassword(
-            password_hash('Caisse123!', PASSWORD_BCRYPT)
+        // 1. Le rôle Acceuil :
+        $acceuil = new Utilisateur();
+        $acceuil->setUtilisateurNom('Acceuil');
+        $acceuil->setUtilisateurPrenom('Wacdo');
+        $acceuil->setUtilisateurEmail('acceuil@wacdo.fr');
+        $acceuil->setUtilisateurPassword(
+            password_hash('acceuil123!', PASSWORD_BCRYPT)
         );
-        $caisse->setUtilisateurRole('ROLE_CAISSE');
+        $acceuil->setUtilisateurRole('ROLE_ACCUEIL');
 
-        $manager->persist($caisse);
+        $manager->persist($acceuil);
 
         // Référence utilisée par CommandeFixtures.
-        $this->addReference(self::CAISSE_REFERENCE, $caisse);
+        $this->addReference(self::ACCUEIL_REFERENCE, $acceuil);
 
         // Enregistrement des utilisateurs dans la base de données.
         $manager->flush();
