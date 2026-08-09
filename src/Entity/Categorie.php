@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\CategorieRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
@@ -13,8 +14,68 @@ class Categorie
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $categorie_nom = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $categorie_description = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $categorie_nomdefichier = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $categorie_image = null;
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getCategorieNom(): ?string
+    {
+        return $this->categorie_nom;
+    }
+
+    public function setCategorieNom(string $categorie_nom): static
+    {
+        $this->categorie_nom = $categorie_nom;
+
+        return $this;
+    }
+
+    public function getCategorieDescription(): ?string
+    {
+        return $this->categorie_description;
+    }
+
+    public function setCategorieDescription(string $categorie_description): static
+    {
+        $this->categorie_description = $categorie_description;
+
+        return $this;
+    }
+
+    public function getCategorieNomdefichier(): ?string
+    {
+        return $this->categorie_nomdefichier;
+    }
+
+    public function setCategorieNomdefichier(string $categorie_nomdefichier): static
+    {
+        $this->categorie_nomdefichier = $categorie_nomdefichier;
+
+        return $this;
+    }
+
+    public function getCategorieImage(): ?string
+    {
+        return $this->categorie_image;
+    }
+
+    public function setCategorieImage(string $categorie_image): static
+    {
+        $this->categorie_image = $categorie_image;
+
+        return $this;
     }
 }
