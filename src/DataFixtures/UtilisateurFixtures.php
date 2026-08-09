@@ -55,17 +55,17 @@ class UtilisateurFixtures extends Fixture
         // 1. Le rôle Acceuil :
         $accueil = new Utilisateur();
         $accueil->setUtilisateurNom('Accueil');
-        $acceuil->setUtilisateurPrenom('Wacdo');
-        $acceuil->setUtilisateurEmail('accueil@wacdo.fr');
-        $acceuil->setUtilisateurPassword(
-            password_hash('acceuil123!', PASSWORD_BCRYPT)
+        $accueil->setUtilisateurPrenom('Wacdo');
+        $accueil->setUtilisateurEmail('accueil@wacdo.fr');
+        $accueil->setUtilisateurPassword(
+            password_hash('accueil123!', PASSWORD_BCRYPT)
         );
-        $acceuil->setUtilisateurRole('ROLE_ACCUEIL');
+        $accueil->setUtilisateurRole('ROLE_ACCUEIL');
 
-        $manager->persist($acceuil);
+        $manager->persist($accueil);
 
         // Référence utilisée par CommandeFixtures.
-        $this->addReference(self::ACCUEIL_REFERENCE, $acceuil);
+        $this->addReference(self::ACCUEIL_REFERENCE, $accueil);
 
         // Enregistrement des utilisateurs dans la base de données.
         $manager->flush();
