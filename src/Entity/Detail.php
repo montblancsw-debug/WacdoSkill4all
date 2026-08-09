@@ -28,6 +28,9 @@ class Detail
     #[ORM\JoinColumn(nullable: false)]
     private ?Produit $produit = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $detail_total = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,6 +80,18 @@ class Detail
     public function setProduit(?Produit $produit): static
     {
         $this->produit = $produit;
+
+        return $this;
+    }
+
+    public function getDetailTotal(): ?string
+    {
+        return $this->detail_total;
+    }
+
+    public function setDetailTotal(string $detail_total): static
+    {
+        $this->detail_total = $detail_total;
 
         return $this;
     }
