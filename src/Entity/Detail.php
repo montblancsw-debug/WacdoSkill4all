@@ -20,6 +20,10 @@ class Detail
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $detail_unitaire = null;
 
+    #[ORM\ManyToOne(inversedBy: 'details')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Commande $commande = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +49,18 @@ class Detail
     public function setDetailUnitaire(string $detail_unitaire): static
     {
         $this->detail_unitaire = $detail_unitaire;
+
+        return $this;
+    }
+
+    public function getCommande(): ?Commande
+    {
+        return $this->commande;
+    }
+
+    public function setCommande(?Commande $commande): static
+    {
+        $this->commande = $commande;
 
         return $this;
     }
