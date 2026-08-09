@@ -12,7 +12,7 @@ class UtilisateurFixtures extends Fixture
 
     public const ADMIN_REFERENCE = 'utilisateur-admin';
     public const PREPARATEUR_REFERENCE = 'utilisateur-preparateur';
-    public const ACCUEIL_REFERENCE = 'utilisateur-acceuil';
+    public const ACCUEIL_REFERENCE = 'utilisateur-accueil';
 
     public function load(ObjectManager $manager): void
     {
@@ -53,10 +53,10 @@ class UtilisateurFixtures extends Fixture
         $this->addReference(self::PREPARATEUR_REFERENCE, $preparateur);
 
         // 1. Le rôle Acceuil :
-        $acceuil = new Utilisateur();
-        $acceuil->setUtilisateurNom('Acceuil');
+        $accueil = new Utilisateur();
+        $accueil->setUtilisateurNom('Accueil');
         $acceuil->setUtilisateurPrenom('Wacdo');
-        $acceuil->setUtilisateurEmail('acceuil@wacdo.fr');
+        $acceuil->setUtilisateurEmail('accueil@wacdo.fr');
         $acceuil->setUtilisateurPassword(
             password_hash('acceuil123!', PASSWORD_BCRYPT)
         );
