@@ -1,38 +1,94 @@
+{# Consultation d'une catégorie. #}
+
 {% extends 'base-backend.html.twig' %}
 
-{% block title %}Categorie{% endblock %}
+{% block title %}
+	{{ categorie.categorieNom }}
+	| Wacdo
+{% endblock %}
 
 {% block body %}
-    <h1>Categorie</h1>
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<div>
+			<h1 class="h3 mb-0">
+				{{ categorie.categorieNom }}
+			</h1>
+			<p class="text-muted mb-0">
+				Informations de la catégorie
+			</p>
+		</div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ categorie.id }}</td>
-            </tr>
-            <tr>
-                <th>Categorie_nom</th>
-                <td>{{ categorie.categorieNom }}</td>
-            </tr>
-            <tr>
-                <th>Categorie_description</th>
-                <td>{{ categorie.categorieDescription }}</td>
-            </tr>
-            <tr>
-                <th>Categorie_nomdefichier</th>
-                <td>{{ categorie.categorieNomdefichier }}</td>
-            </tr>
-            <tr>
-                <th>Categorie_image</th>
-                <td>{{ categorie.categorieImage }}</td>
-            </tr>
-        </tbody>
-    </table>
+		<a href="{{ path('app_admin_categorie_edit', {'id': categorie.id}) }}" class="btn btn-warning">
+			<i class="align-middle" data-feather="edit"></i>
+			Modifier
+		</a>
+	</div>
 
-    <a href="{{ path('app_admin_categorie_index') }}">back to list</a>
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-title mb-0">
+				Détail de la catégorie
+			</h5>
+		</div>
 
-    <a href="{{ path('app_admin_categorie_edit', {'id': categorie.id}) }}">edit</a>
+		<div class="card-body">
+			<table class="table">
+				<tbody>
+					<tr>
+						<th style="width: 30%;">
+							ID
+						</th>
+						<td>
+							{{ categorie.id }}
+						</td>
+					</tr>
 
-    {{ include('admin_categorie/_delete_form.html.twig') }}
+					<tr>
+						<th>
+							Nom
+						</th>
+						<td>
+							{{ categorie.categorieNom }}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Description
+						</th>
+						<td>
+							{{ categorie.categorieDescription ?: 'Aucune description' }}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Nom du fichier
+						</th>
+						<td>
+							{{ categorie.categorieNomdefichier ?: 'Non renseigné' }}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Image
+						</th>
+						<td>
+							{{ categorie.categorieImage ?: 'Aucune image' }}
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="d-flex gap-2 mt-3">
+		<a href="{{ path('app_admin_categorie_index') }}" class="btn btn-secondary">
+			<i class="align-middle" data-feather="arrow-left"></i>
+			Retour à la liste
+		</a>
+
+		{{ include('admin_categorie/_delete_form.html.twig') }}
+	</div>
 {% endblock %}
