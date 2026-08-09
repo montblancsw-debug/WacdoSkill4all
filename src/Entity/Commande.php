@@ -25,13 +25,13 @@ class Commande
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private ?string $commande_total = null;
 
+
+    // Une commande peut être associée à un utilisateur.
+
     #[ORM\ManyToOne(inversedBy: 'commandes')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Utilisateur $utilisateur = null;
 
-    /**
-     * @var Collection<int, Detail>
-     */
     #[ORM\OneToMany(targetEntity: Detail::class, mappedBy: 'commande')]
     private Collection $details;
 
@@ -93,9 +93,6 @@ class Commande
         return $this;
     }
 
-    /**
-     * @return Collection<int, Detail>
-     */
     public function getDetails(): Collection
     {
         return $this->details;
@@ -114,7 +111,6 @@ class Commande
     public function removeDetail(Detail $detail): static
     {
         if ($this->details->removeElement($detail)) {
-            // set the owning side to null (unless already changed)
             if ($detail->getCommande() === $this) {
                 $detail->setCommande(null);
             }

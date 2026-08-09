@@ -30,9 +30,8 @@ class Utilisateur
     #[ORM\Column(length: 255)]
     private ?string $utilisateur_role = null;
 
-    /**
-     * @var Collection<int, Commande>
-     */
+    // Un utilisateur peut être associé à plusieurs commandes.
+
     #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur')]
     private Collection $commandes;
 
@@ -51,7 +50,7 @@ class Utilisateur
         return $this->utilisateur_nom;
     }
 
-    public function setUtilisateurNom(?string $utilisateur_nom): static
+    public function setUtilisateurNom(string $utilisateur_nom): static
     {
         $this->utilisateur_nom = $utilisateur_nom;
 
@@ -106,9 +105,6 @@ class Utilisateur
         return $this;
     }
 
-    /**
-     * @return Collection<int, Commande>
-     */
     public function getCommandes(): Collection
     {
         return $this->commandes;
@@ -127,7 +123,6 @@ class Utilisateur
     public function removeCommande(Commande $commande): static
     {
         if ($this->commandes->removeElement($commande)) {
-            // set the owning side to null (unless already changed)
             if ($commande->getUtilisateur() === $this) {
                 $commande->setUtilisateur(null);
             }
