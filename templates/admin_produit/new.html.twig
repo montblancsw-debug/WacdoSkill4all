@@ -1,11 +1,35 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-backend.html.twig' %}
 
-{% block title %}New Produit{% endblock %}
+{% block title %}
+    Ajouter un produit | Wacdo
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Produit</h1>
 
-    {{ include('admin_produit/_form.html.twig') }}
+    {# Affiche le titre de la page. #}
+    <div class="mb-4">
+        <h1 class="h3 mb-1">
+            Ajouter un produit
+        </h1>
 
-    <a href="{{ path('app_admin_produit_index') }}">back to list</a>
+        <p class="text-muted mb-0">
+            Créez un nouveau produit pour le catalogue Wacdo.
+        </p>
+    </div>
+
+    {# Affiche le formulaire de création. #}
+    {{ include('admin_produit/_form.html.twig', {
+        'button_label': 'Ajouter le produit'
+    }) }}
+
+    {# Retourne vers la liste des produits. #}
+    <div class="mt-3">
+        <a
+            href="{{ path('app_admin_produit_index') }}"
+            class="btn btn-secondary"
+        >
+            Retour à la liste
+        </a>
+    </div>
+
 {% endblock %}

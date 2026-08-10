@@ -1,43 +1,159 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-backend.html.twig' %}
 
-{% block title %}Produit index{% endblock %}
+{% block title %}
+    Gestion des produits | Wacdo
+{% endblock %}
 
 {% block body %}
-    <h1>Produit index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Produit_nom</th>
-                <th>Produit_description</th>
-                <th>Produit_prix</th>
-                <th>Produit_stock</th>
-                <th>Produit_image</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for produit in produits %}
-            <tr>
-                <td>{{ produit.id }}</td>
-                <td>{{ produit.produitNom }}</td>
-                <td>{{ produit.produitDescription }}</td>
-                <td>{{ produit.produitPrix }}</td>
-                <td>{{ produit.produitStock ? 'Yes' : 'No' }}</td>
-                <td>{{ produit.produitImage }}</td>
-                <td>
-                    <a href="{{ path('app_admin_produit_show', {'id': produit.id}) }}">show</a>
-                    <a href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {# En-tête de la page produit. #}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3 mb-1">
+                Gestion des produits
+            </h1>
 
-    <a href="{{ path('app_admin_produit_new') }}">Create new</a>
+            <p class="text-muted mb-0">
+                Consultez et gérez les produits disponibles chez Wacdo.
+            </p>
+        </div>
+
+        <a
+            href="{{ path('app_admin_produit_new') }}"
+            class="btn btn-primary"
+        >
+            Ajouter un produit
+        </a>
+    </div>
+
+    {# Affiche la liste des produits. #}
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                Liste des produits
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Catégorie</th>
+                            <th>Prix</th>
+                            <th>Stock</th>
+                            <th>Image</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for produit in produits %}
+
+                            <tr>
+
+                                {# Affiche l'identifiant du produit. #}
+                                <td>
+                                    {{ produit.id }}
+                                </td>
+
+                                {# Affiche le nom du produit. #}
+                                <td>
+                                    <strong>
+                                        {{ produit.produitNom }}
+                                    </strong>
+                                </td>
+
+                                {# Affiche la catégorie du produit. #}
+                                <td>
+                                    {% if produit.categorie %}
+                                        {{ produit.categorie.categorieNom }}
+                                    {% else %}
+                                        <span class="badge bg-secondary">
+                                            Sans catégorie
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                {# Affiche le prix du produit. #}
+                                <td>
+                                    {{ produit.produitPrix|number_format(2, ',', ' ') }}
+                                    €
+                                </td>
+
+                                {# Affiche la disponibilité du produit. #}
+                                <td>
+                                    {% if produit.produitStock %}
+                                        <span class="badge bg-success">
+                                            Disponible
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-danger">
+                                            Indisponible
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                {# Affiche le nom de l'image. #}
+                                <td>
+                                    {% if produit.produitImage %}
+                                        {{ produit.produitImage }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Aucune image
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                {# Affiche les actions du CRUD. #}
+                                <td class="text-end">
+
+                                    <a
+                                        href="{{ path('app_admin_produit_show', {'id': produit.id}) }}"
+                                        class="btn btn-info btn-sm"
+                                    >
+                                        Voir
+                                    </a>
+
+                                    <a
+                                        href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}"
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Modifier
+                                    </a>
+
+                                    {{ include('admin_produit/_delete_form.html.twig') }}
+
+                                </td>
+
+                            </tr>
+
+                        {% else %}
+
+                            <tr>
+                                <td
+                                    colspan="7"
+                                    class="text-center text-muted"
+                                >
+                                    Aucun produit enregistré.
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
 {% endblock %}

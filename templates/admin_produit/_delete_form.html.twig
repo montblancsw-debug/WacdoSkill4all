@@ -1,4 +1,19 @@
-<form method="post" action="{{ path('app_admin_produit_delete', {'id': produit.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ produit.id) }}">
-    <button class="btn">Delete</button>
+{# Formulaire sécurisé de suppression du produit. #}
+<form
+    method="post"
+    action="{{ path('app_admin_produit_delete', {'id': produit.id}) }}"
+    class="d-inline"
+    onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
+>
+    {# Protège la suppression avec un jeton CSRF. #}
+    <input
+        type="hidden"
+        name="_token"
+        value="{{ csrf_token('delete' ~ produit.id) }}"
+    >
+
+    {# Supprime uniquement le produit sélectionné. #}
+    <button class="btn btn-danger btn-sm">
+        Supprimer
+    </button>
 </form>
