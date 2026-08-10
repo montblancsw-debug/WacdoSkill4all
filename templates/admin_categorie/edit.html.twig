@@ -10,11 +10,13 @@
 		<h1 class="h3">
 			Modifier la catégorie
 		</h1>
+
 		<p class="text-muted">
 			{{ categorie.categorieNom }}
 		</p>
 	</div>
 
+		{# Récupération du boutons d'include pour la mise à jour #}
 	{{ include(
         'admin_categorie/_form.html.twig',
         {
@@ -22,13 +24,14 @@
         }
     ) }}
 
+		{# Bouton Retour à la liste #}
 	<div class="d-flex gap-2 mt-3">
 		<a href="{{ path('app_admin_categorie_index') }}" class="btn btn-secondary">
 			<i class="align-middle" data-feather="arrow-left"></i>
 			Retour à la liste
 		</a>
 
-		{# Suppression de la catégorie sélectionnée #}
+		{# Include de Suppression de la catégorie sélectionnée #}
 		{{ include('admin_categorie/_delete_form.html.twig') }}
 
 	</div>

@@ -1,13 +1,15 @@
 {# Suppression d'une catégorie. #}
 
-<form
-	method="post" action="{{ path('app_admin_categorie_delete', {'id': categorie.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">
+	<form
+		method="post" action="{{ path('app_admin_categorie_delete', {'id': categorie.id}) }}" onsubmit="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">
 
-	{# Protection CSRF contre une suppression frauduleuse #}
-	<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorie.id) }}">
+		{# Protection CSRF contre une suppression frauduleuse #}
+		<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ categorie.id) }}">
 
-	<button class="btn btn-danger">
-		<i class="align-middle" data-feather="trash-2"></i>
-		Supprimer
-	</button>
-</form>
+		<button class="btn btn-danger">
+			<i class="align-middle" data-feather="trash-2">
+				
+			</i>
+			Supprimer
+		</button>
+	</form>

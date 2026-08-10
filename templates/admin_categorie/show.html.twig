@@ -13,13 +13,16 @@
 			<h1 class="h3 mb-0">
 				{{ categorie.categorieNom }}
 			</h1>
+
 			<p class="text-muted mb-0">
 				Informations de la catégorie
 			</p>
 		</div>
 
 		<a href="{{ path('app_admin_categorie_edit', {'id': categorie.id}) }}" class="btn btn-warning">
-			<i class="align-middle" data-feather="edit"></i>
+			<i class="align-middle" data-feather="edit">
+
+			</i>
 			Modifier
 		</a>
 	</div>
@@ -38,6 +41,7 @@
 						<th style="width: 30%;">
 							ID
 						</th>
+
 						<td>
 							{{ categorie.id }}
 						</td>
@@ -47,6 +51,7 @@
 						<th>
 							Nom
 						</th>
+
 						<td>
 							{{ categorie.categorieNom }}
 						</td>
@@ -56,6 +61,7 @@
 						<th>
 							Description
 						</th>
+
 						<td>
 							{{ categorie.categorieDescription ?: 'Aucune description' }}
 						</td>
@@ -65,6 +71,7 @@
 						<th>
 							Nom du fichier
 						</th>
+
 						<td>
 							{{ categorie.categorieNomdefichier ?: 'Non renseigné' }}
 						</td>
@@ -74,6 +81,7 @@
 						<th>
 							Image
 						</th>
+
 						<td>
 							{{ categorie.categorieImage ?: 'Aucune image' }}
 						</td>
@@ -83,9 +91,12 @@
 		</div>
 	</div>
 
+	{# Include  du boutons de retour à la liste #}
 	<div class="d-flex gap-2 mt-3">
 		<a href="{{ path('app_admin_categorie_index') }}" class="btn btn-secondary">
-			<i class="align-middle" data-feather="arrow-left"></i>
+			<i class="align-middle" data-feather="arrow-left">
+				
+			</i>
 			Retour à la liste
 		</a>
 
