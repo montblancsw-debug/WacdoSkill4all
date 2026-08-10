@@ -1,11 +1,39 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-backend.html.twig' %}
 
-{% block title %}New Utilisateur{% endblock %}
+{% block title %}
+    Ajouter un utilisateur | Wacdo
+{% endblock %}
 
 {% block body %}
-    <h1>Create new Utilisateur</h1>
 
-    {{ include('admin_utilisateur/_form.html.twig') }}
+    {# Affiche le titre de la page. #}
+    <div class="mb-4">
 
-    <a href="{{ path('app_admin_utilisateur_index') }}">back to list</a>
+        <h1 class="h3 mb-1">
+            Ajouter un utilisateur
+        </h1>
+
+        <p class="text-muted mb-0">
+            Créez un nouveau compte pour le back-office Wacdo.
+        </p>
+
+    </div>
+
+    {# Affiche le formulaire de création. #}
+    {{ include('admin_utilisateur/_form.html.twig', {
+        'button_label': 'Ajouter l\'utilisateur'
+    }) }}
+
+    {# Retourne vers la liste. #}
+    <div class="mt-3">
+
+        <a
+            href="{{ path('app_admin_utilisateur_index') }}"
+            class="btn btn-secondary"
+        >
+            Retour à la liste
+        </a>
+
+    </div>
+
 {% endblock %}

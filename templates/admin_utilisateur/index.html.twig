@@ -1,42 +1,162 @@
-{% extends 'base.html.twig' %}
+{% extends 'base-backend.html.twig' %}
 
-{% block title %}Utilisateur index{% endblock %}
+{% block title %}
+    Gestion des utilisateurs | Wacdo
+{% endblock %}
 
 {% block body %}
-    <h1>Utilisateur index</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Utilisateur_nom</th>
-                <th>Utilisateur_prenom</th>
-                <th>Utilisateur_email</th>
-                <th>Utilisateur_password</th>
-                <th>Utilisateur_role</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for utilisateur in utilisateurs %}
-            <tr>
-                <td>{{ utilisateur.id }}</td>
-                <td>{{ utilisateur.utilisateurNom }}</td>
-                <td>{{ utilisateur.utilisateurPrenom }}</td>
-                <td>{{ utilisateur.utilisateurEmail }}</td>
-                <td>{{ utilisateur.utilisateurRole }}</td>
-                <td>
-                    <a href="{{ path('app_admin_utilisateur_show', {'id': utilisateur.id}) }}">show</a>
-                    <a href="{{ path('app_admin_utilisateur_edit', {'id': utilisateur.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="7">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    {# Affiche l'en-tête de la page. #}
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <a href="{{ path('app_admin_utilisateur_new') }}">Create new</a>
+        <div>
+            <h1 class="h3 mb-1">
+                Gestion des utilisateurs
+            </h1>
+
+            <p class="text-muted mb-0">
+                Consultez et gérez les comptes du back-office Wacdo.
+            </p>
+        </div>
+
+        <a
+            href="{{ path('app_admin_utilisateur_new') }}"
+            class="btn btn-primary"
+        >
+            Ajouter un utilisateur
+        </a>
+
+    </div>
+
+    {# Affiche la liste des utilisateurs. #}
+    <div class="card">
+
+        <div class="card-header">
+            <h5 class="card-title mb-0">
+                Liste des utilisateurs
+            </h5>
+        </div>
+
+        <div class="card-body">
+
+            <div class="table-responsive">
+
+                <table class="table table-hover">
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Prénom</th>
+                            <th>Email</th>
+                            <th>Rôle</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for utilisateur in utilisateurs %}
+
+                            <tr>
+
+                                <td>
+                                    {{ utilisateur.id }}
+                                </td>
+
+                                <td>
+                                    <strong>
+                                        {{ utilisateur.utilisateurNom }}
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    {% if utilisateur.utilisateurPrenom %}
+                                        {{ utilisateur.utilisateurPrenom }}
+                                    {% else %}
+                                        <span class="text-muted">
+                                            Non renseigné
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ utilisateur.utilisateurEmail }}
+                                </td>
+
+                                <td>
+
+                                    {% if utilisateur.utilisateurRole == 'ROLE_ADMIN' %}
+
+                                        <span class="badge bg-danger">
+                                            Administrateur
+                                        </span>
+
+                                    {% elseif utilisateur.utilisateurRole == 'ROLE_PREPARATEUR' %}
+
+                                        <span class="badge bg-warning">
+                                            Préparateur
+                                        </span>
+
+                                    {% elseif utilisateur.utilisateurRole == 'ROLE_ACCUEIL' %}
+
+                                        <span class="badge bg-info">
+                                            Accueil
+                                        </span>
+
+                                    {% else %}
+
+                                        <span class="badge bg-secondary">
+                                            {{ utilisateur.utilisateurRole }}
+                                        </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                                <td class="text-end">
+
+                                    <a
+                                        href="{{ path('app_admin_utilisateur_show', {'id': utilisateur.id}) }}"
+                                        class="btn btn-info btn-sm"
+                                    >
+                                        Voir
+                                    </a>
+
+                                    <a
+                                        href="{{ path('app_admin_utilisateur_edit', {'id': utilisateur.id}) }}"
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Modifier
+                                    </a>
+
+                                    {{ include('admin_utilisateur/_delete_form.html.twig') }}
+
+                                </td>
+
+                            </tr>
+
+                        {% else %}
+
+                            <tr>
+                                <td
+                                    colspan="6"
+                                    class="text-center text-muted"
+                                >
+                                    Aucun utilisateur enregistré.
+                                </td>
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
 {% endblock %}
