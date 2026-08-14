@@ -1,105 +1,111 @@
 {# Formulaire du CRUD Produit. #}
 
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-live-validation': 'true'
+    }
+}) }}
 
 <div class="card">
 
-    <div class="card-header">
+	<div class="card-header">
 
-        <h5 class="card-title mb-0">
-            Informations du produit
-        </h5>
+		<h5 class="card-title mb-0">
+			Informations du produit
+		</h5>
 
-    </div>
+	</div>
 
-    <div class="card-body">
+	<div
+		class="card-body">
 
-        {# Affiche le nom du produit. #}
-        <div class="mb-3">
+		{# Affiche le nom du produit. #}
+		<div class="mb-3">
 
-            {{ form_label(form.produit_nom) }}
+			{{ form_label(form.produit_nom) }}
 
-            {{ form_widget(form.produit_nom) }}
+			{{ form_widget(form.produit_nom) }}
 
-            {{ form_errors(form.produit_nom) }}
+			{{ form_errors(form.produit_nom) }}
 
-        </div>
+		</div>
 
-        {# Affiche la description du produit. #}
-        <div class="mb-3">
+		{# Affiche la description du produit. #}
+		<div class="mb-3">
 
-            {{ form_label(form.produit_description) }}
+			{{ form_label(form.produit_description) }}
 
-            {{ form_widget(form.produit_description) }}
+			{{ form_widget(form.produit_description) }}
 
-            {{ form_errors(form.produit_description) }}
+			{{ form_errors(form.produit_description) }}
 
-        </div>
+		</div>
 
-        {# Affiche le prix du produit. #}
-        <div class="mb-3">
+		{# Affiche le prix du produit. #}
+		<div class="mb-3">
 
-            {{ form_label(form.produit_prix) }}
+			{{ form_label(form.produit_prix) }}
 
-            {{ form_widget(form.produit_prix) }}
+			{{ form_widget(form.produit_prix) }}
 
-            {{ form_errors(form.produit_prix) }}
+			{{ form_errors(form.produit_prix) }}
 
-        </div>
+		</div>
 
-        {# Affiche la catégorie du produit. #}
-        <div class="mb-3">
+		{# Affiche la catégorie du produit. #}
+		<div class="mb-3">
 
-            {{ form_label(form.categorie) }}
+			{{ form_label(form.categorie) }}
 
-            {{ form_widget(form.categorie) }}
+			{{ form_widget(form.categorie) }}
 
-            {{ form_errors(form.categorie) }}
+			{{ form_errors(form.categorie) }}
 
-        </div>
+		</div>
 
-        {# Affiche le champ de l'image. #}
-        <div class="mb-3">
+		{# Affiche le champ de l'image. #}
+		<div class="mb-3">
 
-            {{ form_label(form.produit_image) }}
+			{{ form_label(form.produit_image) }}
 
-            {{ form_widget(form.produit_image) }}
+			{{ form_widget(form.produit_image) }}
 
-            {{ form_errors(form.produit_image) }}
+			{{ form_errors(form.produit_image) }}
 
-            <div class="form-text">
-                L'upload d'image sera ajouté ultérieurement.
-            </div>
+			<div class="form-text">
+				L'upload d'image sera ajouté ultérieurement.
+			</div>
 
-        </div>
+		</div>
 
-        {# Affiche l'état du stock. #}
-        <div class="mb-3">
+		{# Affiche l'état du stock. #}
+		<div class="mb-3">
 
-            <div class="form-check">
+			<div class="form-check">
 
-                {{ form_widget(form.produit_stock) }}
+				{{ form_widget(form.produit_stock) }}
 
-                {{ form_label(form.produit_stock) }}
+				{{ form_label(form.produit_stock) }}
 
-                {{ form_errors(form.produit_stock) }}
+				{{ form_errors(form.produit_stock) }}
 
-            </div>
+			</div>
 
-        </div>
+		</div>
 
-    </div>
+	</div>
 
-    <div class="card-footer">
+	<div
+		class="card-footer">
 
-        {# Enregistre le formulaire. #}
-        <button class="btn btn-primary">
+		{# Enregistre le formulaire. #}
+		<button class="btn btn-primary">
 
-            {{ button_label|default('Enregistrer') }}
+			{{ button_label|default('Enregistrer') }}
 
-        </button>
+		</button>
 
-    </div>
+	</div>
 
 </div>
 

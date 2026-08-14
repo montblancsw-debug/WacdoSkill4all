@@ -1,6 +1,10 @@
 {# Formulaire du CRUD Utilisateur. #}
 
-{{ form_start(form) }}
+{{ form_start(form, {
+    'attr': {
+        'data-live-validation': 'true'
+    }
+}) }}
 
 <div class="card">
 

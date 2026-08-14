@@ -1,56 +1,82 @@
-{# Ouvre le formulaire Symfony. #}
-{{ form_start(form) }}
+{# Formulaire du CRUD Commande. #}
+
+{{ form_start(form, {
+    'attr': {
+        'data-live-validation': 'true'
+    }
+}) }}
 
 <div class="card">
 
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            Informations de la commande
-        </h5>
-    </div>
+	<div class="card-header">
 
-    <div class="card-body">
+		<h5 class="card-title mb-0">
+			Informations de la commande
+		</h5>
 
-        {# Affiche le statut de la commande. #}
-        <div class="mb-3">
-            {{ form_label(form.commande_statut) }}
-            {{ form_widget(form.commande_statut) }}
-            {{ form_errors(form.commande_statut) }}
-        </div>
+	</div>
 
-        {# Affiche la date de la commande. #}
-        <div class="mb-3">
-            {{ form_label(form.commande_date) }}
-            {{ form_widget(form.commande_date) }}
-            {{ form_errors(form.commande_date) }}
-        </div>
+	<div
+		class="card-body">
 
-        {# Affiche le total de la commande. #}
-        <div class="mb-3">
-            {{ form_label(form.commande_total) }}
-            {{ form_widget(form.commande_total) }}
-            {{ form_errors(form.commande_total) }}
-        </div>
+		{# Affiche le statut de la commande. #}
+		<div class="mb-3">
 
-        {# Affiche l'utilisateur associé. #}
-        <div class="mb-3">
-            {{ form_label(form.utilisateur) }}
-            {{ form_widget(form.utilisateur) }}
-            {{ form_errors(form.utilisateur) }}
-        </div>
+			{{ form_label(form.commande_statut) }}
 
-    </div>
+			{{ form_widget(form.commande_statut) }}
 
-    <div class="card-footer">
+			{{ form_errors(form.commande_statut) }}
 
-        {# Enregistre le formulaire. #}
-        <button class="btn btn-primary">
-            {{ button_label|default('Enregistrer') }}
-        </button>
+		</div>
 
-    </div>
+		{# Affiche la date de la commande. #}
+		<div class="mb-3">
+
+			{{ form_label(form.commande_date) }}
+
+			{{ form_widget(form.commande_date) }}
+
+			{{ form_errors(form.commande_date) }}
+
+		</div>
+
+		{# Affiche le total de la commande. #}
+		<div class="mb-3">
+
+			{{ form_label(form.commande_total) }}
+
+			{{ form_widget(form.commande_total) }}
+
+			{{ form_errors(form.commande_total) }}
+
+		</div>
+
+		{# Affiche l'utilisateur associé. #}
+		<div class="mb-3">
+
+			{{ form_label(form.utilisateur) }}
+
+			{{ form_widget(form.utilisateur) }}
+
+			{{ form_errors(form.utilisateur) }}
+
+		</div>
+
+	</div>
+
+	<div
+		class="card-footer">
+
+		{# Enregistre le formulaire. #}
+		<button class="btn btn-primary">
+
+			{{ button_label|default('Enregistrer') }}
+
+		</button>
+
+	</div>
 
 </div>
 
-{# Ferme le formulaire Symfony. #}
 {{ form_end(form) }}

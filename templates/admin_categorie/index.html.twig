@@ -3,217 +3,209 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-    Gestion des catégories | Wacdo
+	Gestion des catégories | Wacdo
 {% endblock %}
 
 {% block body %}
 
-    {# Affiche l'en-tête de la page. #}
-    <div class="d-flex justify-content-between align-items-center mb-3">
+	<div class="d-flex justify-content-between align-items-center mb-3">
 
-        <div>
+		<div>
 
-            <h1 class="h3 mb-0">
-                Gestion des catégories
-            </h1>
+			<h1 class="h3 mb-0">
+				Gestion des catégories
+			</h1>
 
-            <p class="text-muted mb-0">
-                Liste des catégories de produits.
-            </p>
+			<p class="text-muted mb-0">
+				Liste des catégories de produits.
+			</p>
 
-        </div>
+		</div>
 
-        {# Permet d'ajouter une nouvelle catégorie. #}
-        <a
-            href="{{ path('app_admin_categorie_new') }}"
-            class="btn btn-primary"
-        >
-            <i
-                class="align-middle"
-                data-feather="plus"
-            ></i>
+		{# Ajoute une nouvelle catégorie. #}
+		<a href="{{ path('app_admin_categorie_new') }}" class="btn btn-primary">
 
-            Ajouter une catégorie
-        </a>
+			<i class="align-middle" data-feather="plus"></i>
 
-    </div>
+			Ajouter une catégorie
 
-    {# Affiche la liste des catégories. #}
-    <div class="card">
+		</a>
 
-        <div class="card-header">
+	</div>
 
-            <h5 class="card-title mb-0">
-                Catégories
-            </h5>
 
-        </div>
+	<div class="card">
 
-        <div class="card-body">
+		<div class="card-header">
 
-            <div class="table-responsive">
+			<h5 class="card-title mb-0">
+				Catégories
+			</h5>
 
-                <table class="table table-hover">
+		</div>
 
-                    <thead>
 
-                        <tr>
+		<div class="card-body">
 
-                            <th>
-                                ID
-                            </th>
+			<div class="table-responsive">
 
-                            <th>
-                                Nom
-                            </th>
+				<table class="table table-hover">
 
-                            <th>
-                                Description
-                            </th>
+					<thead>
 
-                            <th>
-                                Nom du fichier
-                            </th>
+						<tr>
 
-                            <th>
-                                Image
-                            </th>
+							<th>
+								ID
+							</th>
 
-                            <th class="text-end">
-                                Actions
-                            </th>
+							<th>
+								Nom
+							</th>
 
-                        </tr>
+							<th>
+								Description
+							</th>
 
-                    </thead>
+							<th>
+								Nom du fichier
+							</th>
 
-                    <tbody>
+							<th>
+								Image
+							</th>
 
-                        {% for categorie in categories %}
+							<th class="text-end">
+								Actions
+							</th>
 
-                            <tr>
+						</tr>
 
-                                {# Affiche l'identifiant. #}
-                                <td>
-                                    {{ categorie.id }}
-                                </td>
+					</thead>
 
-                                {# Affiche le nom de la catégorie. #}
-                                <td>
 
-                                    <strong>
-                                        {{ categorie.categorieNom }}
-                                    </strong>
+					<tbody>
 
-                                </td>
+						{% for categorie in categories %}
 
-                                {# Affiche la description sans les balises CKEditor. #}
-                                <td>
+							<tr>
 
-                                    {% if categorie.categorieDescription %}
+								<td>
+									{{ categorie.id }}
+								</td>
 
-                                        {{ categorie.categorieDescription|striptags }}
 
-                                    {% else %}
+								<td>
 
-                                        <span class="text-muted">
-                                            Aucune description
-                                        </span>
+									<strong>
+										{{ categorie.categorieNom }}
+									</strong>
 
-                                    {% endif %}
+								</td>
 
-                                </td>
 
-                                {# Affiche le nom du fichier. #}
-                                <td>
+								<td>
 
-                                    {% if categorie.categorieNomdefichier %}
+									{% if categorie.categorieDescription %}
 
-                                        {{ categorie.categorieNomdefichier }}
+										{{ categorie.categorieDescription|striptags }}
 
-                                    {% else %}
+									{% else %}
 
-                                        <span class="text-muted">
-                                            Non renseigné
-                                        </span>
+										<span class="text-muted">
+											Aucune description
+										</span>
 
-                                    {% endif %}
+									{% endif %}
 
-                                </td>
+								</td>
 
-                                {# Affiche le nom de l'image. #}
-                                <td>
 
-                                    {% if categorie.categorieImage %}
+								<td>
 
-                                        {{ categorie.categorieImage }}
+									{% if categorie.categorieNomdefichier %}
 
-                                    {% else %}
+										{{ categorie.categorieNomdefichier }}
 
-                                        <span class="text-muted">
-                                            Aucune image
-                                        </span>
+									{% else %}
 
-                                    {% endif %}
+										<span class="text-muted">
+											Non renseigné
+										</span>
 
-                                </td>
+									{% endif %}
 
-                                {# Affiche les actions du CRUD. #}
-                                <td class="text-end">
+								</td>
 
-                                    <a
-                                        href="{{ path('app_admin_categorie_show', {'id': categorie.id}) }}"
-                                        class="btn btn-sm btn-info"
-                                        title="Voir"
-                                    >
-                                        <i
-                                            class="align-middle"
-                                            data-feather="eye"
-                                        ></i>
 
-                                        Voir
-                                    </a>
+								<td>
 
-                                    <a
-                                        href="{{ path('app_admin_categorie_edit', {'id': categorie.id}) }}"
-                                        class="btn btn-sm btn-warning"
-                                        title="Modifier"
-                                    >
-                                        <i
-                                            class="align-middle"
-                                            data-feather="edit"
-                                        ></i>
+									{% if categorie.categorieImage %}
 
-                                        Modifier
-                                    </a>
+										{{ categorie.categorieImage }}
 
-                                </td>
+									{% else %}
 
-                            </tr>
+										<span class="text-muted">
+											Aucune image
+										</span>
 
-                        {% else %}
+									{% endif %}
 
-                            <tr>
+								</td>
 
-                                <td
-                                    colspan="6"
-                                    class="text-center text-muted"
-                                >
-                                    Aucune catégorie enregistrée.
-                                </td>
 
-                            </tr>
+								<td
+									class="text-end">
 
-                        {% endfor %}
+									{# Consulte la catégorie. #}
+									<a href="{{ path('app_admin_categorie_show', {'id': categorie.id}) }}" class="btn btn-sm btn-info" title="Voir">
 
-                    </tbody>
+										<i class="align-middle" data-feather="eye"></i>
 
-                </table>
+										Voir
 
-            </div>
+									</a>
 
-        </div>
 
-    </div>
+									{# Modifie la catégorie. #}
+									<a href="{{ path('app_admin_categorie_edit', {'id': categorie.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
+
+										<i class="align-middle" data-feather="edit"></i>
+
+										Modifier
+
+									</a>
+
+
+									{# Supprime la catégorie directement depuis la liste. #}
+									{{ include('admin_categorie/_delete_form.html.twig') }}
+
+								</td>
+
+							</tr>
+
+
+						{% else %}
+
+							<tr>
+
+								<td colspan="6" class="text-center text-muted">
+									Aucune catégorie enregistrée.
+								</td>
+
+							</tr>
+
+						{% endfor %}
+
+					</tbody>
+
+				</table>
+
+			</div>
+
+		</div>
+
+	</div>
 
 {% endblock %}

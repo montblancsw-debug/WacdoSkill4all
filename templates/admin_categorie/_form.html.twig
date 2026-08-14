@@ -1,6 +1,10 @@
 {# Formulaire du CRUD admin_catégorie. #}
 
-{{ form_start(form) }}
+{{ form_start(form, {
+	'attr': {
+		'data-live-validation': 'true'
+	}
+}) }}
 
 <div class="card">
 
@@ -12,7 +16,8 @@
 
 	</div>
 
-	<div class="card-body">
+	<div
+		class="card-body">
 
 		{# Nom de la catégorie. #}
 		<div class="mb-3">
@@ -60,7 +65,8 @@
 
 	</div>
 
-	<div class="card-footer">
+	<div
+		class="card-footer">
 
 		{# Enregistre le formulaire. #}
 		<button class="btn btn-primary">
