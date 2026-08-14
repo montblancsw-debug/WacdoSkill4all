@@ -1,6 +1,6 @@
 security:
 
-    # Utilise bcrypt pour rester compatible avec les mots de passe Wacdo existants.
+    # Utilise bcrypt pour les mots de passe Wacdo.
     password_hashers:
         App\Entity\Utilisateur:
             algorithm: bcrypt
@@ -14,19 +14,19 @@ security:
 
     firewalls:
 
-        # Désactive la sécurité pour les outils de développement et les assets.
+        # Désactive la sécurité pour les outils de développement.
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        # Firewall principal de l'application.
+        # Firewall principal de Wacdo.
         main:
             lazy: true
 
-            # Utilise les utilisateurs enregistrés en base.
+            # Utilise les utilisateurs Wacdo.
             provider: app_utilisateur_provider
 
-            # Utilise notre formulaire de connexion personnalisé.
+            # Utilise notre authenticator.
             custom_authenticators:
                 - App\Security\AppAuthenticator
 
@@ -41,8 +41,15 @@ security:
                 lifetime: 604800
                 path: /
 
-    # Les routes seront protégées dans l'étape suivante.
-    access_control: []
+    # Sécurise les différentes zones de l'application.
+    access_control:
+
+        # La connexion reste accessible sans authentification.
+        - { path: ^/login$, roles: PUBLIC_ACCESS }
+
+        # Le back-office nécessite un utilisateur connecté.
+        # Une connexion Remember Me est également acceptée.
+        - { path: ^/admin, roles: IS_AUTHENTICATED }
 
 
 when@test:
