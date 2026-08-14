@@ -32,11 +32,11 @@ class Produit
     )]
     private ?string $produit_nom = null;
 
-    // La description du produit reste facultative.
+    // La description reste facultative.
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $produit_description = null;
 
-    // Le prix du produit est obligatoire et doit être positif.
+    // Le prix est obligatoire et doit être positif.
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(
         message: 'Le prix du produit est obligatoire.'
@@ -46,14 +46,14 @@ class Produit
     )]
     private ?string $produit_prix = null;
 
-    // Le stock doit toujours être défini.
+    // Indique si le produit est disponible.
     #[ORM\Column]
     #[Assert\NotNull(
         message: 'La disponibilité du produit doit être renseignée.'
     )]
     private ?bool $produit_stock = null;
 
-    // L'image reste facultative mais limitée à 255 caractères.
+    // Le nom de l'image reste facultatif.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(
         max: 255,
@@ -61,11 +61,14 @@ class Produit
     )]
     private ?string $produit_image = null;
 
-    // La catégorie reste facultative.
+    // La catégorie peut être supprimée sans supprimer le produit.
     #[ORM\ManyToOne(inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Categorie $categorie = null;
 
+    /**
+     * @var Collection<int, Detail>
+     */
     #[ORM\OneToMany(
         targetEntity: Detail::class,
         mappedBy: 'produit'
@@ -111,7 +114,7 @@ class Produit
         return $this->produit_prix;
     }
 
-    public function setProduitPrix(string $produit_prix): static
+    public function setProduitPrix(?string $produit_prix): static
     {
         $this->produit_prix = $produit_prix;
 
@@ -154,6 +157,9 @@ class Produit
         return $this;
     }
 
+    /**
+     * @return Collection<int, Detail>
+     */
     public function getDetails(): Collection
     {
         return $this->details;
