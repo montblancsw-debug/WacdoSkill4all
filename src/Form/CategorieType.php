@@ -3,9 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Categorie;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,6 +15,7 @@ class CategorieType extends AbstractType
     {
         $builder
 
+            // Champ contenant le nom de la catégorie.
             ->add('categorie_nom', TextType::class, [
                 'label' => 'Nom de la catégorie',
                 'attr' => [
@@ -23,17 +24,14 @@ class CategorieType extends AbstractType
                 ],
             ])
 
-            // Contenue de la Categorie :
-            ->add('categorie_description', TextareaType::class, [
+            // Utilise CKEditor pour modifier la description.
+            ->add('categorie_description', CKEditorType::class, [
                 'label' => 'Description',
                 'required' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'rows' => 4,
-                    'placeholder' => 'Description de la catégorie',
-                ],
+                'config_name' => 'main_config',
             ])
 
+            // Champ contenant le nom du fichier.
             ->add('categorie_nomdefichier', TextType::class, [
                 'label' => 'Nom du fichier',
                 'required' => false,
@@ -43,6 +41,7 @@ class CategorieType extends AbstractType
                 ],
             ])
 
+            // Champ contenant le nom de l'image.
             ->add('categorie_image', TextType::class, [
                 'label' => 'Image',
                 'required' => false,
@@ -50,14 +49,13 @@ class CategorieType extends AbstractType
                     'class' => 'form-control',
                     'placeholder' => 'Exemple : burgers.jpg',
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
+        // Lie le formulaire à l'entité Categorie.
         $resolver->setDefaults([
-            // Ce formulaire travaille directement avec l'entité Categorie.
             'data_class' => Categorie::class,
         ]);
     }

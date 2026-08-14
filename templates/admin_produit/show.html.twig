@@ -6,10 +6,11 @@
 
 {% block body %}
 
-    {# Affiche le titre de la fiche produit. #}
+    {# Affiche l'en-tête du produit. #}
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
+
             <h1 class="h3 mb-1">
                 {{ produit.produitNom }}
             </h1>
@@ -17,11 +18,12 @@
             <p class="text-muted mb-0">
                 Détail du produit
             </p>
+
         </div>
 
         <div>
 
-            {# Ouvre la modification du produit. #}
+            {# Permet de modifier le produit. #}
             <a
                 href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}"
                 class="btn btn-warning"
@@ -40,9 +42,11 @@
     <div class="card">
 
         <div class="card-header">
+
             <h5 class="card-title mb-0">
                 Informations du produit
             </h5>
+
         </div>
 
         <div class="card-body">
@@ -52,6 +56,7 @@
                 <tbody>
 
                     <tr>
+
                         <th style="width: 250px;">
                             Identifiant
                         </th>
@@ -59,9 +64,11 @@
                         <td>
                             {{ produit.id }}
                         </td>
+
                     </tr>
 
                     <tr>
+
                         <th>
                             Nom
                         </th>
@@ -69,83 +76,121 @@
                         <td>
                             {{ produit.produitNom }}
                         </td>
+
                     </tr>
 
                     <tr>
+
                         <th>
                             Description
                         </th>
 
                         <td>
+
                             {% if produit.produitDescription %}
-                                {{ produit.produitDescription|nl2br }}
+
+                                {# Interprète la mise en forme enregistrée par CKEditor. #}
+                                {{ produit.produitDescription|raw }}
+
                             {% else %}
+
                                 <span class="text-muted">
                                     Aucune description
                                 </span>
+
                             {% endif %}
+
                         </td>
+
                     </tr>
 
                     <tr>
+
                         <th>
                             Prix
                         </th>
 
                         <td>
+
                             {{ produit.produitPrix|number_format(2, ',', ' ') }}
                             €
+
                         </td>
+
                     </tr>
 
                     <tr>
+
                         <th>
                             Disponibilité
                         </th>
 
                         <td>
+
                             {% if produit.produitStock %}
+
                                 <span class="badge bg-success">
                                     Disponible
                                 </span>
+
                             {% else %}
+
                                 <span class="badge bg-danger">
                                     Indisponible
                                 </span>
+
                             {% endif %}
+
                         </td>
+
                     </tr>
 
                     <tr>
+
                         <th>
                             Catégorie
                         </th>
 
                         <td>
+
                             {% if produit.categorie %}
+
                                 {{ produit.categorie.categorieNom }}
+
                             {% else %}
+
                                 <span class="text-muted">
                                     Sans catégorie
                                 </span>
+
                             {% endif %}
+
                         </td>
+
                     </tr>
 
                     <tr>
+
                         <th>
                             Image
                         </th>
 
                         <td>
+
                             {% if produit.produitImage %}
+
                                 {{ produit.produitImage }}
+
                             {% else %}
+
                                 <span class="text-muted">
                                     Aucune image
                                 </span>
+
                             {% endif %}
+
                         </td>
+
                     </tr>
 
                 </tbody>
