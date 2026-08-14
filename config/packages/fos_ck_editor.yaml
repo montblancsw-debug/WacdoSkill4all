@@ -1,0 +1,15 @@
+fos_ck_editor:
+
+    # Utilise cette configuration par défaut.
+    default_config: main_config
+
+    configs:
+
+        # Configuration principale de CKEditor.
+        main_config:
+
+            # Utilise la barre d'outils minimale.
+            toolbar: basic
+
+            # Désactive la notification de vérification de version.
+            versionCheck: false

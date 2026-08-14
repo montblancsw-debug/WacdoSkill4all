@@ -4,11 +4,11 @@ namespace App\Form;
 
 use App\Entity\Categorie;
 use App\Entity\Produit;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,15 +28,11 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Champ contenant la description du produit.
-            ->add('produit_description', TextareaType::class, [
+            // Utilise CKEditor pour modifier la description.
+            ->add('produit_description', CKEditorType::class, [
                 'label' => 'Description',
                 'required' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'rows' => 5,
-                    'placeholder' => 'Description du produit',
-                ],
+                'config_name' => 'main_config',
             ])
 
             // Champ contenant le prix du produit.
@@ -53,7 +49,7 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Case indiquant si le produit est disponible.
+            // Indique si le produit est disponible.
             ->add('produit_stock', CheckboxType::class, [
                 'label' => 'Produit disponible en stock',
                 'required' => false,
@@ -62,7 +58,7 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Champ temporaire contenant le nom de l'image.
+            // Contient temporairement le nom de l'image.
             ->add('produit_image', TextType::class, [
                 'label' => 'Image du produit',
                 'required' => false,
@@ -72,7 +68,7 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Liste des catégories disponibles.
+            // Permet de sélectionner la catégorie.
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'categorie_nom',
