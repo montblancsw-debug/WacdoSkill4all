@@ -41,15 +41,32 @@ security:
                 lifetime: 604800
                 path: /
 
-    # Sécurise les différentes zones de l'application.
+    # Définit les droits d'accès aux différentes zones.
     access_control:
 
-        # La connexion reste accessible sans authentification.
-        - { path: ^/login$, roles: PUBLIC_ACCESS }
+        # La page de connexion reste publique.
+        - { path: '^/login$', roles: PUBLIC_ACCESS }
 
-        # Le back-office nécessite un utilisateur connecté.
-        # Une connexion Remember Me est également acceptée.
-        - { path: ^/admin, roles: IS_AUTHENTICATED }
+        # Seul l'administrateur gère les utilisateurs.
+        - { path: '^/admin/utilisateur', roles: ROLE_ADMIN }
+
+        # Seul l'administrateur gère les catégories.
+        - { path: '^/admin/categorie', roles: ROLE_ADMIN }
+
+        # Seul l'administrateur gère les produits.
+        - { path: '^/admin/produit', roles: ROLE_ADMIN }
+
+        # Les trois rôles peuvent gérer les commandes.
+        - { path: '^/admin/commande', roles: [ROLE_ADMIN, ROLE_PREPARATEUR, ROLE_ACCUEIL] }
+
+        # Les trois rôles peuvent accéder au Dashboard.
+        - { path: '^/admin/dashboard$', roles: [ROLE_ADMIN, ROLE_PREPARATEUR, ROLE_ACCUEIL] }
+
+        # Les trois rôles peuvent accéder à /admin.
+        - { path: '^/admin$', roles: [ROLE_ADMIN, ROLE_PREPARATEUR, ROLE_ACCUEIL] }
+
+        # Toute autre URL /admin reste réservée à l'administrateur.
+        - { path: '^/admin', roles: ROLE_ADMIN }
 
 
 when@test:

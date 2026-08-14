@@ -25,50 +25,56 @@
 	<div
 		class="row">
 
-		{# Carte des catégories. #}
-		<div class="col-12 col-sm-6 col-xl-3 d-flex">
 
-			<div class="card flex-fill">
+		{# Les informations du catalogue sont réservées à l'administrateur. #}
+		{% if is_granted('ROLE_ADMIN') %}
 
-				<div class="card-body">
+			{# Carte des catégories. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
 
-					<div class="row">
+				<div class="card flex-fill">
 
-						<div class="col mt-0">
+					<div class="card-body">
 
-							<h5 class="card-title">
+						<div class="row">
 
-								<a href="{{ path('app_admin_categorie_index') }}">
-									Catégories
-								</a>
+							<div class="col mt-0">
 
-							</h5>
+								<h5 class="card-title">
 
-						</div>
+									<a href="{{ path('app_admin_categorie_index') }}">
+										Catégories
+									</a>
+
+								</h5>
+
+							</div>
 
 
-						<div class="col-auto">
+							<div class="col-auto">
 
-							<div class="stat text-primary">
+								<div class="stat text-primary">
 
-								<i class="align-middle" data-feather="grid"></i>
+									<i class="align-middle" data-feather="grid"></i>
+
+								</div>
 
 							</div>
 
 						</div>
 
-					</div>
 
+						<h1 class="mt-1 mb-3">
+							{{ numCategorie }}
+						</h1>
 
-					<h1 class="mt-1 mb-3">
-						{{ numCategorie }}
-					</h1>
+						<div class="mb-0">
 
-					<div class="mb-0">
+							<span class="text-muted">
+								Catégories enregistrées
+							</span>
 
-						<span class="text-muted">
-							Catégories enregistrées
-						</span>
+						</div>
 
 					</div>
 
@@ -76,53 +82,53 @@
 
 			</div>
 
-		</div>
+
+			{# Carte des produits. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+
+				<div class="card flex-fill">
+
+					<div class="card-body">
+
+						<div class="row">
+
+							<div class="col mt-0">
+
+								<h5 class="card-title">
+
+									<a href="{{ path('app_admin_produit_index') }}">
+										Produits
+									</a>
+
+								</h5>
+
+							</div>
 
 
-		{# Carte des produits. #}
-		<div class="col-12 col-sm-6 col-xl-3 d-flex">
+							<div class="col-auto">
 
-			<div class="card flex-fill">
+								<div class="stat text-primary">
 
-				<div class="card-body">
+									<i class="align-middle" data-feather="package"></i>
 
-					<div class="row">
-
-						<div class="col mt-0">
-
-							<h5 class="card-title">
-
-								<a href="{{ path('app_admin_produit_index') }}">
-									Produits
-								</a>
-
-							</h5>
-
-						</div>
-
-
-						<div class="col-auto">
-
-							<div class="stat text-primary">
-
-								<i class="align-middle" data-feather="package"></i>
+								</div>
 
 							</div>
 
 						</div>
 
-					</div>
 
+						<h1 class="mt-1 mb-3">
+							{{ numProduit }}
+						</h1>
 
-					<h1 class="mt-1 mb-3">
-						{{ numProduit }}
-					</h1>
+						<div class="mb-0">
 
-					<div class="mb-0">
+							<span class="text-muted">
+								Produits enregistrés
+							</span>
 
-						<span class="text-muted">
-							Produits enregistrés
-						</span>
+						</div>
 
 					</div>
 
@@ -130,53 +136,62 @@
 
 			</div>
 
-		</div>
+		{% endif %}
 
 
-		{# Carte des commandes. #}
-		<div class="col-12 col-sm-6 col-xl-3 d-flex">
+		{# Les trois rôles peuvent consulter les commandes. #}
+		{% if
+            is_granted('ROLE_ADMIN')
+            or is_granted('ROLE_PREPARATEUR')
+            or is_granted('ROLE_ACCUEIL')
+        %}
 
-			<div class="card flex-fill">
+			{# Carte des commandes. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
 
-				<div class="card-body">
+				<div class="card flex-fill">
 
-					<div class="row">
+					<div class="card-body">
 
-						<div class="col mt-0">
+						<div class="row">
 
-							<h5 class="card-title">
+							<div class="col mt-0">
 
-								<a href="{{ path('app_admin_commande_index') }}">
-									Commandes
-								</a>
+								<h5 class="card-title">
 
-							</h5>
+									<a href="{{ path('app_admin_commande_index') }}">
+										Commandes
+									</a>
 
-						</div>
+								</h5>
+
+							</div>
 
 
-						<div class="col-auto">
+							<div class="col-auto">
 
-							<div class="stat text-primary">
+								<div class="stat text-primary">
 
-								<i class="align-middle" data-feather="shopping-cart"></i>
+									<i class="align-middle" data-feather="shopping-cart"></i>
+
+								</div>
 
 							</div>
 
 						</div>
 
-					</div>
 
+						<h1 class="mt-1 mb-3">
+							{{ numCommande }}
+						</h1>
 
-					<h1 class="mt-1 mb-3">
-						{{ numCommande }}
-					</h1>
+						<div class="mb-0">
 
-					<div class="mb-0">
+							<span class="text-muted">
+								Commandes enregistrées
+							</span>
 
-						<span class="text-muted">
-							Commandes enregistrées
-						</span>
+						</div>
 
 					</div>
 
@@ -184,53 +199,58 @@
 
 			</div>
 
-		</div>
+		{% endif %}
 
 
-		{# Carte des utilisateurs. #}
-		<div class="col-12 col-sm-6 col-xl-3 d-flex">
+		{# La gestion des utilisateurs est réservée à l'administrateur. #}
+		{% if is_granted('ROLE_ADMIN') %}
 
-			<div class="card flex-fill">
+			{# Carte des utilisateurs. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
 
-				<div class="card-body">
+				<div class="card flex-fill">
 
-					<div class="row">
+					<div class="card-body">
 
-						<div class="col mt-0">
+						<div class="row">
 
-							<h5 class="card-title">
+							<div class="col mt-0">
 
-								<a href="{{ path('app_admin_utilisateur_index') }}">
-									Utilisateurs
-								</a>
+								<h5 class="card-title">
 
-							</h5>
+									<a href="{{ path('app_admin_utilisateur_index') }}">
+										Utilisateurs
+									</a>
 
-						</div>
+								</h5>
+
+							</div>
 
 
-						<div class="col-auto">
+							<div class="col-auto">
 
-							<div class="stat text-primary">
+								<div class="stat text-primary">
 
-								<i class="align-middle" data-feather="users"></i>
+									<i class="align-middle" data-feather="users"></i>
+
+								</div>
 
 							</div>
 
 						</div>
 
-					</div>
 
+						<h1 class="mt-1 mb-3">
+							{{ numUtilisateur }}
+						</h1>
 
-					<h1 class="mt-1 mb-3">
-						{{ numUtilisateur }}
-					</h1>
+						<div class="mb-0">
 
-					<div class="mb-0">
+							<span class="text-muted">
+								Utilisateurs enregistrés
+							</span>
 
-						<span class="text-muted">
-							Utilisateurs enregistrés
-						</span>
+						</div>
 
 					</div>
 
@@ -238,7 +258,8 @@
 
 			</div>
 
-		</div>
+		{% endif %}
+
 
 	</div>
 
