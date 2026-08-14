@@ -19,32 +19,36 @@ class ProduitType extends AbstractType
     {
         $builder
 
-            // Champ contenant le nom du produit.
+            // Champ obligatoire contenant le nom du produit.
             ->add('produit_nom', TextType::class, [
                 'label' => 'Nom du produit',
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Ex : WacFat',
+                    'minlength' => 2,
+                    'maxlength' => 255,
                 ],
             ])
 
-            // Utilise CKEditor pour modifier la description.
+            // Utilise CKEditor pour la description facultative.
             ->add('produit_description', CKEditorType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'config_name' => 'main_config',
             ])
 
-            // Champ contenant le prix du produit.
+            // Champ obligatoire contenant le prix.
             ->add('produit_prix', NumberType::class, [
                 'label' => 'Prix (€)',
+                'required' => true,
                 'input' => 'string',
                 'scale' => 2,
                 'html5' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'step' => '0.01',
-                    'min' => '0',
+                    'min' => '0.01',
                     'placeholder' => 'Ex : 8.50',
                 ],
             ])
@@ -58,17 +62,18 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Contient temporairement le nom de l'image.
+            // Champ facultatif contenant le nom de l'image.
             ->add('produit_image', TextType::class, [
                 'label' => 'Image du produit',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Ex : wacfat.jpg',
+                    'maxlength' => 255,
                 ],
             ])
 
-            // Permet de sélectionner la catégorie.
+            // Permet de sélectionner une catégorie.
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'categorie_nom',
