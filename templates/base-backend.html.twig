@@ -1,110 +1,172 @@
 <!DOCTYPE html>
+
 <html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>
-        {% block title %}
-            Administration Wacdo
-        {% endblock %}
-    </title>
+	<head>
 
-    {# Icône AdminKit #}
-    <link
-        rel="shortcut icon"
-        href="{{ asset('img/icons/icon-48x48.png') }}"
-    >
+		<meta charset="UTF-8">
 
-    {# CSS principal du template AdminKit #}
-    <link
-        rel="stylesheet"
-        href="{{ asset('css/app.css') }}"
-    >
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		>
+		<title>
+			{% block title %}
+				Bienvenue sur l'admin
+			{% endblock %}
+		</title>
+		{# Charge les styles AdminKit. #}
+		<link
+			rel="stylesheet"
+			href="{{ asset('css/app.css') }}"
+		>
+		{# Charge la police utilisée par AdminKit. #}
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
+			rel="stylesheet"
+		>
+		{% block stylesheet %}
+		{% endblock %}
+	</head>
+	<body>
+		<div class="wrapper">
+			{# Affiche le menu latéral du back-office. #}
+			{{ include('inc/_backend-left-nav.html.twig') }}
+			<div class="main">
+				{# Affiche la barre de navigation supérieure. #}
+				{{ include('inc/_backend-top-nav.html.twig') }}
+				<main class="content">
+					<div class="container-fluid p-0">
+						{# Affiche les messages Flash Symfony. #}
+						{% for label, messages in app.flashes %}
+							{% for message in messages %}
+								<div
+									class="alert alert-{{ label }} alert-dismissible fade show"
+									role="alert"
+								>
+									{{ message }}
+									{# Permet de fermer le message. #}
+									<button
+										type="button"
+										class="btn-close"
+										data-bs-dismiss="alert"
+										aria-label="Fermer"
+									></button>
+								</div>
+							{% endfor %}
+						{% endfor %}
+						{# Affiche le contenu de la page actuelle. #}
+						{% block body %}
+						{% endblock %}
+					</div>
+				</main>
+				<footer class="footer">
+					<div class="container-fluid">
+						<div class="row text-muted">
+							<div class="col-6 text-start">
+								<p class="mb-0">
+									<a
+										class="text-muted"
+										href="https://adminkit.io/"
+										target="_blank"
+									>
+										<strong>
+											AdminKit
+										</strong>
+									</a>
 
-    {# Police utilisée par AdminKit #}
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
-        rel="stylesheet"
-    >
+									-
 
-    {# Permet l'ajout de la CSS spécifique dans certaines pages #}
-    {% block stylesheets %}
-    {% endblock %}
-</head>
+									<a
+										class="text-muted"
+										href="https://adminkit.io/"
+										target="_blank"
+									>
+										<strong>
+											Bootstrap Admin Template
+										</strong>
+									</a>
 
-<body>
+									&copy;
 
-    <div class="wrapper">
+								</p>
 
-        {# Menu latéral du back-office #}
-        {{ include('inc/_backend-left-nav.html.twig') }}
+							</div>
 
-        <div class="main">
 
-            {# Barre de navigation supérieure #}
-            {{ include('inc/_backend-top-nav.html.twig') }}
+							<div class="col-6 text-end">
 
-            <main class="content">
-                <div class="container-fluid p-0">
+								<ul class="list-inline">
 
-                    {# Affichage des éventuels messages Flash Symfony #}
-                    {% for label, messages in app.flashes %}
-                        {% for message in messages %}
-                            <div class="alert alert-{{ label }} alert-dismissible fade show">
-                                {{ message }}
+									<li class="list-inline-item">
 
-                                <button
-                                    type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="alert"
-                                    aria-label="Fermer"
-                                ></button>
-                            </div>
-                        {% endfor %}
-                    {% endfor %}
+										<a
+											class="text-muted"
+											href="https://adminkit.io/"
+											target="_blank"
+										>
+											Support
+										</a>
 
-                    {# Contenu propre à chaque page du back-office #}
-                    {% block body %}
-                    {% endblock %}
+									</li>
 
-                </div>
-            </main>
+									<li class="list-inline-item">
 
-            <footer class="footer">
-                <div class="container-fluid">
+										<a
+											class="text-muted"
+											href="https://adminkit.io/"
+											target="_blank"
+										>
+											Help Center
+										</a>
 
-                    <div class="row text-muted">
+									</li>
 
-                        <div class="col-6 text-start">
-                            <p class="mb-0">
-                                <strong>Wacdo</strong>
-                                -
-                                Back-office
-                            </p>
-                        </div>
+									<li class="list-inline-item">
 
-                        <div class="col-6 text-end">
-                            <p class="mb-0">
-                                Administration Wacdo
-                            </p>
-                        </div>
+										<a
+											class="text-muted"
+											href="https://adminkit.io/"
+											target="_blank"
+										>
+											Privacy
+										</a>
 
-                    </div>
+									</li>
 
-                </div>
-            </footer>
+									<li class="list-inline-item">
 
-        </div>
+										<a
+											class="text-muted"
+											href="https://adminkit.io/"
+											target="_blank"
+										>
+											Terms
+										</a>
 
-    </div>
+									</li>
 
-    {# JavaScript principal d'AdminKit #}
-    <script src="{{ asset('js/app.js') }}"></script>
+								</ul>
 
-    {# Permet d'ajouter du JavaScript spécifique dans certaines pages #}
-    {% block javascripts %}
-    {% endblock %}
+							</div>
 
-</body>
+						</div>
+
+					</div>
+
+				</footer>
+
+			</div>
+
+		</div>
+
+
+		{# Charge le JavaScript AdminKit et Bootstrap. #}
+		<script src="{{ asset('js/app.js') }}"></script>
+
+		{% block javascripts %}
+		{% endblock %}
+
+	</body>
+
 </html>

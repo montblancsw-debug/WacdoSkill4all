@@ -61,7 +61,7 @@ class UtilisateurType extends AbstractType
                 ],
             ])
 
-            // Champ obligatoire contenant l'adresse email.
+            // Champ obligatoire contenant une adresse email complète.
             ->add('utilisateur_email', EmailType::class, [
                 'label' => 'Adresse email',
                 'required' => true,
@@ -70,6 +70,12 @@ class UtilisateurType extends AbstractType
                     'placeholder' => 'Ex : utilisateur@wacdo.fr',
                     'maxlength' => 255,
                     'autocomplete' => 'email',
+
+                    // Exige un @, un domaine et une extension comme .fr ou .com.
+                    'pattern' => '[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}',
+
+                    // Aide le navigateur à expliquer le format attendu.
+                    'title' => 'Entrez une adresse complète, par exemple utilisateur@wacdo.fr',
                 ],
             ])
 

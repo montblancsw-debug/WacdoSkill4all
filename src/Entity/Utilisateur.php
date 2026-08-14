@@ -44,15 +44,25 @@ class Utilisateur
     )]
     private ?string $utilisateur_prenom = null;
 
-    // L'adresse email est obligatoire et doit être valide.
+    // L'adresse email est obligatoire.
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(
         message: 'L\'adresse email est obligatoire.',
         normalizer: 'trim'
     )]
+
+    // Vérifie que la valeur correspond à une adresse email.
     #[Assert\Email(
         message: 'L\'adresse email "{{ value }}" n\'est pas valide.'
     )]
+
+    // Exige un domaine avec une extension comme .fr ou .com.
+    #[Assert\Regex(
+        pattern: '/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/',
+        message: 'L\'adresse email doit contenir un @ et une extension valide comme .fr ou .com.'
+    )]
+
+    // Limite la longueur maximale de l'adresse.
     #[Assert\Length(
         max: 255,
         maxMessage: 'L\'adresse email ne peut pas dépasser {{ limit }} caractères.'

@@ -1,72 +1,106 @@
-{# Ouvre le formulaire Symfony. #}
+{# Formulaire du CRUD Produit. #}
+
 {{ form_start(form) }}
 
 <div class="card">
+
     <div class="card-header">
+
         <h5 class="card-title mb-0">
             Informations du produit
         </h5>
+
     </div>
 
     <div class="card-body">
 
         {# Affiche le nom du produit. #}
         <div class="mb-3">
+
             {{ form_label(form.produit_nom) }}
+
             {{ form_widget(form.produit_nom) }}
+
             {{ form_errors(form.produit_nom) }}
+
         </div>
 
         {# Affiche la description du produit. #}
         <div class="mb-3">
+
             {{ form_label(form.produit_description) }}
+
             {{ form_widget(form.produit_description) }}
+
             {{ form_errors(form.produit_description) }}
+
         </div>
 
         {# Affiche le prix du produit. #}
         <div class="mb-3">
+
             {{ form_label(form.produit_prix) }}
+
             {{ form_widget(form.produit_prix) }}
+
             {{ form_errors(form.produit_prix) }}
+
         </div>
 
         {# Affiche la catégorie du produit. #}
         <div class="mb-3">
+
             {{ form_label(form.categorie) }}
+
             {{ form_widget(form.categorie) }}
+
             {{ form_errors(form.categorie) }}
+
         </div>
 
         {# Affiche le champ de l'image. #}
         <div class="mb-3">
+
             {{ form_label(form.produit_image) }}
+
             {{ form_widget(form.produit_image) }}
+
             {{ form_errors(form.produit_image) }}
 
             <div class="form-text">
                 L'upload d'image sera ajouté ultérieurement.
             </div>
+
         </div>
 
         {# Affiche l'état du stock. #}
         <div class="mb-3">
+
             <div class="form-check">
+
                 {{ form_widget(form.produit_stock) }}
+
                 {{ form_label(form.produit_stock) }}
+
                 {{ form_errors(form.produit_stock) }}
+
             </div>
+
         </div>
 
     </div>
 
     <div class="card-footer">
+
         {# Enregistre le formulaire. #}
         <button class="btn btn-primary">
+
             {{ button_label|default('Enregistrer') }}
+
         </button>
+
     </div>
+
 </div>
 
-{# Ferme le formulaire Symfony. #}
 {{ form_end(form) }}

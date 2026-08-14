@@ -18,9 +18,10 @@ class CommandeType extends AbstractType
     {
         $builder
 
-            // Permet de choisir le statut de la commande.
+            // Permet de choisir le statut.
             ->add('commande_statut', ChoiceType::class, [
                 'label' => 'Statut',
+                'required' => true,
                 'choices' => [
                     'En attente' => 'en attente',
                     'Préparée' => 'préparée',
@@ -35,6 +36,7 @@ class CommandeType extends AbstractType
             // Permet de renseigner la date et l'heure.
             ->add('commande_date', DateTimeType::class, [
                 'label' => 'Date et heure',
+                'required' => true,
                 'widget' => 'single_text',
                 'attr' => [
                     'class' => 'form-control',
@@ -44,13 +46,14 @@ class CommandeType extends AbstractType
             // Permet de renseigner le montant total.
             ->add('commande_total', NumberType::class, [
                 'label' => 'Total (€)',
+                'required' => true,
                 'input' => 'string',
                 'scale' => 2,
                 'html5' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'step' => '0.01',
-                    'min' => '0',
+                    'min' => '0.01',
                     'placeholder' => 'Ex : 19.50',
                 ],
             ])

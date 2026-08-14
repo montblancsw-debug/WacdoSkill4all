@@ -2,53 +2,75 @@
 
 {{ form_start(form) }}
 
-	<div class="card">
-		<div class="card-header">
-			<h5 class="card-title mb-0">
-				Informations de la catégorie
-			</h5>
-		</div>
+<div class="card">
 
-			{# Ouverture de la Div #}
-		<div class="card-body">
+	<div class="card-header">
 
-			{# Noms de la catégorie : Burgers, Boissons, Desserts... #}
-			<div class="mb-3">
-				{{ form_label(form.categorie_nom) }}
-				{{ form_widget(form.categorie_nom) }}
-				{{ form_errors(form.categorie_nom) }}
-			</div>
+		<h5 class="card-title mb-0">
+			Informations de la catégorie
+		</h5>
 
-			{# Descriptions de la catégorie #}
-			<div class="mb-3">
-				{{ form_label(form.categorie_description) }}
-				{{ form_widget(form.categorie_description) }}
-				{{ form_errors(form.categorie_description) }}
-			</div>
-
-			{# Filesname de la catégorie #}
-			<div class="mb-3">
-				{{ form_label(form.categorie_nomdefichier) }}
-				{{ form_widget(form.categorie_nomdefichier) }}
-				{{ form_errors(form.categorie_nomdefichier) }}
-			</div>
-
-			{# images de la catégorie #}
-			<div class="mb-3">
-				{{ form_label(form.categorie_image) }}
-				{{ form_widget(form.categorie_image) }}
-				{{ form_errors(form.categorie_image) }}
-			</div>
-
-			{# Fermeture de la div #}
-		</div>
-
-			{# Bouton Enregistrer #}
-		<div class="card-footer">
-			<button class="btn btn-primary">
-				{{ button_label|default('Enregistrer') }}
-			</button>
-		</div>
 	</div>
+
+	<div class="card-body">
+
+		{# Nom de la catégorie. #}
+		<div class="mb-3">
+
+			{{ form_label(form.categorie_nom) }}
+
+			{{ form_widget(form.categorie_nom) }}
+
+			{{ form_errors(form.categorie_nom) }}
+
+		</div>
+
+		{# Description de la catégorie. #}
+		<div class="mb-3">
+
+			{{ form_label(form.categorie_description) }}
+
+			{{ form_widget(form.categorie_description) }}
+
+			{{ form_errors(form.categorie_description) }}
+
+		</div>
+
+		{# Nom du fichier de la catégorie. #}
+		<div class="mb-3">
+
+			{{ form_label(form.categorie_nomdefichier) }}
+
+			{{ form_widget(form.categorie_nomdefichier) }}
+
+			{{ form_errors(form.categorie_nomdefichier) }}
+
+		</div>
+
+		{# Image de la catégorie. #}
+		<div class="mb-3">
+
+			{{ form_label(form.categorie_image) }}
+
+			{{ form_widget(form.categorie_image) }}
+
+			{{ form_errors(form.categorie_image) }}
+
+		</div>
+
+	</div>
+
+	<div class="card-footer">
+
+		{# Enregistre le formulaire. #}
+		<button class="btn btn-primary">
+
+			{{ button_label|default('Enregistrer') }}
+
+		</button>
+
+	</div>
+
+</div>
 
 {{ form_end(form) }}
