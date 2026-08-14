@@ -14,13 +14,16 @@
 			{% endblock %}
 		</title>
 
+
 		{# Charge les styles AdminKit. #}
 		<link
 		rel="stylesheet" href="{{ asset('css/app.css') }}">
 
+
 		{# Charge la police utilisée par AdminKit. #}
 		<link
 		href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
 
 		{# Styles des messages Flash du back-office. #}
 		<style>
@@ -77,9 +80,11 @@
 			}
 		</style>
 
+
 		{% block stylesheet %}{% endblock %}
 
 	</head>
+
 
 	<body>
 
@@ -89,16 +94,19 @@
 			{# Affiche le menu latéral du back-office. #}
 			{{ include('inc/_backend-left-nav.html.twig') }}
 
+
 			<div
 				class="main">
 
 				{# Affiche la barre de navigation supérieure. #}
 				{{ include('inc/_backend-top-nav.html.twig') }}
 
+
 				<main class="content">
 
 					<div
 						class="container-fluid p-0">
+
 
 						{# Affiche les messages Flash Symfony. #}
 						{% for label, messages in app.flashes %}
@@ -107,6 +115,7 @@
 
 								{# Définit la couleur du Flash. #}
 								{% set flashClass = 'wacdo-flash-info' %}
+
 
 								{% if label == 'success' %}
 
@@ -126,9 +135,11 @@
 
 								{% endif %}
 
+
 								<div class="wacdo-flash {{ flashClass }}" role="alert">
 
 									{{ message }}
+
 
 									{# Ferme le message Flash. #}
 									<button type="button" class="wacdo-flash-close" aria-label="Fermer">
@@ -161,17 +172,21 @@
 								<p class="mb-0">
 
 									<a class="text-muted" href="https://adminkit.io/" target="_blank">
+
 										<strong>
 											AdminKit
 										</strong>
+
 									</a>
 
 									-
 
 									<a class="text-muted" href="https://adminkit.io/" target="_blank">
+
 										<strong>
 											Bootstrap Admin Template
 										</strong>
+
 									</a>
 
 									&copy;
@@ -193,6 +208,7 @@
 
 									</li>
 
+
 									<li class="list-inline-item">
 
 										<a class="text-muted" href="https://adminkit.io/" target="_blank">
@@ -201,6 +217,7 @@
 
 									</li>
 
+
 									<li class="list-inline-item">
 
 										<a class="text-muted" href="https://adminkit.io/" target="_blank">
@@ -208,6 +225,7 @@
 										</a>
 
 									</li>
+
 
 									<li class="list-inline-item">
 
@@ -236,10 +254,18 @@
 		<script src="{{ asset('js/app.js') }}"></script>
 
 
-		{# Gère les Flash et les contraintes des formulaires. #}
+		{# Gère les Flash, les contraintes et l'affichage AdminKit. #}
 		<script>
 
-			document.addEventListener('DOMContentLoaded', function () { // Permet de fermer manuellement les messages Flash.
+			document.addEventListener('DOMContentLoaded', function () { // Réinitialise les icônes Feather.
+if (window.feather) {
+
+window.feather.replace();
+
+}
+
+
+// Permet de fermer manuellement les messages Flash.
 document.querySelectorAll('.wacdo-flash-close').forEach(function (button) {
 
 button.addEventListener('click', function () {
@@ -247,7 +273,9 @@ button.addEventListener('click', function () {
 const flash = button.closest('.wacdo-flash');
 
 if (flash) {
+
 flash.remove();
+
 }
 
 });
@@ -255,7 +283,7 @@ flash.remove();
 });
 
 
-// Sélectionne uniquement les formulaires du CRUD.
+// Sélectionne uniquement les formulaires concernés.
 const forms = document.querySelectorAll('form[data-live-validation="true"]');
 
 
@@ -269,13 +297,16 @@ if (field.type === 'email') {
 
 const value = field.value.trim();
 
+
 // Supprime l'ancien message personnalisé.
 field.setCustomValidity('');
 
 
 // Un champ vide reste géré par required.
 if (value === '') {
+
 return;
+
 }
 
 
@@ -285,6 +316,7 @@ if (! value.includes('@')) {
 field.setCustomValidity("L'adresse email doit contenir un @.");
 
 return;
+
 }
 
 
@@ -297,6 +329,7 @@ if (parts.length !== 2 || parts[0].trim() === '' || parts[1].trim() === '') {
 field.setCustomValidity("Saisissez une adresse complète, par exemple utilisateur@wacdo.fr.");
 
 return;
+
 }
 
 
@@ -315,7 +348,9 @@ field.setCustomValidity("L'adresse email doit contenir une extension valide comm
 // Affiche immédiatement la bulle de contrainte.
 function validateField(field) { // Ignore les champs désactivés.
 if (field.disabled || field.readOnly) {
+
 return;
+
 }
 
 
@@ -330,6 +365,7 @@ field.reportValidity();
 
 forms.forEach(function (form) {
 
+
 const fields = form.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea');
 
 
@@ -342,6 +378,7 @@ let validationTimer;
 field.addEventListener('input', function () {
 
 clearTimeout(validationTimer);
+
 
 validationTimer = setTimeout(function () {
 
@@ -386,6 +423,27 @@ prepareFieldValidity(field);
 });
 
 });
+
+});
+
+
+// Détecte une page restaurée depuis le cache du navigateur.
+window.addEventListener('pageshow', function (event) { // Recharge réellement une ancienne page restaurée.
+if (event.persisted) {
+
+window.location.reload();
+
+return;
+
+}
+
+
+// Réinitialise également les icônes après l'affichage.
+if (window.feather) {
+
+window.feather.replace();
+
+}
 
 });
 		</script>

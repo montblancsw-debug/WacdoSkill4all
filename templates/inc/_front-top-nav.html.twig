@@ -1,0 +1,136 @@
+{# Navigation principale du front-office Wacdo. #}
+
+{% set currentRoute = app.request.attributes.get('_route') %}
+
+
+<nav class="navbar navbar-expand-lg bg-white border-bottom">
+
+	<div
+		class="container">
+
+
+		{# Retourne vers la page d'accueil. #}
+		<a class="navbar-brand fw-bold" href="{{ path('app_front_home') }}">
+			Wacdo
+		</a>
+
+
+		{# Bouton du menu sur mobile. #}
+		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#frontNavbar" aria-controls="frontNavbar" aria-expanded="false" aria-label="Ouvrir la navigation">
+
+			<span class="navbar-toggler-icon"></span>
+
+		</button>
+
+
+		<div class="collapse navbar-collapse" id="frontNavbar">
+
+
+			<ul
+				class="navbar-nav me-auto mb-2 mb-lg-0">
+
+
+				{# Lien vers l'accueil. #}
+				<li class="nav-item">
+
+					<a class="nav-link
+												{% if currentRoute == 'app_front_home' or currentRoute == 'app_home' %}
+													active
+												{% endif %}" href="{{ path('app_front_home') }}">
+						Accueil
+					</a>
+
+				</li>
+
+
+				{# Prépare l'accès au futur catalogue. #}
+				<li class="nav-item">
+
+					<a class="nav-link" href="{{ path('app_front_home') }}#catalogue">
+						Catalogue
+					</a>
+
+				</li>
+
+
+			</ul>
+
+
+			<ul class="navbar-nav ms-auto">
+
+
+				{% if app.user %}
+
+
+					{# Affiche l'utilisateur actuellement connecté. #}
+					<li class="nav-item">
+
+						<span class="nav-link text-muted">
+
+							{% if app.user.utilisateurPrenom %}
+
+								{{ app.user.utilisateurPrenom }}
+
+							{% endif %}
+
+							{{ app.user.utilisateurNom }}
+
+						</span>
+
+					</li>
+
+
+					{# Affiche l'administration aux rôles du back-office. #}
+					{% if
+						is_granted('ROLE_ADMIN')
+						or is_granted('ROLE_PREPARATEUR')
+						or is_granted('ROLE_ACCUEIL')
+					%}
+
+						<li class="nav-item">
+
+							<a class="nav-link" href="{{ path('app_admin_dashboard') }}">
+								Administration
+							</a>
+
+						</li>
+
+					{% endif %}
+
+
+					{# Déconnecte l'utilisateur. #}
+					<li class="nav-item">
+
+						<a class="nav-link" href="{{ path('app_logout') }}">
+							Déconnexion
+						</a>
+
+					</li>
+
+
+				{% else %}
+
+
+					{# Permet d'accéder à la connexion. #}
+					<li class="nav-item">
+
+						<a class="nav-link
+														{% if currentRoute == 'app_login' %}
+															active
+														{% endif %}" href="{{ path('app_login') }}">
+							Connexion
+						</a>
+
+					</li>
+
+
+				{% endif %}
+
+
+			</ul>
+
+		</div>
+
+	</div>
+
+</nav>
