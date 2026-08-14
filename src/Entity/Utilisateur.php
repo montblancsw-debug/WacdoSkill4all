@@ -6,33 +6,85 @@ use App\Repository\UtilisateurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+#[UniqueEntity(
+    fields: ['utilisateur_email'],
+    message: 'Cette adresse email est déjà utilisée.'
+)]
 class Utilisateur
 {
+    // Identifiant unique de l'utilisateur.
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    // Le nom de l'utilisateur est obligatoire.
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'Le nom de l\'utilisateur est obligatoire.',
+        normalizer: 'trim'
+    )]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $utilisateur_nom = null;
 
+    // Le prénom reste facultatif.
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $utilisateur_prenom = null;
 
+    // L'adresse email est obligatoire et doit être valide.
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'L\'adresse email est obligatoire.',
+        normalizer: 'trim'
+    )]
+    #[Assert\Email(
+        message: 'L\'adresse email "{{ value }}" n\'est pas valide.'
+    )]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'L\'adresse email ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $utilisateur_email = null;
 
+    // Contient uniquement le mot de passe haché.
     #[ORM\Column(length: 72)]
     private ?string $utilisateur_password = null;
 
+    // Le rôle doit correspondre à un rôle autorisé.
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'Le rôle de l\'utilisateur est obligatoire.'
+    )]
+    #[Assert\Choice(
+        choices: [
+            'ROLE_ADMIN',
+            'ROLE_PREPARATEUR',
+            'ROLE_ACCUEIL',
+        ],
+        message: 'Le rôle sélectionné est invalide.'
+    )]
     private ?string $utilisateur_role = null;
 
-    // Un utilisateur peut être associé à plusieurs commandes.
-
-    #[ORM\OneToMany(targetEntity: Commande::class, mappedBy: 'utilisateur')]
+    /**
+     * @var Collection<int, Commande>
+     */
+    #[ORM\OneToMany(
+        targetEntity: Commande::class,
+        mappedBy: 'utilisateur'
+    )]
     private Collection $commandes;
 
     public function __construct()
@@ -50,7 +102,7 @@ class Utilisateur
         return $this->utilisateur_nom;
     }
 
-    public function setUtilisateurNom(string $utilisateur_nom): static
+    public function setUtilisateurNom(?string $utilisateur_nom): static
     {
         $this->utilisateur_nom = $utilisateur_nom;
 
@@ -74,7 +126,7 @@ class Utilisateur
         return $this->utilisateur_email;
     }
 
-    public function setUtilisateurEmail(string $utilisateur_email): static
+    public function setUtilisateurEmail(?string $utilisateur_email): static
     {
         $this->utilisateur_email = $utilisateur_email;
 
@@ -98,13 +150,16 @@ class Utilisateur
         return $this->utilisateur_role;
     }
 
-    public function setUtilisateurRole(string $utilisateur_role): static
+    public function setUtilisateurRole(?string $utilisateur_role): static
     {
         $this->utilisateur_role = $utilisateur_role;
 
         return $this;
     }
 
+    /**
+     * @return Collection<int, Commande>
+     */
     public function getCommandes(): Collection
     {
         return $this->commandes;
