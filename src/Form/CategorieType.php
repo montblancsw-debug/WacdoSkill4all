@@ -15,39 +15,44 @@ class CategorieType extends AbstractType
     {
         $builder
 
-            // Champ contenant le nom de la catégorie.
+            // Champ obligatoire contenant le nom de la catégorie.
             ->add('categorie_nom', TextType::class, [
                 'label' => 'Nom de la catégorie',
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Exemple : Burgers',
+                    'minlength' => 2,
+                    'maxlength' => 255,
                 ],
             ])
 
-            // Utilise CKEditor pour modifier la description.
+            // Utilise CKEditor pour la description facultative.
             ->add('categorie_description', CKEditorType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'config_name' => 'main_config',
             ])
 
-            // Champ contenant le nom du fichier.
+            // Champ facultatif contenant le nom du fichier.
             ->add('categorie_nomdefichier', TextType::class, [
                 'label' => 'Nom du fichier',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Exemple : burgers.jpg',
+                    'maxlength' => 255,
                 ],
             ])
 
-            // Champ contenant le nom de l'image.
+            // Champ facultatif contenant le nom de l'image.
             ->add('categorie_image', TextType::class, [
                 'label' => 'Image',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Exemple : burgers.jpg',
+                    'maxlength' => 255,
                 ],
             ]);
     }

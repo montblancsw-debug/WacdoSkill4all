@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 class Categorie
@@ -16,21 +17,40 @@ class Categorie
     #[ORM\Column]
     private ?int $id = null;
 
+    // Le nom de la catégorie est obligatoire.
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(
+        message: 'Le nom de la catégorie est obligatoire.',
+        normalizer: 'trim'
+    )]
+    #[Assert\Length(
+        min: 2,
+        max: 255,
+        minMessage: 'Le nom de la catégorie doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $categorie_nom = null;
 
+    // La description de la catégorie reste facultative.
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $categorie_description = null;
 
+    // Le nom du fichier est facultatif mais limité à 255 caractères.
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le nom du fichier ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $categorie_nomdefichier = null;
 
+    // Le nom de l'image est facultatif mais limité à 255 caractères.
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.'
+    )]
     private ?string $categorie_image = null;
 
-    /**
-     * @var Collection<int, Produit>
-     */
     #[ORM\OneToMany(targetEntity: Produit::class, mappedBy: 'categorie')]
     private Collection $produits;
 
@@ -92,9 +112,6 @@ class Categorie
         return $this;
     }
 
-    /**
-     * @return Collection<int, Produit>
-     */
     public function getProduits(): Collection
     {
         return $this->produits;
@@ -113,7 +130,6 @@ class Categorie
     public function removeProduit(Produit $produit): static
     {
         if ($this->produits->removeElement($produit)) {
-            // set the owning side to null (unless already changed)
             if ($produit->getCategorie() === $this) {
                 $produit->setCategorie(null);
             }
