@@ -1,39 +1,56 @@
 security:
-    # https://symfony.com/doc/current/security.html#registering-the-user-hashing-passwords
+
+    # Utilise bcrypt pour rester compatible avec les mots de passe Wacdo existants.
     password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-    # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
+        App\Entity\Utilisateur:
+            algorithm: bcrypt
+
+    # Charge les utilisateurs depuis la base de données.
     providers:
-        users_in_memory: { memory: null }
+        app_utilisateur_provider:
+            entity:
+                class: App\Entity\Utilisateur
+                property: utilisateur_email
+
     firewalls:
+
+        # Désactive la sécurité pour les outils de développement et les assets.
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        # Firewall principal de l'application.
         main:
             lazy: true
-            provider: users_in_memory
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
+            # Utilise les utilisateurs enregistrés en base.
+            provider: app_utilisateur_provider
 
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            # Utilise notre formulaire de connexion personnalisé.
+            custom_authenticators:
+                - App\Security\AppAuthenticator
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
-    access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+            # Configure la déconnexion.
+            logout:
+                path: app_logout
+                target: app_login
+
+            # Permet de rester connecté.
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+                path: /
+
+    # Les routes seront protégées dans l'étape suivante.
+    access_control: []
+
 
 when@test:
+
     security:
+
         password_hashers:
-            # By default, password hashers are resource intensive and take time. This is
-            # important to generate secure password hashes. In tests however, secure hashes
-            # are not important, waste resources and increase test times. The following
-            # reduces the work factor to the lowest possible values.
-            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-                algorithm: auto
-                cost: 4 # Lowest possible value for bcrypt
-                time_cost: 3 # Lowest possible value for argon
-                memory_cost: 10 # Lowest possible value for argon
+
+            App\Entity\Utilisateur:
+                algorithm: bcrypt
+                cost: 4

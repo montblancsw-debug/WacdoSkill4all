@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
@@ -14,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
     fields: ['utilisateur_email'],
     message: 'Cette adresse email est déjà utilisée.'
 )]
-class Utilisateur
+class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     // Identifiant unique de l'utilisateur.
     #[ORM\Id]
@@ -44,25 +46,19 @@ class Utilisateur
     )]
     private ?string $utilisateur_prenom = null;
 
-    // L'adresse email est obligatoire.
+    // L'adresse email sert également d'identifiant de connexion.
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(
         message: 'L\'adresse email est obligatoire.',
         normalizer: 'trim'
     )]
-
-    // Vérifie que la valeur correspond à une adresse email.
     #[Assert\Email(
         message: 'L\'adresse email "{{ value }}" n\'est pas valide.'
     )]
-
-    // Exige un domaine avec une extension comme .fr ou .com.
     #[Assert\Regex(
         pattern: '/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/',
         message: 'L\'adresse email doit contenir un @ et une extension valide comme .fr ou .com.'
     )]
-
-    // Limite la longueur maximale de l'adresse.
     #[Assert\Length(
         max: 255,
         maxMessage: 'L\'adresse email ne peut pas dépasser {{ limit }} caractères.'
@@ -73,7 +69,7 @@ class Utilisateur
     #[ORM\Column(length: 72)]
     private ?string $utilisateur_password = null;
 
-    // Le rôle doit correspondre à un rôle autorisé.
+    // Le rôle détermine les droits dans le back-office.
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(
         message: 'Le rôle de l\'utilisateur est obligatoire.'
@@ -166,6 +162,33 @@ class Utilisateur
 
         return $this;
     }
+
+    // Retourne l'adresse email utilisée pour la connexion Symfony.
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->utilisateur_email;
+    }
+
+    // Retourne le rôle Symfony de l'utilisateur.
+    public function getRoles(): array
+    {
+        if ($this->utilisateur_role === null) {
+            return [];
+        }
+
+        return [
+            $this->utilisateur_role,
+        ];
+    }
+
+    // Retourne le mot de passe haché à Symfony.
+    public function getPassword(): ?string
+    {
+        return $this->utilisateur_password;
+    }
+
+    // Supprime les éventuelles données sensibles temporaires.
+    public function eraseCredentials(): void {}
 
     /**
      * @return Collection<int, Commande>

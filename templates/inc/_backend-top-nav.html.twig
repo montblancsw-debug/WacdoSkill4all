@@ -1,8 +1,12 @@
+{# Barre de navigation supérieure du back-office. #}
+
 <nav class="navbar navbar-expand navbar-light navbar-bg">
 
-    {# Bouton permettant d'ouvrir / fermer le menu latéral #}
+    {# Bouton permettant d'ouvrir ou fermer le menu latéral. #}
     <a class="sidebar-toggle js-sidebar-toggle">
+
         <i class="hamburger align-self-center"></i>
+
     </a>
 
 
@@ -10,46 +14,113 @@
 
         <ul class="navbar-nav navbar-align">
 
-            <li class="nav-item dropdown">
 
-                <a
-                    class="nav-link dropdown-toggle d-none d-sm-inline-block"
-                    href="#"
-                    data-bs-toggle="dropdown"
-                >
+            {% if app.user %}
 
-                    <span class="text-dark">
-                        Administration Wacdo
-                    </span>
+                <li class="nav-item dropdown">
 
-                </a>
+                    <a
+                        class="nav-link dropdown-toggle d-none d-sm-inline-block"
+                        href="#"
+                        data-bs-toggle="dropdown"
+                    >
 
+                        <span class="text-dark">
 
-                <div class="dropdown-menu dropdown-menu-end">
+                            {% if app.user.utilisateurPrenom %}
 
-                    <a class="dropdown-item" href="#">
-                        <i
-                            class="align-middle me-1"
-                            data-feather="user"
-                        ></i>
+                                {{ app.user.utilisateurPrenom }}
 
-                        Mon profil
+                            {% endif %}
+
+                            {{ app.user.utilisateurNom }}
+
+                        </span>
+
                     </a>
 
-                    <div class="dropdown-divider"></div>
 
-                    <a class="dropdown-item" href="#">
+                    <div class="dropdown-menu dropdown-menu-end">
+
+                        {# Affiche l'adresse email de l'utilisateur connecté. #}
+                        <span class="dropdown-item-text">
+
+                            <strong>
+                                {{ app.user.utilisateurEmail }}
+                            </strong>
+
+                        </span>
+
+
+                        {# Affiche le rôle de l'utilisateur connecté. #}
+                        <span class="dropdown-item-text text-muted">
+
+                            {% if app.user.utilisateurRole == 'ROLE_ADMIN' %}
+
+                                Administrateur
+
+                            {% elseif app.user.utilisateurRole == 'ROLE_PREPARATEUR' %}
+
+                                Préparateur
+
+                            {% elseif app.user.utilisateurRole == 'ROLE_ACCUEIL' %}
+
+                                Accueil
+
+                            {% else %}
+
+                                Utilisateur
+
+                            {% endif %}
+
+                        </span>
+
+
+                        <div class="dropdown-divider"></div>
+
+
+                        {# Déconnecte l'utilisateur. #}
+                        <a
+                            class="dropdown-item"
+                            href="{{ path('app_logout') }}"
+                        >
+
+                            <i
+                                class="align-middle me-1"
+                                data-feather="log-out"
+                            ></i>
+
+                            Déconnexion
+
+                        </a>
+
+                    </div>
+
+                </li>
+
+
+            {% else %}
+
+                <li class="nav-item">
+
+                    <a
+                        class="nav-link"
+                        href="{{ path('app_login') }}"
+                    >
+
                         <i
                             class="align-middle me-1"
-                            data-feather="log-out"
+                            data-feather="log-in"
                         ></i>
 
-                        Déconnexion
+                        Connexion
+
                     </a>
 
-                </div>
+                </li>
 
-            </li>
+            {% endif %}
+
 
         </ul>
 
