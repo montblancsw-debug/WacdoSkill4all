@@ -13,3 +13,7 @@ fos_ck_editor:
 
             # Désactive la notification de vérification de version.
             versionCheck: false
+
+            # Conserve directement les caractères accentués.
+            entities: false
+            entities_latin: false
