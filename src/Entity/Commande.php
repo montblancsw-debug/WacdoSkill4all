@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
 {
@@ -55,9 +54,6 @@ class Commande
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Utilisateur $utilisateur = null;
 
-    /**
-     * @var Collection<int, Detail>
-     */
     #[ORM\OneToMany(
         targetEntity: Detail::class,
         mappedBy: 'commande'
@@ -82,7 +78,6 @@ class Commande
     public function setCommandeStatut(?string $commande_statut): static
     {
         $this->commande_statut = $commande_statut;
-
         return $this;
     }
 
@@ -94,7 +89,6 @@ class Commande
     public function setCommandeDate(?\DateTime $commande_date): static
     {
         $this->commande_date = $commande_date;
-
         return $this;
     }
 
@@ -106,7 +100,6 @@ class Commande
     public function setCommandeTotal(?string $commande_total): static
     {
         $this->commande_total = $commande_total;
-
         return $this;
     }
 
@@ -118,13 +111,8 @@ class Commande
     public function setUtilisateur(?Utilisateur $utilisateur): static
     {
         $this->utilisateur = $utilisateur;
-
         return $this;
     }
-
-    /**
-     * @return Collection<int, Detail>
-     */
     public function getDetails(): Collection
     {
         return $this->details;
@@ -136,7 +124,6 @@ class Commande
             $this->details->add($detail);
             $detail->setCommande($this);
         }
-
         return $this;
     }
 
@@ -147,7 +134,6 @@ class Commande
                 $detail->setCommande(null);
             }
         }
-
         return $this;
     }
 }

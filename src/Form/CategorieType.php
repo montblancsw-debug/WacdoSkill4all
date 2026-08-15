@@ -8,13 +8,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 class CategorieType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-
             // Champ obligatoire contenant le nom de la catégorie.
             ->add('categorie_nom', TextType::class, [
                 'label' => 'Nom de la catégorie',
@@ -56,7 +54,6 @@ class CategorieType extends AbstractType
                 ],
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         // Lie le formulaire à l'entité Categorie.

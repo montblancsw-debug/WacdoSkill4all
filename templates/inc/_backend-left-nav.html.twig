@@ -1,24 +1,18 @@
-{# Menu latéral principal du back-office Wacdo. #}
+{# Menu latéral principal. #}
 
-{# Récupère la route actuellement affichée. #}
+{# Récupère la route. #}
 {% set currentRoute = app.request.attributes.get('_route') %}
-
 
 	<nav id="sidebar" class="sidebar js-sidebar"> <div
 		class="sidebar-content js-simplebar">
 
 		{# Retourne vers le Dashboard. #}
 		<a class="sidebar-brand" href="{{ path('app_admin_dashboard') }}">
-
 			<span class="align-middle">
 				Wacdo
 			</span>
-
 		</a>
-
-
 		<ul class="sidebar-nav">
-
 
 			{# ================================ #}
 			{# TABLEAU DE BORD                  #}
@@ -26,23 +20,16 @@
 
 				<li class="sidebar-header"> Administration
 			</li>
-
-
 			<li class="sidebar-item
-					                {% if currentRoute == 'app_admin' or currentRoute == 'app_admin_dashboard' %}
-					                    active
-					                {% endif %}">
-
+					{% if currentRoute == 'app_admin' or currentRoute == 'app_admin_dashboard' %}
+					active
+					{% endif %}">
 				<a class="sidebar-link" href="{{ path('app_admin_dashboard') }}">
-
 					<i class="align-middle" data-feather="sliders"></i>
-
 					<span class="align-middle">
 						Tableau de bord
 					</span>
-
 				</a>
-
 			</li>
 
 
@@ -51,46 +38,30 @@
 			{# ================================ #}
 
 				{% if is_granted('ROLE_ADMIN') %}
-
 					<li class="sidebar-header"> Catalogue
 				</li>
-
-
 				<li class="sidebar-item
-						                    {% if currentRoute starts with 'app_admin_categorie_' %}
-						                        active
-						                    {% endif %}">
-
+						{% if currentRoute starts with 'app_admin_categorie_' %}
+						active
+						{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_categorie_index') }}">
-
 						<i class="align-middle" data-feather="grid"></i>
-
 						<span class="align-middle">
 							Catégories
 						</span>
-
 					</a>
-
 				</li>
-
-
 				<li class="sidebar-item
-						                    {% if currentRoute starts with 'app_admin_produit_' %}
-						                        active
-						                    {% endif %}">
-
+						{% if currentRoute starts with 'app_admin_produit_' %}
+						active
+						{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_produit_index') }}">
-
 						<i class="align-middle" data-feather="package"></i>
-
 						<span class="align-middle">
 							Produits
 						</span>
-
 					</a>
-
 				</li>
-
 			{% endif %}
 
 
@@ -103,63 +74,41 @@
                 or is_granted('ROLE_PREPARATEUR')
                 or is_granted('ROLE_ACCUEIL')
             %}
-
 					<li class="sidebar-header"> Commandes
 				</li>
-
-
 				<li class="sidebar-item
-						                    {% if currentRoute starts with 'app_admin_commande_' %}
-						                        active
-						                    {% endif %}">
-
+						{% if currentRoute starts with 'app_admin_commande_' %}
+						active
+						{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_commande_index') }}">
-
 						<i class="align-middle" data-feather="shopping-cart"></i>
-
 						<span class="align-middle">
 							Commandes
 						</span>
-
 					</a>
-
 				</li>
-
 			{% endif %}
-
 
 			{# ================================ #}
 			{# GESTION DES UTILISATEURS         #}
 			{# ================================ #}
 
 				{% if is_granted('ROLE_ADMIN') %}
-
 					<li class="sidebar-header"> Utilisateurs
 				</li>
-
-
 				<li class="sidebar-item
-						                    {% if currentRoute starts with 'app_admin_utilisateur_' %}
-						                        active
-						                    {% endif %}">
-
+						{% if currentRoute starts with 'app_admin_utilisateur_' %}
+						active
+						{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_utilisateur_index') }}">
-
 						<i class="align-middle" data-feather="users"></i>
-
 						<span class="align-middle">
 							Utilisateurs
 						</span>
-
 					</a>
-
 				</li>
-
 			{% endif %}
 
-
 		</ul>
-
 	</div>
-
 </nav>

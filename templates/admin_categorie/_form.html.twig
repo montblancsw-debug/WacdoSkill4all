@@ -7,13 +7,10 @@
 }) }}
 
 <div class="card">
-
 	<div class="card-header">
-
 		<h5 class="card-title mb-0">
 			Informations de la catégorie
 		</h5>
-
 	</div>
 
 	<div
@@ -21,48 +18,31 @@
 
 		{# Nom de la catégorie. #}
 		<div class="mb-3">
-
 			{{ form_label(form.categorie_nom) }}
-
 			{{ form_widget(form.categorie_nom) }}
-
 			{{ form_errors(form.categorie_nom) }}
-
 		</div>
 
 		{# Description de la catégorie. #}
 		<div class="mb-3">
-
 			{{ form_label(form.categorie_description) }}
-
 			{{ form_widget(form.categorie_description) }}
-
 			{{ form_errors(form.categorie_description) }}
-
 		</div>
 
 		{# Nom du fichier de la catégorie. #}
 		<div class="mb-3">
-
 			{{ form_label(form.categorie_nomdefichier) }}
-
 			{{ form_widget(form.categorie_nomdefichier) }}
-
 			{{ form_errors(form.categorie_nomdefichier) }}
-
 		</div>
 
 		{# Image de la catégorie. #}
 		<div class="mb-3">
-
 			{{ form_label(form.categorie_image) }}
-
 			{{ form_widget(form.categorie_image) }}
-
 			{{ form_errors(form.categorie_image) }}
-
 		</div>
-
 	</div>
 
 	<div
@@ -70,13 +50,8 @@
 
 		{# Enregistre le formulaire. #}
 		<button class="btn btn-primary">
-
 			{{ button_label|default('Enregistrer') }}
-
 		</button>
-
 	</div>
-
 </div>
-
 {{ form_end(form) }}

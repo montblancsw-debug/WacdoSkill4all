@@ -8,7 +8,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 class Produit
 {
@@ -66,9 +65,6 @@ class Produit
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Categorie $categorie = null;
 
-    /**
-     * @var Collection<int, Detail>
-     */
     #[ORM\OneToMany(
         targetEntity: Detail::class,
         mappedBy: 'produit'
@@ -93,7 +89,6 @@ class Produit
     public function setProduitNom(string $produit_nom): static
     {
         $this->produit_nom = $produit_nom;
-
         return $this;
     }
 
@@ -105,7 +100,6 @@ class Produit
     public function setProduitDescription(?string $produit_description): static
     {
         $this->produit_description = $produit_description;
-
         return $this;
     }
 
@@ -117,7 +111,6 @@ class Produit
     public function setProduitPrix(?string $produit_prix): static
     {
         $this->produit_prix = $produit_prix;
-
         return $this;
     }
 
@@ -129,7 +122,6 @@ class Produit
     public function setProduitStock(bool $produit_stock): static
     {
         $this->produit_stock = $produit_stock;
-
         return $this;
     }
 
@@ -141,7 +133,6 @@ class Produit
     public function setProduitImage(?string $produit_image): static
     {
         $this->produit_image = $produit_image;
-
         return $this;
     }
 
@@ -153,13 +144,9 @@ class Produit
     public function setCategorie(?Categorie $categorie): static
     {
         $this->categorie = $categorie;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Detail>
-     */
     public function getDetails(): Collection
     {
         return $this->details;
@@ -171,7 +158,6 @@ class Produit
             $this->details->add($detail);
             $detail->setProduit($this);
         }
-
         return $this;
     }
 
@@ -182,7 +168,6 @@ class Produit
                 $detail->setProduit(null);
             }
         }
-
         return $this;
     }
 }

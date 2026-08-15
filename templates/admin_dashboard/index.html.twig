@@ -7,137 +7,82 @@
 {% endblock %}
 
 {% block body %}
-
 	{# Titre du Dashboard. #}
 	<div class="mb-4">
-
 		<h1 class="h3 mb-1">
 			Tableau de bord
 		</h1>
-
 		<p class="text-muted mb-0">
 			Vue générale de l'administration Wacdo.
 		</p>
-
 	</div>
-
 
 	<div
 		class="row">
-
-
 		{# Les informations du catalogue sont réservées à l'administrateur. #}
 		{% if is_granted('ROLE_ADMIN') %}
-
 			{# Carte des catégories. #}
 			<div class="col-12 col-sm-6 col-xl-3 d-flex">
-
 				<div class="card flex-fill">
-
 					<div class="card-body">
-
 						<div class="row">
-
 							<div class="col mt-0">
-
 								<h5 class="card-title">
-
 									<a href="{{ path('app_admin_categorie_index') }}">
 										Catégories
 									</a>
-
 								</h5>
-
 							</div>
-
 
 							<div class="col-auto">
-
 								<div class="stat text-primary">
-
 									<i class="align-middle" data-feather="grid"></i>
-
 								</div>
-
 							</div>
-
 						</div>
-
 
 						<h1 class="mt-1 mb-3">
 							{{ numCategorie }}
 						</h1>
-
 						<div class="mb-0">
-
 							<span class="text-muted">
 								Catégories enregistrées
 							</span>
-
 						</div>
-
 					</div>
-
 				</div>
-
 			</div>
-
 
 			{# Carte des produits. #}
 			<div class="col-12 col-sm-6 col-xl-3 d-flex">
-
 				<div class="card flex-fill">
-
 					<div class="card-body">
-
 						<div class="row">
-
 							<div class="col mt-0">
-
 								<h5 class="card-title">
-
 									<a href="{{ path('app_admin_produit_index') }}">
 										Produits
 									</a>
-
 								</h5>
-
 							</div>
-
-
 							<div class="col-auto">
-
 								<div class="stat text-primary">
-
 									<i class="align-middle" data-feather="package"></i>
-
 								</div>
-
 							</div>
-
 						</div>
-
-
 						<h1 class="mt-1 mb-3">
 							{{ numProduit }}
 						</h1>
-
 						<div class="mb-0">
-
 							<span class="text-muted">
 								Produits enregistrés
 							</span>
-
 						</div>
-
 					</div>
-
 				</div>
-
 			</div>
-
 		{% endif %}
-
 
 		{# Les trois rôles peuvent consulter les commandes. #}
 		{% if
@@ -148,119 +93,70 @@
 
 			{# Carte des commandes. #}
 			<div class="col-12 col-sm-6 col-xl-3 d-flex">
-
 				<div class="card flex-fill">
-
 					<div class="card-body">
-
 						<div class="row">
-
 							<div class="col mt-0">
-
 								<h5 class="card-title">
-
 									<a href="{{ path('app_admin_commande_index') }}">
 										Commandes
 									</a>
-
 								</h5>
-
 							</div>
-
 
 							<div class="col-auto">
-
 								<div class="stat text-primary">
-
 									<i class="align-middle" data-feather="shopping-cart"></i>
-
 								</div>
-
 							</div>
-
 						</div>
-
-
 						<h1 class="mt-1 mb-3">
 							{{ numCommande }}
 						</h1>
-
 						<div class="mb-0">
-
 							<span class="text-muted">
 								Commandes enregistrées
 							</span>
-
 						</div>
-
 					</div>
-
 				</div>
-
 			</div>
-
 		{% endif %}
-
 
 		{# La gestion des utilisateurs est réservée à l'administrateur. #}
 		{% if is_granted('ROLE_ADMIN') %}
 
 			{# Carte des utilisateurs. #}
 			<div class="col-12 col-sm-6 col-xl-3 d-flex">
-
 				<div class="card flex-fill">
 
 					<div class="card-body">
-
 						<div class="row">
-
 							<div class="col mt-0">
-
 								<h5 class="card-title">
-
 									<a href="{{ path('app_admin_utilisateur_index') }}">
 										Utilisateurs
 									</a>
-
 								</h5>
-
 							</div>
-
 
 							<div class="col-auto">
-
 								<div class="stat text-primary">
-
 									<i class="align-middle" data-feather="users"></i>
-
 								</div>
-
 							</div>
-
 						</div>
-
-
 						<h1 class="mt-1 mb-3">
 							{{ numUtilisateur }}
 						</h1>
-
 						<div class="mb-0">
-
 							<span class="text-muted">
 								Utilisateurs enregistrés
 							</span>
-
 						</div>
-
 					</div>
-
 				</div>
-
 			</div>
-
 		{% endif %}
-
-
 	</div>
-
 {% endblock %}

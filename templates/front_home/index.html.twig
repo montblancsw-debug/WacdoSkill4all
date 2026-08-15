@@ -2,143 +2,89 @@
 
 {% extends 'base.html.twig' %}
 
-
 {% block title %}
 	Bienvenue chez Wacdo
 {% endblock %}
 
-
 {% block body %}
-
 
 	{# Présentation principale de Wacdo. #}
 	<section class="front-hero mb-5">
-
 		<div class="row align-items-center">
-
 			<div class="col-12 col-lg-8">
-
 				<h1 class="front-hero-title mb-3">
 					Bienvenue chez Wacdo
 				</h1>
-
-
 				<p class="lead text-muted mb-4">
-
 					Découvrez notre catalogue et préparez votre prochaine commande.
-
 				</p>
-
-
 				<a href="#catalogue" class="btn btn-primary btn-lg">
 					Découvrir le catalogue
 				</a>
 
-
 				{% if not app.user %}
-
 					<a href="{{ path('app_login') }}" class="btn btn-outline-secondary btn-lg ms-2">
 						Connexion
 					</a>
-
 				{% endif %}
-
 			</div>
-
 		</div>
-
 	</section>
-
 
 	{# Présente les futures fonctionnalités du catalogue. #}
 	<section id="catalogue" class="front-section">
-
 		<div class="mb-4">
-
 			<h2 class="h3">
 				Notre catalogue
 			</h2>
-
 			<p class="text-muted">
 				Retrouvez prochainement tous les produits disponibles à la commande.
 			</p>
-
 		</div>
 
-
+			{# Présentation des catégories. #}
 		<div
 			class="row g-4">
-
-
-			{# Présentation des catégories. #}
 			<div class="col-12 col-md-4">
-
 				<div class="card front-card">
-
 					<div class="card-body">
-
 						<h3 class="h5">
 							Catégories
 						</h3>
-
 						<p class="text-muted mb-0">
 							Parcourez les produits selon leur catégorie.
 						</p>
-
 					</div>
-
 				</div>
-
 			</div>
-
 
 			{# Présentation des produits. #}
 			<div class="col-12 col-md-4">
-
 				<div class="card front-card">
-
 					<div class="card-body">
-
 						<h3 class="h5">
 							Produits
 						</h3>
-
 						<p class="text-muted mb-0">
 							Consultez les produits proposés par Wacdo.
 						</p>
-
 					</div>
-
 				</div>
-
 			</div>
-
 
 			{# Présentation de la commande. #}
 			<div class="col-12 col-md-4">
-
 				<div class="card front-card">
-
 					<div class="card-body">
-
 						<h3 class="h5">
 							Commandes
 						</h3>
-
 						<p class="text-muted mb-0">
 							Le parcours de commande sera intégré progressivement.
 						</p>
-
 					</div>
-
 				</div>
-
 			</div>
-
-
 		</div>
-
 	</section>
-
-
 {% endblock %}

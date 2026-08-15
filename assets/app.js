@@ -1,9 +1,9 @@
 import './bootstrap.js';
 /*
- * Welcome to your app's main JavaScript file!
+ * Bienvenue dans le fichier JavaScript principal de votre application !
  *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
+ * Ce fichier sera inclus dans la page via la fonction Twig importmap(),
+ * qui devrait déjà figurer dans votre fichier base.html.twig.
  */
 import './styles/app.css';
 

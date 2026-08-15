@@ -7,54 +7,35 @@
 {% endblock %}
 
 {% block body %}
-
 	<div class="d-flex justify-content-between align-items-center mb-3">
-
 		<div>
-
 			<h1 class="h3 mb-0">
 				Gestion des catégories
 			</h1>
-
 			<p class="text-muted mb-0">
 				Liste des catégories de produits.
 			</p>
-
 		</div>
 
 		{# Ajoute une nouvelle catégorie. #}
 		<a href="{{ path('app_admin_categorie_new') }}" class="btn btn-primary">
-
 			<i class="align-middle" data-feather="plus"></i>
-
 			Ajouter une catégorie
-
 		</a>
-
 	</div>
 
-
 	<div class="card">
-
 		<div class="card-header">
-
 			<h5 class="card-title mb-0">
 				Catégories
 			</h5>
-
 		</div>
 
-
 		<div class="card-body">
-
 			<div class="table-responsive">
-
 				<table class="table table-hover">
-
 					<thead>
-
 						<tr>
-
 							<th>
 								ID
 							</th>
@@ -78,134 +59,80 @@
 							<th class="text-end">
 								Actions
 							</th>
-
 						</tr>
-
 					</thead>
 
-
 					<tbody>
-
 						{% for categorie in categories %}
-
 							<tr>
-
 								<td>
 									{{ categorie.id }}
 								</td>
 
-
 								<td>
-
 									<strong>
 										{{ categorie.categorieNom }}
 									</strong>
-
 								</td>
 
-
 								<td>
-
 									{% if categorie.categorieDescription %}
-
 										{{ categorie.categorieDescription|striptags }}
-
 									{% else %}
-
 										<span class="text-muted">
 											Aucune description
 										</span>
-
 									{% endif %}
-
 								</td>
 
-
 								<td>
-
 									{% if categorie.categorieNomdefichier %}
-
 										{{ categorie.categorieNomdefichier }}
-
 									{% else %}
-
 										<span class="text-muted">
 											Non renseigné
 										</span>
-
 									{% endif %}
-
 								</td>
 
-
 								<td>
-
 									{% if categorie.categorieImage %}
-
 										{{ categorie.categorieImage }}
-
 									{% else %}
-
 										<span class="text-muted">
 											Aucune image
 										</span>
-
 									{% endif %}
-
 								</td>
-
 
 								<td
 									class="text-end">
-
 									{# Consulte la catégorie. #}
 									<a href="{{ path('app_admin_categorie_show', {'id': categorie.id}) }}" class="btn btn-sm btn-info" title="Voir">
-
 										<i class="align-middle" data-feather="eye"></i>
-
 										Voir
-
 									</a>
-
 
 									{# Modifie la catégorie. #}
 									<a href="{{ path('app_admin_categorie_edit', {'id': categorie.id}) }}" class="btn btn-sm btn-warning" title="Modifier">
-
 										<i class="align-middle" data-feather="edit"></i>
-
 										Modifier
-
 									</a>
-
 
 									{# Supprime la catégorie directement depuis la liste. #}
 									{{ include('admin_categorie/_delete_form.html.twig') }}
-
 								</td>
-
 							</tr>
-
-
 						{% else %}
-
 							<tr>
-
 								<td colspan="6" class="text-center text-muted">
 									Aucune catégorie enregistrée.
 								</td>
-
 							</tr>
-
 						{% endfor %}
-
 					</tbody>
-
 				</table>
-
 			</div>
-
 		</div>
-
 	</div>
-
 {% endblock %}

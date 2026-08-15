@@ -11,12 +11,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
-
 class UtilisateurType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        // Prépare les contraintes du mot de passe.
+        // Les contraintes du mot de passe.
         $passwordConstraints = [
             new Assert\Length(
                 min: 8,
@@ -26,7 +25,7 @@ class UtilisateurType extends AbstractType
             ),
         ];
 
-        // Rend le mot de passe obligatoire uniquement à la création.
+        // Rend le mot de passe obligatoire uniquement lors de la création.
         if (!$options['is_edit']) {
             array_unshift(
                 $passwordConstraints,
@@ -35,7 +34,6 @@ class UtilisateurType extends AbstractType
                 )
             );
         }
-
         $builder
 
             // Champ obligatoire contenant le nom.
@@ -73,8 +71,7 @@ class UtilisateurType extends AbstractType
 
                     // Exige un @, un domaine et une extension comme .fr ou .com.
                     'pattern' => '[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}',
-
-                    // Aide le navigateur à expliquer le format attendu.
+                    // Aide le navigateur pour le format attendu.
                     'title' => 'Entrez une adresse complète, par exemple utilisateur@wacdo.fr',
                 ],
             ])
@@ -84,13 +81,9 @@ class UtilisateurType extends AbstractType
                 'label' => $options['is_edit']
                     ? 'Nouveau mot de passe'
                     : 'Mot de passe',
-
                 'mapped' => false,
-
                 'required' => !$options['is_edit'],
-
                 'constraints' => $passwordConstraints,
-
                 'attr' => [
                     'class' => 'form-control',
                     'autocomplete' => 'new-password',
@@ -102,7 +95,7 @@ class UtilisateurType extends AbstractType
                 ],
             ])
 
-            // Permet uniquement les rôles autorisés.
+            // Uniquement les rôles autorisés.
             ->add('utilisateur_role', ChoiceType::class, [
                 'label' => 'Rôle',
                 'required' => true,
@@ -117,7 +110,6 @@ class UtilisateurType extends AbstractType
                 ],
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         // Lie le formulaire à l'entité Utilisateur.
@@ -126,7 +118,7 @@ class UtilisateurType extends AbstractType
             'is_edit' => false,
         ]);
 
-        // Définit le type de l'option utilisée en modification.
+        // Définit le type de l'option utilisée.
         $resolver->setAllowedTypes(
             'is_edit',
             'bool'

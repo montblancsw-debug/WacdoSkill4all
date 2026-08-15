@@ -11,14 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-// Contrôleur du back-office permettant la gestion des catégories
+// Contrôleur permettant la gestion des catégories
 
 #[Route('/admin/categorie')]
 final class AdminCategorieController extends AbstractController
 {
-    /*
-     * Affiche la liste complète des catégories.
-     */
+
+    // Affiche la liste complète des catégories.
+
     #[Route(name: 'app_admin_categorie_index', methods: ['GET'])]
     public function index(
         CategorieRepository $categorieRepository
@@ -76,9 +76,7 @@ final class AdminCategorieController extends AbstractController
         ]);
     }
 
-    /*
-     * Affiche les informations d'une catégorie.
-     */
+    // Affiche les informations d'une catégorie.
     #[Route('/{id}', name: 'app_admin_categorie_show', methods: ['GET'])]
     public function show(
         Categorie $categorie
@@ -88,9 +86,7 @@ final class AdminCategorieController extends AbstractController
         ]);
     }
 
-    /*
-     * Modification d'une catégorie existante.
-     */
+    // Modification d'une catégorie existante.
     #[Route('/{id}/edit', name: 'app_admin_categorie_edit', methods: ['GET', 'POST'])]
     public function edit(
         Request $request,

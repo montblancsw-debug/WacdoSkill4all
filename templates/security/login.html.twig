@@ -9,111 +9,72 @@
 {% block body %}
 
 	<div class="container py-5">
-
 		<div class="row justify-content-center">
-
 			<div class="col-12 col-md-8 col-lg-5">
-
 				<div class="card shadow-sm">
-
 					<div class="card-body p-4">
-
 						<div class="text-center mb-4">
-
 							<h1 class="h3">
 								Connexion
 							</h1>
-
 							<p class="text-muted">
 								Accès à l'administration Wacdo
 							</p>
-
 						</div>
-
 
 						{# Affiche l'erreur de connexion. #}
 						{% if error %}
-
 							<div class="alert alert-danger" role="alert">
-
 								Adresse email ou mot de passe incorrect.
-
 							</div>
-
 						{% endif %}
-
-
 						<form
 							method="post">
 
 							{# Adresse email utilisée pour la connexion. #}
 							<div class="mb-3">
-
 								<label for="inputEmail" class="form-label">
 									Adresse email
 								</label>
-
 								<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" placeholder="Ex : admin@wacdo.fr" required autofocus>
-
 							</div>
-
 
 							{# Mot de passe de l'utilisateur. #}
 							<div class="mb-3">
-
 								<label for="inputPassword" class="form-label">
 									Mot de passe
 								</label>
-
 								<input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-
 							</div>
-
 
 							{# Protection CSRF du formulaire de connexion. #}
 							<input
 							type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-
 							{# Permet de rester connecté. #}
 							<div class="form-check mb-4">
-
 								<input type="checkbox" name="_remember_me" id="rememberMe" class="form-check-input">
-
 								<label for="rememberMe" class="form-check-label">
 									Se souvenir de moi
 								</label>
-
 							</div>
 
-
 							<div class="d-grid">
-
 								<button class="btn btn-primary" type="submit">
 									Se connecter
 								</button>
-
 							</div>
 
 						</form>
-
-
 						<div class="text-center mt-3">
-
 							<a href="{{ path('app_front_home') }}">
 								Retour au site
 							</a>
-
 						</div>
 
 					</div>
-
 				</div>
-
 			</div>
-
 		</div>
-
 	</div>
-
 {% endblock %}

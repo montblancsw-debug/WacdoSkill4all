@@ -72,7 +72,6 @@ class Categorie
     public function setCategorieNom(string $categorie_nom): static
     {
         $this->categorie_nom = $categorie_nom;
-
         return $this;
     }
 
@@ -84,7 +83,6 @@ class Categorie
     public function setCategorieDescription(?string $categorie_description): static
     {
         $this->categorie_description = $categorie_description;
-
         return $this;
     }
 
@@ -96,7 +94,6 @@ class Categorie
     public function setCategorieNomdefichier(?string $categorie_nomdefichier): static
     {
         $this->categorie_nomdefichier = $categorie_nomdefichier;
-
         return $this;
     }
 
@@ -108,7 +105,6 @@ class Categorie
     public function setCategorieImage(?string $categorie_image): static
     {
         $this->categorie_image = $categorie_image;
-
         return $this;
     }
 
@@ -123,10 +119,9 @@ class Categorie
             $this->produits->add($produit);
             $produit->setCategorie($this);
         }
-
         return $this;
     }
-
+    
     public function removeProduit(Produit $produit): static
     {
         if ($this->produits->removeElement($produit)) {
@@ -134,7 +129,6 @@ class Categorie
                 $produit->setCategorie(null);
             }
         }
-
         return $this;
     }
 }

@@ -10,7 +10,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[UniqueEntity(
     fields: ['utilisateur_email'],
@@ -69,7 +68,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 72)]
     private ?string $utilisateur_password = null;
 
-    // Le rôle détermine les droits dans le back-office.
+    // Le rôle détermine les droits.
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(
         message: 'Le rôle de l\'utilisateur est obligatoire.'
@@ -84,9 +83,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $utilisateur_role = null;
 
-    /**
-     * @var Collection<int, Commande>
-     */
     #[ORM\OneToMany(
         targetEntity: Commande::class,
         mappedBy: 'utilisateur'
@@ -111,7 +107,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUtilisateurNom(?string $utilisateur_nom): static
     {
         $this->utilisateur_nom = $utilisateur_nom;
-
         return $this;
     }
 
@@ -123,7 +118,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUtilisateurPrenom(?string $utilisateur_prenom): static
     {
         $this->utilisateur_prenom = $utilisateur_prenom;
-
         return $this;
     }
 
@@ -135,7 +129,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUtilisateurEmail(?string $utilisateur_email): static
     {
         $this->utilisateur_email = $utilisateur_email;
-
         return $this;
     }
 
@@ -147,7 +140,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUtilisateurPassword(string $utilisateur_password): static
     {
         $this->utilisateur_password = $utilisateur_password;
-
         return $this;
     }
 
@@ -159,40 +151,35 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUtilisateurRole(?string $utilisateur_role): static
     {
         $this->utilisateur_role = $utilisateur_role;
-
         return $this;
     }
 
-    // Retourne l'adresse email utilisée pour la connexion Symfony.
+    // Retourne l'adresse email utilisée pour la connexion.
     public function getUserIdentifier(): string
     {
         return (string) $this->utilisateur_email;
     }
 
-    // Retourne le rôle Symfony de l'utilisateur.
+    // Retourne le rôle de l'utilisateur.
     public function getRoles(): array
     {
         if ($this->utilisateur_role === null) {
             return [];
         }
-
         return [
             $this->utilisateur_role,
         ];
     }
 
-    // Retourne le mot de passe haché à Symfony.
+    // Retourne le mot de passe haché.
     public function getPassword(): ?string
     {
         return $this->utilisateur_password;
     }
 
-    // Supprime les éventuelles données sensibles temporaires.
+    // Supprime les données sensibles.
     public function eraseCredentials(): void {}
 
-    /**
-     * @return Collection<int, Commande>
-     */
     public function getCommandes(): Collection
     {
         return $this->commandes;
@@ -204,7 +191,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             $this->commandes->add($commande);
             $commande->setUtilisateur($this);
         }
-
         return $this;
     }
 
@@ -215,7 +201,6 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
                 $commande->setUtilisateur(null);
             }
         }
-
         return $this;
     }
 }

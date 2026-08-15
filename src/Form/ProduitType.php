@@ -12,13 +12,11 @@ use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 class ProduitType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-
             // Champ obligatoire contenant le nom du produit.
             ->add('produit_nom', TextType::class, [
                 'label' => 'Nom du produit',
@@ -85,7 +83,6 @@ class ProduitType extends AbstractType
                 ],
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         // Lie le formulaire à l'entité Produit.

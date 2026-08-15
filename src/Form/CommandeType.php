@@ -11,13 +11,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-
 class CommandeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-
             // Permet de choisir le statut.
             ->add('commande_statut', ChoiceType::class, [
                 'label' => 'Statut',
@@ -67,7 +65,6 @@ class CommandeType extends AbstractType
                         . ' '
                         . ($utilisateur->getUtilisateurNom() ?? '')
                     );
-
                     return $identite
                         . ' - '
                         . $utilisateur->getUtilisateurEmail();
@@ -80,7 +77,6 @@ class CommandeType extends AbstractType
                 ],
             ]);
     }
-
     public function configureOptions(OptionsResolver $resolver): void
     {
         // Lie le formulaire à l'entité Commande.

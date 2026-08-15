@@ -7,19 +7,14 @@
 {% endblock %}
 
 {% block body %}
-
 	<div class="mb-3">
-
 		<h1 class="h3">
 			Modifier la catégorie
 		</h1>
-
 		<p class="text-muted">
 			{{ categorie.categorieNom }}
 		</p>
-
 	</div>
-
 
 	{# Affiche le formulaire de modification. #}
 	{{ include(
@@ -29,18 +24,11 @@
 		}
 	) }}
 
-
 	{# Retourne vers la liste des catégories. #}
 	<div class="mt-3">
-
 		<a href="{{ path('app_admin_categorie_index') }}" class="btn btn-secondary">
-
 			<i class="align-middle" data-feather="arrow-left"></i>
-
 			Retour à la liste
-
 		</a>
-
 	</div>
-
 {% endblock %}

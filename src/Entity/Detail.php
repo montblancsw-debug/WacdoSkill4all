@@ -6,7 +6,6 @@ use App\Repository\DetailRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
 #[ORM\Entity(repositoryClass: DetailRepository::class)]
 class Detail
 {
@@ -72,7 +71,6 @@ class Detail
     public function setDetailQuantite(?int $detail_quantite): static
     {
         $this->detail_quantite = $detail_quantite;
-
         return $this;
     }
 
@@ -84,7 +82,6 @@ class Detail
     public function setDetailUnitaire(?string $detail_unitaire): static
     {
         $this->detail_unitaire = $detail_unitaire;
-
         return $this;
     }
 
@@ -96,7 +93,6 @@ class Detail
     public function setCommande(?Commande $commande): static
     {
         $this->commande = $commande;
-
         return $this;
     }
 
@@ -108,7 +104,6 @@ class Detail
     public function setProduit(?Produit $produit): static
     {
         $this->produit = $produit;
-
         return $this;
     }
 
@@ -120,7 +115,6 @@ class Detail
     public function setDetailTotal(?string $detail_total): static
     {
         $this->detail_total = $detail_total;
-
         return $this;
     }
 }
