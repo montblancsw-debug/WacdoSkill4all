@@ -7,8 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
+
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
+#[Vich\Uploadable]
 class Produit
 {
     // Identifiant unique du produit.
@@ -52,13 +56,33 @@ class Produit
     )]
     private ?bool $produit_stock = null;
 
-    // Le nom de l'image reste facultatif.
+    // Contient le nom du fichier enregistré.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(
         max: 255,
         maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.'
     )]
     private ?string $produit_image = null;
+
+    // Reçoit temporairement le fichier envoyé.
+    #[Vich\UploadableField(
+        mapping: 'produits',
+        fileNameProperty: 'produitImage'
+    )]
+    #[Assert\Image(
+        maxSize: '2M',
+        mimeTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ],
+        mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.'
+    )]
+    private ?File $imageFile = null;
+
+    // Permet à Doctrine de détecter un changement d'image.
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     // La catégorie peut être supprimée sans supprimer le produit.
     #[ORM\ManyToOne(inversedBy: 'produits')]
@@ -133,6 +157,31 @@ class Produit
     public function setProduitImage(?string $produit_image): static
     {
         $this->produit_image = $produit_image;
+        return $this;
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
         return $this;
     }
 
