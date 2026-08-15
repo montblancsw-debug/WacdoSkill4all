@@ -13,8 +13,8 @@
 		</h5>
 	</div>
 
-	<div
-		class="card-body">
+	<div class="card-body">
+
 		{# Affiche le nom du produit. #}
 		<div class="mb-3">
 			{{ form_label(form.produit_nom) }}
@@ -43,14 +43,22 @@
 			{{ form_errors(form.categorie) }}
 		</div>
 
-		{# Affiche le champ de l'image. #}
+		{# Permet de sélectionner une image. #}
 		<div class="mb-3">
-			{{ form_label(form.produit_image) }}
-			{{ form_widget(form.produit_image) }}
-			{{ form_errors(form.produit_image) }}
+			{{ form_label(form.imageFile) }}
+			{{ form_widget(form.imageFile) }}
+			{{ form_errors(form.imageFile) }}
 			<div class="form-text">
-				L'upload d'image sera ajouté ultérieurement.
+				Formats acceptés : JPG, PNG ou WEBP. Taille maximale : 2 Mo.
 			</div>
+			{% if produit.produitImage %}
+				<div class="form-text">
+					Image actuelle : {{ produit.produitImage }}
+				</div>
+				<div class="form-text">
+					Laissez le champ vide pour conserver cette image.
+				</div>
+			{% endif %}
 		</div>
 
 		{# Affiche l'état du stock. #}
@@ -63,8 +71,8 @@
 		</div>
 	</div>
 
-	<div
-		class="card-footer">
+	<div class="card-footer">
+
 		{# Enregistre le formulaire. #}
 		<button class="btn btn-primary">
 			{{ button_label|default('Enregistrer') }}
