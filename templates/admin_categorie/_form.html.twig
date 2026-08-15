@@ -13,8 +13,7 @@
 		</h5>
 	</div>
 
-	<div
-		class="card-body">
+	<div class="card-body">
 
 		{# Nom de la catégorie. #}
 		<div class="mb-3">
@@ -30,23 +29,29 @@
 			{{ form_errors(form.categorie_description) }}
 		</div>
 
-		{# Nom du fichier de la catégorie. #}
-		<div class="mb-3">
-			{{ form_label(form.categorie_nomdefichier) }}
-			{{ form_widget(form.categorie_nomdefichier) }}
-			{{ form_errors(form.categorie_nomdefichier) }}
-		</div>
-
 		{# Image de la catégorie. #}
 		<div class="mb-3">
-			{{ form_label(form.categorie_image) }}
-			{{ form_widget(form.categorie_image) }}
-			{{ form_errors(form.categorie_image) }}
+			{{ form_label(form.imageFile) }}
+			{{ form_widget(form.imageFile) }}
+			{{ form_errors(form.imageFile) }}
+
+			<div class="form-text">
+				Formats acceptés : JPG, PNG ou WEBP. Taille maximale : 2 Mo.
+			</div>
+
+			{% if categorie.categorieNomdefichier %}
+				<div class="form-text">
+					Image actuelle : {{ categorie.categorieNomdefichier }}
+				</div>
+
+				<div class="form-text">
+					Laissez le champ vide pour conserver cette image.
+				</div>
+			{% endif %}
 		</div>
 	</div>
 
-	<div
-		class="card-footer">
+	<div class="card-footer">
 
 		{# Enregistre le formulaire. #}
 		<button class="btn btn-primary">

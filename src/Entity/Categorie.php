@@ -7,9 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
+#[Vich\Uploadable]
 class Categorie
 {
     #[ORM\Id]
@@ -35,7 +38,7 @@ class Categorie
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $categorie_description = null;
 
-    // Le nom du fichier est facultatif mais limité à 255 caractères.
+    // Contient le nom du fichier enregistré.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(
         max: 255,
@@ -43,13 +46,33 @@ class Categorie
     )]
     private ?string $categorie_nomdefichier = null;
 
-    // Le nom de l'image est facultatif mais limité à 255 caractères.
+    // Conserve le champ image existant.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(
         max: 255,
         maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.'
     )]
     private ?string $categorie_image = null;
+
+    // Reçoit temporairement le fichier envoyé.
+    #[Vich\UploadableField(
+        mapping: 'categories',
+        fileNameProperty: 'categorieNomdefichier'
+    )]
+    #[Assert\Image(
+        maxSize: '2M',
+        mimeTypes: [
+            'image/jpeg',
+            'image/png',
+            'image/webp'
+        ],
+        mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.'
+    )]
+    private ?File $imageFile = null;
+
+    // Permet à Doctrine de détecter un changement d'image.
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\OneToMany(targetEntity: Produit::class, mappedBy: 'categorie')]
     private Collection $produits;
@@ -108,6 +131,31 @@ class Categorie
         return $this;
     }
 
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
     public function getProduits(): Collection
     {
         return $this->produits;
@@ -121,7 +169,7 @@ class Categorie
         }
         return $this;
     }
-    
+
     public function removeProduit(Produit $produit): static
     {
         if ($this->produits->removeElement($produit)) {

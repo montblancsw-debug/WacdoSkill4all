@@ -5,9 +5,11 @@ namespace App\Form;
 use App\Entity\Categorie;
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 class CategorieType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -32,28 +34,17 @@ class CategorieType extends AbstractType
                 'config_name' => 'main_config',
             ])
 
-            // Champ facultatif contenant le nom du fichier.
-            ->add('categorie_nomdefichier', TextType::class, [
-                'label' => 'Nom du fichier',
+            // Permet de sélectionner une image.
+            ->add('imageFile', FileType::class, [
+                'label' => 'Image de la catégorie',
                 'required' => false,
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Exemple : burgers.jpg',
-                    'maxlength' => 255,
-                ],
-            ])
-
-            // Champ facultatif contenant le nom de l'image.
-            ->add('categorie_image', TextType::class, [
-                'label' => 'Image',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Exemple : burgers.jpg',
-                    'maxlength' => 255,
+                    'accept' => 'image/jpeg,image/png,image/webp',
                 ],
             ]);
     }
+
     public function configureOptions(OptionsResolver $resolver): void
     {
         // Lie le formulaire à l'entité Categorie.
