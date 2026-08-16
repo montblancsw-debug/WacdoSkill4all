@@ -11,11 +11,20 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+
 class CommandeType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ): void {
+        $commande = $options['data'];
+
+        $isEdit = $commande instanceof Commande
+            && $commande->getId() !== null;
+
         $builder
+
             // Permet de choisir le statut.
             ->add('commande_statut', ChoiceType::class, [
                 'label' => 'Statut',
@@ -41,13 +50,17 @@ class CommandeType extends AbstractType
                 ],
             ])
 
-            // Permet de renseigner le montant total.
+            // Affiche le montant total de la commande.
             ->add('commande_total', NumberType::class, [
                 'label' => 'Total (€)',
                 'required' => true,
                 'input' => 'string',
                 'scale' => 2,
                 'html5' => true,
+                'disabled' => $isEdit,
+                'help' => $isEdit
+                    ? 'Le total est calculé automatiquement à partir des articles.'
+                    : null,
                 'attr' => [
                     'class' => 'form-control',
                     'step' => '0.01',
@@ -59,12 +72,15 @@ class CommandeType extends AbstractType
             // Permet de sélectionner l'utilisateur associé.
             ->add('utilisateur', EntityType::class, [
                 'class' => Utilisateur::class,
-                'choice_label' => function (Utilisateur $utilisateur): string {
+                'choice_label' => function (
+                    Utilisateur $utilisateur
+                ): string {
                     $identite = trim(
                         ($utilisateur->getUtilisateurPrenom() ?? '')
                         . ' '
                         . ($utilisateur->getUtilisateurNom() ?? '')
                     );
+
                     return $identite
                         . ' - '
                         . $utilisateur->getUtilisateurEmail();
@@ -77,9 +93,10 @@ class CommandeType extends AbstractType
                 ],
             ]);
     }
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        // Lie le formulaire à l'entité Commande.
+
+    public function configureOptions(
+        OptionsResolver $resolver
+    ): void {
         $resolver->setDefaults([
             'data_class' => Commande::class,
         ]);

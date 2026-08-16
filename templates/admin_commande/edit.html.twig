@@ -7,6 +7,7 @@
 {% block body %}
 
 	<div class="mb-4">
+
 		<h1 class="h3 mb-1">
 			Modifier la commande
 		</h1>
@@ -14,23 +15,181 @@
 		<p class="text-muted mb-0">
 			Commande #{{ commande.id }}
 		</p>
+
 	</div>
 
-	{# Affiche le formulaire de modification. #}
+	{# Modifie les informations générales. #}
 	{{ include('admin_commande/_form.html.twig', {
 		'button_label': 'Mettre à jour'
 	}) }}
 
-	{# Affiche les articles de la commande. #}
-	{{ include('admin_commande/_details.html.twig') }}
+	{# Permet de gérer les articles. #}
+	{{ include('admin_commande/_details.html.twig', {
+		'editable': true,
+		'produitsDisponibles': produitsDisponibles
+	}) }}
 
 	<div class="mt-3">
+
 		<a
 			href="{{ path('app_admin_commande_index') }}"
 			class="btn btn-secondary"
 		>
 			Retour à la liste
 		</a>
+
 	</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+	<script>
+		document.addEventListener('submit', async function (event) {
+
+			const form = event.target.closest(
+				'.js-commande-async-form'
+			);
+
+			if (!form) {
+				return;
+			}
+
+			event.preventDefault();
+
+			const confirmation = form.dataset.confirm;
+
+			if (
+				confirmation
+				&& !window.confirm(confirmation)
+			) {
+				return;
+			}
+
+			const submitButton = form.querySelector(
+				'button[type="submit"]'
+			);
+
+			if (submitButton) {
+				submitButton.disabled = true;
+			}
+
+			try {
+
+				const response = await fetch(
+					form.action,
+					{
+						method: 'POST',
+						body: new FormData(form),
+						credentials: 'same-origin',
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest'
+						}
+					}
+				);
+
+				if (!response.ok) {
+					throw new Error(
+						'La modification de la commande a échoué.'
+					);
+				}
+
+				const html = await response.text();
+
+				const parser = new DOMParser();
+
+				const documentResponse = parser.parseFromString(
+					html,
+					'text/html'
+				);
+
+				const nouveauDetail = documentResponse.querySelector(
+					'#commande-details-card'
+				);
+
+				const detailActuel = document.querySelector(
+					'#commande-details-card'
+				);
+
+				if (
+					nouveauDetail
+					&& detailActuel
+				) {
+					detailActuel.replaceWith(
+						nouveauDetail
+					);
+				}
+
+				// Actualise le total de la commande.
+				const nouveauTotal = documentResponse.querySelector(
+					'#commande_commande_total'
+				);
+
+				const totalActuel = document.querySelector(
+					'#commande_commande_total'
+				);
+
+				if (
+					nouveauTotal
+					&& totalActuel
+				) {
+					totalActuel.value = nouveauTotal.value;
+				}
+
+				// Récupère les nouveaux messages Flash éventuels.
+				const nouveauxFlash = documentResponse.querySelectorAll(
+					'.wacdo-flash'
+				);
+
+				if (nouveauxFlash.length > 0) {
+
+					document
+						.querySelectorAll('.wacdo-flash')
+						.forEach(function (flash) {
+							flash.remove();
+						});
+
+					const container = document.querySelector(
+						'.content .container-fluid'
+					);
+
+					if (container) {
+
+						Array
+							.from(nouveauxFlash)
+							.reverse()
+							.forEach(function (flash) {
+
+								container.insertBefore(
+									flash,
+									container.firstChild
+								);
+
+							});
+
+					}
+
+				}
+
+				// Recharge les icônes Feather du bloc remplacé.
+				if (window.feather) {
+					window.feather.replace();
+				}
+
+			} catch (error) {
+
+				console.error(error);
+
+				window.alert(
+					'Une erreur est survenue pendant la modification de la commande.'
+				);
+
+				if (submitButton) {
+					submitButton.disabled = false;
+				}
+			}
+
+		});
+	</script>
 
 {% endblock %}

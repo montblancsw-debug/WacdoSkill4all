@@ -38,6 +38,10 @@ body {
     background-color: var(--wacdo-white);
 }
 
+/* ====================================================== */
+/* ======================= Cartes. ====================== */
+/* ====================================================== */
+
 .card {
     border: 1px solid rgba(216, 217, 221, 0.8);
     box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.06);
@@ -46,6 +50,10 @@ body {
 .card-header {
     background-color: var(--wacdo-white);
 }
+
+/* ====================================================== */
+/* ====================== Boutons. ====================== */
+/* ====================================================== */
 
 .btn-primary {
     color: var(--wacdo-white);
@@ -58,6 +66,17 @@ body {
     color: var(--wacdo-white);
     background-color: #d94f00;
     border-color: #d94f00;
+}
+
+.btn-outline-primary {
+    color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
+}
+
+.btn-outline-primary:hover {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
 }
 
 .btn-warning {
@@ -78,6 +97,26 @@ body {
     border-color: var(--wacdo-secondary);
 }
 
+/* Uniformise les boutons de suppression. */
+.wacdo-delete-button {
+    min-width: 108px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.65rem;
+}
+
+.wacdo-delete-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* ====================================================== */
+/* ================== Menu utilisateur. ================= */
+/* ====================================================== */
+
 .wacdo-account-trigger {
     border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
@@ -97,6 +136,10 @@ body {
     background-color: var(--wacdo-orange);
 }
 
+/* ====================================================== */
+/* ======================= Tables. ====================== */
+/* ====================================================== */
+
 .table-hover tbody tr:hover {
     background-color: rgba(242, 92, 5, 0.04);
 }
@@ -110,8 +153,8 @@ body {
     height: 72px;
     object-fit: contain;
     padding: 0.35rem;
-    background-color: #FFFFFF;
-    border: 1px solid #D8D9DD;
+    background-color: var(--wacdo-white);
+    border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
 
@@ -121,9 +164,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6C757D;
-    background-color: #F5F6F8;
-    border: 1px solid #D8D9DD;
+    color: var(--wacdo-secondary);
+    background-color: #f5f6f8;
+    border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
 
@@ -132,7 +175,49 @@ body {
     height: 120px;
     object-fit: contain;
     padding: 0.5rem;
-    background-color: #FFFFFF;
-    border: 1px solid #D8D9DD;
+    background-color: var(--wacdo-white);
+    border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
+}
+
+/* ====================================================== */
+/* ================ Quantités de commande. ============== */
+/* ====================================================== */
+
+.wacdo-quantity-control {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.wacdo-quantity-control form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.wacdo-quantity-button {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.wacdo-quantity-value {
+    min-width: 30px;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* ====================================================== */
+/* ================ Mise à jour dynamique. ============== */
+/* ====================================================== */
+
+#commande-details-card {
+    transition:
+        opacity 0.15s ease,
+        box-shadow 0.15s ease;
 }

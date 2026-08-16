@@ -12,8 +12,15 @@
 		value="{{ csrf_token('delete' ~ commande.id) }}"
 	>
 
-	<button type="submit" class="btn btn-danger">
-		<i class="align-middle me-1" data-feather="trash-2"></i>
+	<button
+		type="submit"
+		class="btn btn-danger btn-sm wacdo-delete-button"
+	>
+		<i
+			class="align-middle"
+			data-feather="trash-2"
+		></i>
+
 		Supprimer
 	</button>
 </form>

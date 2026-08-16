@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Commande;
+use App\Entity\Detail;
 use App\Form\CommandeType;
 use App\Repository\CommandeRepository;
+use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,37 +34,25 @@ final class AdminCommandeController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager
     ): Response {
-        // Crée une nouvelle commande.
         $commande = new Commande();
-
-        // Initialise la date avec la date actuelle.
         $commande->setCommandeDate(new \DateTime());
 
-        // Crée le formulaire de la commande.
         $form = $this->createForm(
             CommandeType::class,
             $commande
         );
 
-        // Récupère les données envoyées.
         $form->handleRequest($request);
 
-        // Vérifie que le formulaire est valide.
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // Prépare l'enregistrement de la commande.
             $entityManager->persist($commande);
-
-            // Enregistre la commande en base.
             $entityManager->flush();
 
-            // Affiche un message de confirmation.
             $this->addFlash(
                 'success',
                 'La commande a été ajoutée avec succès.'
             );
 
-            // Retourne vers la liste des commandes.
             return $this->redirectToRoute(
                 'app_admin_commande_index',
                 [],
@@ -70,7 +60,6 @@ final class AdminCommandeController extends AbstractController
             );
         }
 
-        // Affiche le formulaire de création.
         return $this->render('admin_commande/new.html.twig', [
             'commande' => $commande,
             'form' => $form,
@@ -82,6 +71,9 @@ final class AdminCommandeController extends AbstractController
     public function show(
         Commande $commande
     ): Response {
+        // Calcule le total des produits encore présents.
+        $this->recalculateCommandeTotal($commande);
+
         return $this->render('admin_commande/show.html.twig', [
             'commande' => $commande,
         ]);
@@ -92,30 +84,31 @@ final class AdminCommandeController extends AbstractController
     public function edit(
         Request $request,
         Commande $commande,
+        ProduitRepository $produitRepository,
         EntityManagerInterface $entityManager
     ): Response {
-        // Crée le formulaire avec la commande existante.
+        // Calcule le total actuel de la commande.
+        $this->recalculateCommandeTotal($commande);
+
         $form = $this->createForm(
             CommandeType::class,
             $commande
         );
 
-        // Récupère les nouvelles données.
         $form->handleRequest($request);
 
-        // Vérifie que le formulaire est valide.
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // Enregistre les modifications.
+            // Le total dépend toujours des articles.
+            $this->recalculateCommandeTotal($commande);
+
             $entityManager->flush();
 
-            // Affiche un message de confirmation.
             $this->addFlash(
                 'success',
                 'La commande a été modifiée avec succès.'
             );
 
-            // Retourne vers la liste des commandes.
             return $this->redirectToRoute(
                 'app_admin_commande_index',
                 [],
@@ -123,56 +116,407 @@ final class AdminCommandeController extends AbstractController
             );
         }
 
-        // Affiche le formulaire de modification.
         return $this->render('admin_commande/edit.html.twig', [
             'commande' => $commande,
             'form' => $form,
+            'produitsDisponibles' => $produitRepository->findBy(
+                [
+                    'produit_stock' => true,
+                ],
+                [
+                    'produit_nom' => 'ASC',
+                ]
+            ),
         ]);
     }
 
-    // Supprime uniquement la commande sélectionnée.
+    // Ajoute un produit à la commande.
+    #[Route(
+        '/{id}/produit/ajouter',
+        name: 'app_admin_commande_add_product',
+        methods: ['POST']
+    )]
+    public function addProduct(
+        Request $request,
+        Commande $commande,
+        ProduitRepository $produitRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
+        if (
+            !$this->isCsrfTokenValid(
+                'commande_add_product' . $commande->getId(),
+                $request->getPayload()->getString('_token')
+            )
+        ) {
+            $this->addFlash(
+                'danger',
+                'L\'ajout du produit a échoué.'
+            );
+
+            return $this->redirectToRoute(
+                'app_admin_commande_edit',
+                [
+                    'id' => $commande->getId(),
+                ]
+            );
+        }
+
+        $produitId = $request
+            ->getPayload()
+            ->getInt('produit_id');
+
+        $quantite = max(
+            1,
+            $request
+                ->getPayload()
+                ->getInt('quantite', 1)
+        );
+
+        $produit = $produitRepository->find(
+            $produitId
+        );
+
+        if (
+            $produit === null
+            || !$produit->isProduitStock()
+        ) {
+            $this->addFlash(
+                'danger',
+                'Le produit sélectionné n\'est pas disponible.'
+            );
+
+            return $this->redirectToRoute(
+                'app_admin_commande_edit',
+                [
+                    'id' => $commande->getId(),
+                ]
+            );
+        }
+
+        // Cherche si le produit existe déjà dans la commande.
+        $detailExistant = null;
+
+        foreach ($commande->getDetails() as $detail) {
+            if (
+                $detail->getProduit()
+                && $detail->getProduit()->getId() === $produit->getId()
+            ) {
+                $detailExistant = $detail;
+                break;
+            }
+        }
+
+        if ($detailExistant !== null) {
+
+            // Augmente la quantité du produit déjà présent.
+            $detailExistant->setDetailQuantite(
+                $detailExistant->getDetailQuantite()
+                + $quantite
+            );
+
+            $this->updateDetailTotal(
+                $detailExistant
+            );
+
+        } else {
+
+            // Crée une nouvelle ligne de commande.
+            $detail = new Detail();
+
+            $detail->setCommande($commande);
+            $detail->setProduit($produit);
+            $detail->setDetailQuantite($quantite);
+            $detail->setDetailUnitaire(
+                $produit->getProduitPrix()
+            );
+
+            $this->updateDetailTotal(
+                $detail
+            );
+
+            $commande->addDetail($detail);
+
+            $entityManager->persist($detail);
+        }
+
+        $this->recalculateCommandeTotal(
+            $commande
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Le produit a été ajouté à la commande.'
+        );
+
+        return $this->redirectToRoute(
+            'app_admin_commande_edit',
+            [
+                'id' => $commande->getId(),
+            ]
+        );
+    }
+
+    // Augmente la quantité d'une ligne.
+    #[Route(
+        '/{id}/detail/{detailId}/plus',
+        name: 'app_admin_commande_detail_plus',
+        methods: ['POST']
+    )]
+    public function increaseDetail(
+        Request $request,
+        Commande $commande,
+        int $detailId,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $detail = $this->findDetail(
+            $commande,
+            $detailId,
+            $entityManager
+        );
+
+        if (
+            !$this->isCsrfTokenValid(
+                'commande_detail_plus' . $detail->getId(),
+                $request->getPayload()->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $detail->setDetailQuantite(
+            $detail->getDetailQuantite() + 1
+        );
+
+        $this->updateDetailTotal(
+            $detail
+        );
+
+        $this->recalculateCommandeTotal(
+            $commande
+        );
+
+        $entityManager->flush();
+
+        return $this->redirectToRoute(
+            'app_admin_commande_edit',
+            [
+                'id' => $commande->getId(),
+            ]
+        );
+    }
+
+    // Diminue la quantité d'une ligne.
+    #[Route(
+        '/{id}/detail/{detailId}/moins',
+        name: 'app_admin_commande_detail_minus',
+        methods: ['POST']
+    )]
+    public function decreaseDetail(
+        Request $request,
+        Commande $commande,
+        int $detailId,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $detail = $this->findDetail(
+            $commande,
+            $detailId,
+            $entityManager
+        );
+
+        if (
+            !$this->isCsrfTokenValid(
+                'commande_detail_minus' . $detail->getId(),
+                $request->getPayload()->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // La quantité ne peut pas descendre sous 1.
+        if ($detail->getDetailQuantite() > 1) {
+            $detail->setDetailQuantite(
+                $detail->getDetailQuantite() - 1
+            );
+
+            $this->updateDetailTotal(
+                $detail
+            );
+
+            $this->recalculateCommandeTotal(
+                $commande
+            );
+
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute(
+            'app_admin_commande_edit',
+            [
+                'id' => $commande->getId(),
+            ]
+        );
+    }
+
+    // Supprime une ligne de la commande.
+    #[Route(
+        '/{id}/detail/{detailId}/supprimer',
+        name: 'app_admin_commande_detail_delete',
+        methods: ['POST']
+    )]
+    public function deleteDetail(
+        Request $request,
+        Commande $commande,
+        int $detailId,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $detail = $this->findDetail(
+            $commande,
+            $detailId,
+            $entityManager
+        );
+
+        if (
+            !$this->isCsrfTokenValid(
+                'commande_detail_delete' . $detail->getId(),
+                $request->getPayload()->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $commande->removeDetail(
+            $detail
+        );
+
+        $entityManager->remove(
+            $detail
+        );
+
+        $this->recalculateCommandeTotal(
+            $commande
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Le produit a été retiré de la commande.'
+        );
+
+        return $this->redirectToRoute(
+            'app_admin_commande_edit',
+            [
+                'id' => $commande->getId(),
+            ]
+        );
+    }
+
+    // Supprime la commande sélectionnée.
     #[Route('/{id}', name: 'app_admin_commande_delete', methods: ['POST'])]
     public function delete(
         Request $request,
         Commande $commande,
         EntityManagerInterface $entityManager
     ): Response {
-        // Vérifie le jeton CSRF.
         if (
             $this->isCsrfTokenValid(
                 'delete' . $commande->getId(),
                 $request->getPayload()->getString('_token')
             )
         ) {
-            // Supprime les détails appartenant à cette commande.
             foreach ($commande->getDetails() as $detail) {
                 $entityManager->remove($detail);
             }
 
-            // Supprime uniquement la commande sélectionnée.
             $entityManager->remove($commande);
-
-            // Exécute les suppressions en base.
             $entityManager->flush();
 
-            // Affiche un message de confirmation.
             $this->addFlash(
                 'success',
                 'La commande a été supprimée avec succès.'
             );
         } else {
-            // Affiche une erreur si le jeton est invalide.
             $this->addFlash(
                 'danger',
                 'La suppression de la commande a échoué.'
             );
         }
 
-        // Retourne vers la liste des commandes.
         return $this->redirectToRoute(
             'app_admin_commande_index',
             [],
             Response::HTTP_SEE_OTHER
+        );
+    }
+
+    // Récupère une ligne appartenant à la commande.
+    private function findDetail(
+        Commande $commande,
+        int $detailId,
+        EntityManagerInterface $entityManager
+    ): Detail {
+        $detail = $entityManager
+            ->getRepository(Detail::class)
+            ->find($detailId);
+
+        if (
+            $detail === null
+            || $detail->getCommande()?->getId() !== $commande->getId()
+        ) {
+            throw $this->createNotFoundException(
+                'Cette ligne de commande n\'existe pas.'
+            );
+        }
+
+        return $detail;
+    }
+
+    // Recalcule le total d'une ligne.
+    private function updateDetailTotal(
+        Detail $detail
+    ): void {
+        $prixUnitaire = (float) $detail->getDetailUnitaire();
+        $quantite = $detail->getDetailQuantite() ?? 0;
+
+        $detail->setDetailTotal(
+            number_format(
+                $prixUnitaire * $quantite,
+                2,
+                '.',
+                ''
+            )
+        );
+    }
+
+    // Recalcule le total général de la commande.
+    private function recalculateCommandeTotal(
+        Commande $commande
+    ): void {
+        $total = 0.0;
+
+        foreach ($commande->getDetails() as $detail) {
+
+            // Ignore les anciens produits supprimés.
+            if ($detail->getProduit() === null) {
+                continue;
+            }
+
+            $this->updateDetailTotal(
+                $detail
+            );
+
+            $total += (float) $detail->getDetailTotal();
+        }
+
+        $commande->setCommandeTotal(
+            number_format(
+                $total,
+                2,
+                '.',
+                ''
+            )
         );
     }
 }
