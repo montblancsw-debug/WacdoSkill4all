@@ -31,8 +31,11 @@ class CommandeType extends AbstractType
                 'required' => true,
                 'choices' => [
                     'En attente' => 'en attente',
-                    'Préparée' => 'préparée',
+                    'En préparation' => 'en préparation',
+                    'Prête' => 'prête',
+                    'En livraison' => 'en livraison',
                     'Livrée' => 'livrée',
+                    'Annulée' => 'annulée',
                 ],
                 'placeholder' => 'Choisir un statut',
                 'attr' => [
@@ -50,7 +53,7 @@ class CommandeType extends AbstractType
                 ],
             ])
 
-            // Affiche le montant total de la commande.
+            // Affiche le montant total calculé.
             ->add('commande_total', NumberType::class, [
                 'label' => 'Total (€)',
                 'required' => true,

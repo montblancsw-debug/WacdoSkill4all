@@ -22,6 +22,46 @@
 
 		</div>
 
+		{# Recherche un produit par son nom. #}
+		<div class="card front-card mb-4">
+
+			<div class="card-body">
+
+				<form
+					method="post"
+					action="{{ path('app_front_produit') }}"
+					class="row g-2"
+				>
+
+					<div class="col-12 col-md">
+
+						<input
+							type="text"
+							name="search"
+							class="form-control"
+							placeholder="Rechercher un produit..."
+							value="{{ search|default('') }}"
+						>
+
+					</div>
+
+					<div class="col-12 col-md-auto">
+
+						<button
+							type="submit"
+							class="btn btn-primary w-100"
+						>
+							Rechercher
+						</button>
+
+					</div>
+
+				</form>
+
+			</div>
+
+		</div>
+
 		<div class="row g-4">
 
 			{% for produit in produits %}
@@ -177,7 +217,7 @@
 				<div class="col-12">
 
 					<div class="alert alert-info mb-0">
-						Aucun produit n'est actuellement disponible dans le catalogue.
+						Aucun produit ne correspond à votre recherche.
 					</div>
 
 				</div>

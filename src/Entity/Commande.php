@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
 {
@@ -25,8 +26,11 @@ class Commande
     #[Assert\Choice(
         choices: [
             'en attente',
-            'préparée',
+            'en préparation',
+            'prête',
+            'en livraison',
             'livrée',
+            'annulée',
         ],
         message: 'Le statut sélectionné est invalide.'
     )]
@@ -113,6 +117,7 @@ class Commande
         $this->utilisateur = $utilisateur;
         return $this;
     }
+
     public function getDetails(): Collection
     {
         return $this->details;
@@ -124,6 +129,7 @@ class Commande
             $this->details->add($detail);
             $detail->setCommande($this);
         }
+
         return $this;
     }
 
@@ -134,6 +140,34 @@ class Commande
                 $detail->setCommande(null);
             }
         }
+
         return $this;
+    }
+
+    // Indique si le client peut encore modifier la commande.
+    public function isModifiableByClient(): bool
+    {
+        return in_array(
+            $this->commande_statut,
+            [
+                'en attente',
+                'en préparation',
+            ],
+            true
+        );
+    }
+
+    // Indique si le client peut encore annuler la commande.
+    public function isAnnulableByClient(): bool
+    {
+        return in_array(
+            $this->commande_statut,
+            [
+                'en attente',
+                'en préparation',
+                'prête',
+            ],
+            true
+        );
     }
 }
