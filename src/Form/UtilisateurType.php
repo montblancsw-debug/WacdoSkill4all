@@ -11,10 +11,13 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
+
 class UtilisateurType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ): void {
         // Les contraintes du mot de passe.
         $passwordConstraints = [
             new Assert\Length(
@@ -34,6 +37,7 @@ class UtilisateurType extends AbstractType
                 )
             );
         }
+
         $builder
 
             // Champ obligatoire contenant le nom.
@@ -68,10 +72,7 @@ class UtilisateurType extends AbstractType
                     'placeholder' => 'Ex : utilisateur@wacdo.fr',
                     'maxlength' => 255,
                     'autocomplete' => 'email',
-
-                    // Exige un @, un domaine et une extension comme .fr ou .com.
                     'pattern' => '[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}',
-                    // Aide le navigateur pour le format attendu.
                     'title' => 'Entrez une adresse complète, par exemple utilisateur@wacdo.fr',
                 ],
             ])
@@ -103,6 +104,7 @@ class UtilisateurType extends AbstractType
                     'Administrateur' => 'ROLE_ADMIN',
                     'Préparateur' => 'ROLE_PREPARATEUR',
                     'Accueil' => 'ROLE_ACCUEIL',
+                    'Client' => 'ROLE_USER',
                 ],
                 'placeholder' => 'Choisir un rôle',
                 'attr' => [
@@ -110,15 +112,15 @@ class UtilisateurType extends AbstractType
                 ],
             ]);
     }
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        // Lie le formulaire à l'entité Utilisateur.
+
+    public function configureOptions(
+        OptionsResolver $resolver
+    ): void {
         $resolver->setDefaults([
             'data_class' => Utilisateur::class,
             'is_edit' => false,
         ]);
 
-        // Définit le type de l'option utilisée.
         $resolver->setAllowedTypes(
             'is_edit',
             'bool'

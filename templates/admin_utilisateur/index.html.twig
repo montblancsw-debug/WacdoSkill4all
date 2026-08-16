@@ -68,22 +68,22 @@
                                 </td>
                                 <td>
                                     {% if utilisateur.utilisateurRole == 'ROLE_ADMIN' %}
-                                        <span class="badge bg-danger">
-                                            Administrateur
-                                        </span>
-                                    {% elseif utilisateur.utilisateurRole == 'ROLE_PREPARATEUR' %}
-                                        <span class="badge bg-warning">
-                                            Préparateur
-                                        </span>
-                                    {% elseif utilisateur.utilisateurRole == 'ROLE_ACCUEIL' %}
-                                        <span class="badge bg-info">
-                                            Accueil
-                                        </span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">
-                                            {{ utilisateur.utilisateurRole }}
-                                        </span>
-                                    {% endif %}
+                                    <span class="badge bg-danger">
+                                        Administrateur
+                                    </span>
+                                {% elseif utilisateur.utilisateurRole == 'ROLE_PREPARATEUR' %}
+                                    <span class="badge bg-warning">
+                                        Préparateur
+                                    </span>
+                                {% elseif utilisateur.utilisateurRole == 'ROLE_ACCUEIL' %}
+                                    <span class="badge bg-info">
+                                        Accueil
+                                    </span>
+                                {% elseif utilisateur.utilisateurRole == 'ROLE_USER' %}
+                                    <span class="badge bg-secondary">
+                                        Client
+                                    </span>
+                                {% endif %}
                                 </td>
                                 <td class="text-end">
                                     <a

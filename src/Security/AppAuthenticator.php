@@ -16,10 +16,13 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+
 class AppAuthenticator extends AbstractLoginFormAuthenticator
 {
     use TargetPathTrait;
+
     public const LOGIN_ROUTE = 'app_login';
+
     public function __construct(
         private UrlGeneratorInterface $urlGenerator
     ) {
@@ -61,35 +64,58 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
         TokenInterface $token,
         string $firewallName
     ): ?Response {
-        // Retourne vers la page initialement demandée.
-        if (
-            $targetPath = $this->getTargetPath(
-                $request->getSession(),
-                $firewallName
-            )
-        ) {
-            return new RedirectResponse(
-                $targetPath
-            );
-        }
-
-        // Récupère la session courante.
+        // Ajoute un message après connexion.
         $session = $request->getSession();
 
-        // Vérifie que la session possède un FlashBag.
         if ($session instanceof FlashBagAwareSessionInterface) {
-
-            // Ajoute un message après connexion.
             $session->getFlashBag()->add(
                 'success',
                 'Vous êtes bien connecté.'
             );
         }
 
-        // Redirige vers le Dashboard Wacdo.
+        // Récupère les rôles de l'utilisateur connecté.
+        $roles = $token->getRoleNames();
+
+        $hasBackendAccess =
+            in_array('ROLE_ADMIN', $roles, true)
+            || in_array('ROLE_PREPARATEUR', $roles, true)
+            || in_array('ROLE_ACCUEIL', $roles, true);
+
+        // Récupère une éventuelle page demandée avant la connexion.
+        $targetPath = $this->getTargetPath(
+            $request->getSession(),
+            $firewallName
+        );
+
+        if ($targetPath) {
+
+            // Ne réutilise jamais une ancienne destination /admin.
+            if (str_starts_with($targetPath, '/admin')) {
+                $this->removeTargetPath(
+                    $request->getSession(),
+                    $firewallName
+                );
+            } else {
+                return new RedirectResponse(
+                    $targetPath
+                );
+            }
+        }
+
+        // Les rôles du back-office arrivent sur le Dashboard.
+        if ($hasBackendAccess) {
+            return new RedirectResponse(
+                $this->urlGenerator->generate(
+                    'app_admin_dashboard'
+                )
+            );
+        }
+
+        // Un client revient sur le site public.
         return new RedirectResponse(
             $this->urlGenerator->generate(
-                'app_admin_dashboard'
+                'app_front_home'
             )
         );
     }

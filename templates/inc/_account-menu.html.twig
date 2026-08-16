@@ -4,7 +4,7 @@
 
 {% if app.user %}
 
-	{% set roleLabel = 'Utilisateur' %}
+	{% set roleLabel = 'Client' %}
 
 	{% if app.user.utilisateurRole == 'ROLE_ADMIN' %}
 		{% set roleLabel = 'Administrateur' %}
@@ -33,6 +33,7 @@
 		<div class="dropdown-menu dropdown-menu-end wacdo-account-menu">
 
 			<div class="px-3 py-2">
+
 				<strong class="d-block">
 					{{ app.user.utilisateurEmail }}
 				</strong>
@@ -40,18 +41,20 @@
 				<span class="text-muted small">
 					{{ roleLabel }}
 				</span>
+
 			</div>
 
 			<div class="dropdown-divider"></div>
 
-			{# Retourne vers le site depuis le dashboard. #}
 			{% if menuContext == 'backend' %}
+
 				<a
 					class="dropdown-item"
 					href="{{ path('app_front_home') }}"
 				>
 					Accueil du site
 				</a>
+
 			{% endif %}
 
 			<a
@@ -68,12 +71,14 @@
 			%}
 
 				{% if menuContext != 'backend' %}
+
 					<a
 						class="dropdown-item"
 						href="{{ path('app_admin_dashboard') }}"
 					>
 						Dashboard
 					</a>
+
 				{% endif %}
 
 			{% endif %}
@@ -105,6 +110,13 @@
 		</a>
 
 		<div class="dropdown-menu dropdown-menu-end wacdo-account-menu">
+
+			<a
+				class="dropdown-item"
+				href="{{ path('app_register') }}"
+			>
+				Inscription
+			</a>
 
 			<a
 				class="dropdown-item"

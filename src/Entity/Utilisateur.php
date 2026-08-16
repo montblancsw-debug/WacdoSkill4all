@@ -10,6 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[UniqueEntity(
     fields: ['utilisateur_email'],
@@ -78,6 +79,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             'ROLE_ADMIN',
             'ROLE_PREPARATEUR',
             'ROLE_ACCUEIL',
+            'ROLE_USER',
         ],
         message: 'Le rôle sélectionné est invalide.'
     )]
@@ -166,6 +168,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         if ($this->utilisateur_role === null) {
             return [];
         }
+
         return [
             $this->utilisateur_role,
         ];
@@ -191,6 +194,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
             $this->commandes->add($commande);
             $commande->setUtilisateur($this);
         }
+
         return $this;
     }
 
@@ -201,6 +205,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
                 $commande->setUtilisateur(null);
             }
         }
+
         return $this;
     }
 }
