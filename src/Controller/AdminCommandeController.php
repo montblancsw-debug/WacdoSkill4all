@@ -16,36 +16,73 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/commande')]
 final class AdminCommandeController extends AbstractController
 {
-    // Affiche la liste des commandes.
-    #[Route(name: 'app_admin_commande_index', methods: ['GET'])]
+    // Affiche et recherche les commandes.
+    #[Route(
+        name: 'app_admin_commande_index',
+        methods: ['GET', 'POST']
+    )]
     public function index(
-        CommandeRepository $commandeRepository
+        CommandeRepository $commandeRepository,
+        Request $request
     ): Response {
-        return $this->render('admin_commande/index.html.twig', [
-            'commandes' => $commandeRepository->findBy([], [
-                'id' => 'DESC',
-            ]),
-        ]);
+        $search = trim(
+            (string) $request
+                ->request
+                ->get('search', '')
+        );
+
+        if ($search !== '') {
+            $commandes = $commandeRepository->search(
+                $search
+            );
+        } else {
+            $commandes = $commandeRepository->findBy(
+                [],
+                [
+                    'id' => 'DESC',
+                ]
+            );
+        }
+
+        return $this->render(
+            'admin_commande/index.html.twig',
+            [
+                'commandes' => $commandes,
+                'search' => $search,
+            ]
+        );
     }
 
     // Permet de créer une nouvelle commande.
-    #[Route('/new', name: 'app_admin_commande_new', methods: ['GET', 'POST'])]
+    #[Route(
+        '/new',
+        name: 'app_admin_commande_new',
+        methods: ['GET', 'POST']
+    )]
     public function new(
         Request $request,
         EntityManagerInterface $entityManager
     ): Response {
         $commande = new Commande();
-        $commande->setCommandeDate(new \DateTime());
+
+        $commande->setCommandeDate(
+            new \DateTime()
+        );
 
         $form = $this->createForm(
             CommandeType::class,
             $commande
         );
 
-        $form->handleRequest($request);
+        $form->handleRequest(
+            $request
+        );
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($commande);
+            $entityManager->persist(
+                $commande
+            );
+
             $entityManager->flush();
 
             $this->addFlash(
@@ -60,47 +97,65 @@ final class AdminCommandeController extends AbstractController
             );
         }
 
-        return $this->render('admin_commande/new.html.twig', [
-            'commande' => $commande,
-            'form' => $form,
-        ]);
+        return $this->render(
+            'admin_commande/new.html.twig',
+            [
+                'commande' => $commande,
+                'form' => $form,
+            ]
+        );
     }
 
     // Affiche le détail d'une commande.
-    #[Route('/{id}', name: 'app_admin_commande_show', methods: ['GET'])]
+    #[Route(
+        '/{id}',
+        name: 'app_admin_commande_show',
+        methods: ['GET']
+    )]
     public function show(
         Commande $commande
     ): Response {
-        // Calcule le total des produits encore présents.
-        $this->recalculateCommandeTotal($commande);
+        $this->recalculateCommandeTotal(
+            $commande
+        );
 
-        return $this->render('admin_commande/show.html.twig', [
-            'commande' => $commande,
-        ]);
+        return $this->render(
+            'admin_commande/show.html.twig',
+            [
+                'commande' => $commande,
+            ]
+        );
     }
 
     // Permet de modifier une commande.
-    #[Route('/{id}/edit', name: 'app_admin_commande_edit', methods: ['GET', 'POST'])]
+    #[Route(
+        '/{id}/edit',
+        name: 'app_admin_commande_edit',
+        methods: ['GET', 'POST']
+    )]
     public function edit(
         Request $request,
         Commande $commande,
         ProduitRepository $produitRepository,
         EntityManagerInterface $entityManager
     ): Response {
-        // Calcule le total actuel de la commande.
-        $this->recalculateCommandeTotal($commande);
+        $this->recalculateCommandeTotal(
+            $commande
+        );
 
         $form = $this->createForm(
             CommandeType::class,
             $commande
         );
 
-        $form->handleRequest($request);
+        $form->handleRequest(
+            $request
+        );
 
         if ($form->isSubmitted() && $form->isValid()) {
-
-            // Le total dépend toujours des articles.
-            $this->recalculateCommandeTotal($commande);
+            $this->recalculateCommandeTotal(
+                $commande
+            );
 
             $entityManager->flush();
 
@@ -116,18 +171,21 @@ final class AdminCommandeController extends AbstractController
             );
         }
 
-        return $this->render('admin_commande/edit.html.twig', [
-            'commande' => $commande,
-            'form' => $form,
-            'produitsDisponibles' => $produitRepository->findBy(
-                [
-                    'produit_stock' => true,
-                ],
-                [
-                    'produit_nom' => 'ASC',
-                ]
-            ),
-        ]);
+        return $this->render(
+            'admin_commande/edit.html.twig',
+            [
+                'commande' => $commande,
+                'form' => $form,
+                'produitsDisponibles' => $produitRepository->findBy(
+                    [
+                        'produit_stock' => true,
+                    ],
+                    [
+                        'produit_nom' => 'ASC',
+                    ]
+                ),
+            ]
+        );
     }
 
     // Ajoute un produit à la commande.
@@ -193,7 +251,6 @@ final class AdminCommandeController extends AbstractController
             );
         }
 
-        // Cherche si le produit existe déjà dans la commande.
         $detailExistant = null;
 
         foreach ($commande->getDetails() as $detail) {
@@ -207,8 +264,6 @@ final class AdminCommandeController extends AbstractController
         }
 
         if ($detailExistant !== null) {
-
-            // Augmente la quantité du produit déjà présent.
             $detailExistant->setDetailQuantite(
                 $detailExistant->getDetailQuantite()
                 + $quantite
@@ -217,15 +272,21 @@ final class AdminCommandeController extends AbstractController
             $this->updateDetailTotal(
                 $detailExistant
             );
-
         } else {
-
-            // Crée une nouvelle ligne de commande.
             $detail = new Detail();
 
-            $detail->setCommande($commande);
-            $detail->setProduit($produit);
-            $detail->setDetailQuantite($quantite);
+            $detail->setCommande(
+                $commande
+            );
+
+            $detail->setProduit(
+                $produit
+            );
+
+            $detail->setDetailQuantite(
+                $quantite
+            );
+
             $detail->setDetailUnitaire(
                 $produit->getProduitPrix()
             );
@@ -234,9 +295,13 @@ final class AdminCommandeController extends AbstractController
                 $detail
             );
 
-            $commande->addDetail($detail);
+            $commande->addDetail(
+                $detail
+            );
 
-            $entityManager->persist($detail);
+            $entityManager->persist(
+                $detail
+            );
         }
 
         $this->recalculateCommandeTotal(
@@ -334,7 +399,6 @@ final class AdminCommandeController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // La quantité ne peut pas descendre sous 1.
         if ($detail->getDetailQuantite() > 1) {
             $detail->setDetailQuantite(
                 $detail->getDetailQuantite() - 1
@@ -414,7 +478,11 @@ final class AdminCommandeController extends AbstractController
     }
 
     // Supprime la commande sélectionnée.
-    #[Route('/{id}', name: 'app_admin_commande_delete', methods: ['POST'])]
+    #[Route(
+        '/{id}',
+        name: 'app_admin_commande_delete',
+        methods: ['POST']
+    )]
     public function delete(
         Request $request,
         Commande $commande,
@@ -427,10 +495,15 @@ final class AdminCommandeController extends AbstractController
             )
         ) {
             foreach ($commande->getDetails() as $detail) {
-                $entityManager->remove($detail);
+                $entityManager->remove(
+                    $detail
+                );
             }
 
-            $entityManager->remove($commande);
+            $entityManager->remove(
+                $commande
+            );
+
             $entityManager->flush();
 
             $this->addFlash(
@@ -459,7 +532,9 @@ final class AdminCommandeController extends AbstractController
     ): Detail {
         $detail = $entityManager
             ->getRepository(Detail::class)
-            ->find($detailId);
+            ->find(
+                $detailId
+            );
 
         if (
             $detail === null
@@ -478,6 +553,7 @@ final class AdminCommandeController extends AbstractController
         Detail $detail
     ): void {
         $prixUnitaire = (float) $detail->getDetailUnitaire();
+
         $quantite = $detail->getDetailQuantite() ?? 0;
 
         $detail->setDetailTotal(
@@ -497,8 +573,6 @@ final class AdminCommandeController extends AbstractController
         $total = 0.0;
 
         foreach ($commande->getDetails() as $detail) {
-
-            // Ignore les anciens produits supprimés.
             if ($detail->getProduit() === null) {
                 continue;
             }

@@ -1,168 +1,237 @@
-{# Historique des commandes du client. #}
-
-{% extends 'base.html.twig' %}
+{% extends 'base-backend.html.twig' %}
 
 {% block title %}
-	Mes commandes | Wacdo
+	Gestion des commandes | Wacdo
 {% endblock %}
 
 {% block body %}
 
-	<section class="front-section">
+	<div class="d-flex justify-content-between align-items-center mb-4">
 
-		<div class="mb-4">
+		<div>
 
-			<h1 class="h2 mb-1">
-				Mes commandes
+			<h1 class="h3 mb-1">
+				Gestion des commandes
 			</h1>
 
-			<p class="text-muted">
-				Consultez l'historique de vos commandes Wacdo.
+			<p class="text-muted mb-0">
+				Consultez et gérez les commandes Wacdo.
 			</p>
 
 		</div>
 
-		{% if commandes is not empty %}
+		<a
+			href="{{ path('app_admin_commande_new') }}"
+			class="btn btn-primary"
+		>
+			Ajouter une commande
+		</a>
 
-			<div class="card front-card">
+	</div>
 
-				<div class="card-body">
+	<div class="card">
 
-					<div class="table-responsive">
+		<div class="card-header">
 
-						<table class="table align-middle">
+			<h5 class="card-title mb-0">
+				Liste des commandes
+			</h5>
 
-							<thead>
-								<tr>
-									<th>Commande</th>
-									<th>Date</th>
-									<th>Articles</th>
-									<th>Statut</th>
-									<th>Total</th>
-									<th class="text-end">
-										Action
-									</th>
-								</tr>
-							</thead>
+		</div>
 
-							<tbody>
+		<div class="card-body">
 
-								{% for commande in commandes %}
+			<form
+				method="post"
+				action="{{ path('app_admin_commande_index') }}"
+				class="row g-2 mb-4"
+			>
 
-									{% set nombreArticles = 0 %}
+				<div class="col">
 
-									{% for detail in commande.details %}
-										{% if detail.produit %}
-											{% set nombreArticles = nombreArticles + detail.detailQuantite %}
-										{% endif %}
-									{% endfor %}
-
-									<tr>
-
-										<td>
-											<strong>
-												#{{ commande.id }}
-											</strong>
-										</td>
-
-										<td>
-											{{ commande.commandeDate
-												? commande.commandeDate|date('d/m/Y à H:i')
-												: 'Non renseignée'
-											}}
-										</td>
-
-										<td>
-											{{ nombreArticles }}
-										</td>
-
-										<td>
-
-											{% if commande.commandeStatut == 'en attente' %}
-
-												<span class="badge text-bg-warning">
-													En attente
-												</span>
-
-											{% elseif commande.commandeStatut == 'préparée' %}
-
-												<span class="badge text-bg-info">
-													Préparée
-												</span>
-
-											{% elseif commande.commandeStatut == 'livrée' %}
-
-												<span class="badge text-bg-success">
-													Livrée
-												</span>
-
-											{% else %}
-
-												<span class="badge text-bg-secondary">
-													{{ commande.commandeStatut }}
-												</span>
-
-											{% endif %}
-
-										</td>
-
-										<td>
-
-											<strong>
-												{{ commande.commandeTotal|number_format(2, ',', ' ') }}
-												€
-											</strong>
-
-										</td>
-
-										<td class="text-end">
-
-											<a
-												href="{{ path('app_front_commande_show', {'id': commande.id}) }}"
-												class="btn btn-outline-primary btn-sm"
-											>
-												Voir le détail
-											</a>
-
-										</td>
-
-									</tr>
-
-								{% endfor %}
-
-							</tbody>
-
-						</table>
-
-					</div>
+					<input
+						type="text"
+						name="search"
+						class="form-control"
+						placeholder="Rechercher par numéro, utilisateur ou statut..."
+						value="{{ search|default('') }}"
+					>
 
 				</div>
 
+				<div class="col-auto">
+
+					<button
+						type="submit"
+						class="btn btn-primary"
+					>
+						Rechercher
+					</button>
+
+				</div>
+
+			</form>
+
+			<div class="table-responsive">
+
+				<table class="table table-hover align-middle">
+
+					<thead>
+						<tr>
+							<th>N°</th>
+							<th>Date</th>
+							<th>Utilisateur</th>
+							<th>Statut</th>
+							<th>Articles</th>
+							<th>Total</th>
+							<th class="text-end">
+								Actions
+							</th>
+						</tr>
+					</thead>
+
+					<tbody>
+
+						{% for commande in commandes %}
+
+							<tr>
+
+								<td>
+									<strong>
+										#{{ commande.id }}
+									</strong>
+								</td>
+
+								<td>
+									{{ commande.commandeDate
+										? commande.commandeDate|date('d/m/Y H:i')
+										: 'Non renseignée'
+									}}
+								</td>
+
+								<td>
+
+									{% if commande.utilisateur %}
+
+										{{ commande.utilisateur.utilisateurPrenom }}
+										{{ commande.utilisateur.utilisateurNom }}
+
+									{% else %}
+
+										<span class="text-muted">
+											Utilisateur supprimé
+										</span>
+
+									{% endif %}
+
+								</td>
+
+								<td>
+
+									{% if commande.commandeStatut == 'en attente' %}
+
+										<span class="badge bg-warning">
+											En attente
+										</span>
+
+									{% elseif commande.commandeStatut == 'en préparation' %}
+
+										<span class="badge bg-info">
+											En préparation
+										</span>
+
+									{% elseif commande.commandeStatut == 'prête' %}
+
+										<span class="badge bg-primary">
+											Prête
+										</span>
+
+									{% elseif commande.commandeStatut == 'en livraison' %}
+
+										<span class="badge bg-info">
+											En livraison
+										</span>
+
+									{% elseif commande.commandeStatut == 'livrée' %}
+
+										<span class="badge bg-success">
+											Livrée
+										</span>
+
+									{% elseif commande.commandeStatut == 'annulée' %}
+
+										<span class="badge bg-danger">
+											Annulée
+										</span>
+
+									{% else %}
+
+										<span class="badge bg-secondary">
+											{{ commande.commandeStatut }}
+										</span>
+
+									{% endif %}
+
+								</td>
+
+								<td>
+									{{ commande.details|length }}
+								</td>
+
+								<td>
+
+									<strong>
+										{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+										€
+									</strong>
+
+								</td>
+
+								<td class="text-end">
+
+									<a
+										href="{{ path('app_admin_commande_show', {'id': commande.id}) }}"
+										class="btn btn-info btn-sm"
+									>
+										Voir
+									</a>
+
+									<a
+										href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
+										class="btn btn-warning btn-sm"
+									>
+										Modifier
+									</a>
+
+									{{ include('admin_commande/_delete_form.html.twig') }}
+
+								</td>
+
+							</tr>
+
+						{% else %}
+
+							<tr>
+
+								<td
+									colspan="7"
+									class="text-center text-muted"
+								>
+									Aucune commande ne correspond à votre recherche.
+								</td>
+
+							</tr>
+
+						{% endfor %}
+
+					</tbody>
+
+				</table>
+
 			</div>
 
-		{% else %}
+		</div>
 
-			<div class="front-empty-cart text-center">
-
-				<h2 class="h4">
-					Aucune commande
-				</h2>
-
-				<p class="text-muted">
-					Vous n'avez pas encore passé de commande.
-				</p>
-
-				<a
-					href="{{ path('app_front_produit') }}"
-					class="btn btn-primary"
-				>
-					Découvrir le catalogue
-				</a>
-
-			</div>
-
-		{% endif %}
-
-	</section>
+	</div>
 
 {% endblock %}

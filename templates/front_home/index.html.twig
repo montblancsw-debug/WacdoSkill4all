@@ -134,7 +134,28 @@
 							Commandes
 						</h3>
 
-						{% if is_granted('ROLE_USER') %}
+						{% if
+							is_granted('ROLE_ADMIN')
+							or is_granted('ROLE_PREPARATEUR')
+							or is_granted('ROLE_ACCUEIL')
+						%}
+
+							<p class="text-muted">
+								Consultez et gérez les commandes clients depuis le dashboard.
+							</p>
+
+							<div class="mt-auto">
+
+								<a
+									href="{{ path('app_admin_commande_index') }}"
+									class="btn btn-outline-primary"
+								>
+									Commandes
+								</a>
+
+							</div>
+
+						{% elseif is_granted('ROLE_USER') %}
 
 							<p class="text-muted">
 								Consultez l'historique et le statut de vos commandes.
@@ -151,7 +172,7 @@
 
 							</div>
 
-						{% elseif not app.user %}
+						{% else %}
 
 							<p class="text-muted">
 								Connectez-vous pour passer et suivre vos commandes.
@@ -167,12 +188,6 @@
 								</a>
 
 							</div>
-
-						{% else %}
-
-							<p class="text-muted mb-0">
-								Le suivi des commandes clients est accessible depuis le dashboard.
-							</p>
 
 						{% endif %}
 

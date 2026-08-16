@@ -30,12 +30,45 @@
 	<div class="card">
 
 		<div class="card-header">
+
 			<h5 class="card-title mb-0">
 				Liste des produits
 			</h5>
+
 		</div>
 
 		<div class="card-body">
+
+			<form
+				method="post"
+				action="{{ path('app_admin_produit_index') }}"
+				class="row g-2 mb-4"
+			>
+
+				<div class="col">
+
+					<input
+						type="text"
+						name="search"
+						class="form-control"
+						placeholder="Rechercher un produit..."
+						value="{{ search|default('') }}"
+					>
+
+				</div>
+
+				<div class="col-auto">
+
+					<button
+						type="submit"
+						class="btn btn-primary"
+					>
+						Rechercher
+					</button>
+
+				</div>
+
+			</form>
 
 			<div class="table-responsive">
 
@@ -156,12 +189,14 @@
 						{% else %}
 
 							<tr>
+
 								<td
 									colspan="7"
 									class="text-center text-muted"
 								>
-									Aucun produit enregistré.
+									Aucun produit ne correspond à votre recherche.
 								</td>
+
 							</tr>
 
 						{% endfor %}

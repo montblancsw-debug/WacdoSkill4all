@@ -11,33 +11,52 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommandeRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Commande::class);
+    public function __construct(
+        ManagerRegistry $registry
+    ) {
+        parent::__construct(
+            $registry,
+            Commande::class
+        );
     }
 
-    //    /**
-    //     * @return Commande[] Returns an array of Commande objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('c.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    // Recherche une commande.
+    public function search(
+        string $value
+    ): array {
+        $queryBuilder = $this
+            ->createQueryBuilder('c')
+            ->leftJoin(
+                'c.utilisateur',
+                'u'
+            )
+            ->andWhere(
+                'c.commande_statut LIKE :val
+                OR u.utilisateur_nom LIKE :val
+                OR u.utilisateur_prenom LIKE :val
+                OR u.utilisateur_email LIKE :val'
+            )
+            ->setParameter(
+                'val',
+                '%' . $value . '%'
+            );
 
-    //    public function findOneBySomeField($value): ?Commande
-    //    {
-    //        return $this->createQueryBuilder('c')
-    //            ->andWhere('c.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        // Permet également la recherche par numéro.
+        if (ctype_digit($value)) {
+            $queryBuilder
+                ->orWhere('c.id = :id')
+                ->setParameter(
+                    'id',
+                    (int) $value
+                );
+        }
+
+        return $queryBuilder
+            ->orderBy(
+                'c.id',
+                'DESC'
+            )
+            ->getQuery()
+            ->getResult();
+    }
 }
