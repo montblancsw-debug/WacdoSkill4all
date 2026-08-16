@@ -457,7 +457,6 @@ class FrontCommandeController extends AbstractController
             throw $this->createAccessDeniedException();
         }
 
-        // Une commande ne doit jamais devenir vide.
         if ($commande->getDetails()->count() <= 1) {
             $this->addFlash(
                 'warning',
@@ -548,10 +547,276 @@ class FrontCommandeController extends AbstractController
         );
 
         return $this->redirectToRoute(
+            'app_front_commande',
+            [],
+            Response::HTTP_SEE_OTHER
+        );
+    }
+
+    // Relance une ancienne commande annulée.
+    #[Route(
+        '/{id}/relancer',
+        name: 'app_front_commande_relaunch',
+        methods: ['POST']
+    )]
+    public function relaunch(
+        Request $request,
+        Commande $commande,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $this->assertCommandeOwner(
+            $commande
+        );
+
+        if (
+            !$this->isCsrfTokenValid(
+                'front_commande_relaunch' . $commande->getId(),
+                $request->getPayload()->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($commande->getCommandeStatut() !== 'annulée') {
+            $this->addFlash(
+                'warning',
+                'Seule une commande annulée peut être relancée.'
+            );
+
+            return $this->redirectToRoute(
+                'app_front_commande_show',
+                [
+                    'id' => $commande->getId(),
+                ]
+            );
+        }
+
+        if ($commande->getDetails()->isEmpty()) {
+            $this->addFlash(
+                'warning',
+                'Cette commande ne contient aucun produit et ne peut pas être relancée.'
+            );
+
+            return $this->redirectToRoute(
+                'app_front_commande_show',
+                [
+                    'id' => $commande->getId(),
+                ]
+            );
+        }
+
+        // Vérifie tous les produits avant de créer la nouvelle commande.
+        foreach ($commande->getDetails() as $detail) {
+            $produit = $detail->getProduit();
+
+            if ($produit === null) {
+                $this->addFlash(
+                    'warning',
+                    'Cette commande contient un produit qui n\'existe plus et ne peut pas être relancée.'
+                );
+
+                return $this->redirectToRoute(
+                    'app_front_commande_show',
+                    [
+                        'id' => $commande->getId(),
+                    ]
+                );
+            }
+
+            if (!$produit->isProduitStock()) {
+                $this->addFlash(
+                    'warning',
+                    'Le produit "' . $produit->getProduitNom() . '" n\'est plus disponible. La commande ne peut pas être relancée.'
+                );
+
+                return $this->redirectToRoute(
+                    'app_front_commande_show',
+                    [
+                        'id' => $commande->getId(),
+                    ]
+                );
+            }
+        }
+
+        $utilisateur = $this->getCurrentUtilisateur();
+
+        if ($utilisateur === null) {
+            throw $this->createAccessDeniedException();
+        }
+
+        // Crée une nouvelle commande.
+        $nouvelleCommande = new Commande();
+
+        $nouvelleCommande->setCommandeDate(
+            new \DateTime()
+        );
+
+        $nouvelleCommande->setCommandeStatut(
+            'en attente'
+        );
+
+        $nouvelleCommande->setUtilisateur(
+            $utilisateur
+        );
+
+        $nouvelleCommande->setCommandeTotal(
+            '0.00'
+        );
+
+        $entityManager->persist(
+            $nouvelleCommande
+        );
+
+        $totalCommande = 0.0;
+
+        // Recrée les lignes avec les prix actuels.
+        foreach ($commande->getDetails() as $ancienDetail) {
+            $produit = $ancienDetail->getProduit();
+
+            if ($produit === null) {
+                continue;
+            }
+
+            $quantite = max(
+                1,
+                (int) $ancienDetail->getDetailQuantite()
+            );
+
+            $prixUnitaire =
+                (float) $produit->getProduitPrix();
+
+            $totalLigne =
+                $prixUnitaire * $quantite;
+
+            $nouveauDetail = new Detail();
+
+            $nouveauDetail->setCommande(
+                $nouvelleCommande
+            );
+
+            $nouveauDetail->setProduit(
+                $produit
+            );
+
+            $nouveauDetail->setDetailQuantite(
+                $quantite
+            );
+
+            $nouveauDetail->setDetailUnitaire(
+                number_format(
+                    $prixUnitaire,
+                    2,
+                    '.',
+                    ''
+                )
+            );
+
+            $nouveauDetail->setDetailTotal(
+                number_format(
+                    $totalLigne,
+                    2,
+                    '.',
+                    ''
+                )
+            );
+
+            $nouvelleCommande->addDetail(
+                $nouveauDetail
+            );
+
+            $entityManager->persist(
+                $nouveauDetail
+            );
+
+            $totalCommande += $totalLigne;
+        }
+
+        $nouvelleCommande->setCommandeTotal(
+            number_format(
+                $totalCommande,
+                2,
+                '.',
+                ''
+            )
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'Votre commande a été relancée sous le numéro #' . $nouvelleCommande->getId() . '.'
+        );
+
+        return $this->redirectToRoute(
             'app_front_commande_show',
             [
-                'id' => $commande->getId(),
-            ]
+                'id' => $nouvelleCommande->getId(),
+            ],
+            Response::HTTP_SEE_OTHER
+        );
+    }
+
+    // Supprime définitivement une commande annulée.
+    #[Route(
+        '/{id}/supprimer',
+        name: 'app_front_commande_delete',
+        methods: ['POST']
+    )]
+    public function delete(
+        Request $request,
+        Commande $commande,
+        EntityManagerInterface $entityManager
+    ): Response {
+        $this->assertCommandeOwner(
+            $commande
+        );
+
+        if (
+            !$this->isCsrfTokenValid(
+                'front_commande_delete' . $commande->getId(),
+                $request->getPayload()->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if ($commande->getCommandeStatut() !== 'annulée') {
+            $this->addFlash(
+                'warning',
+                'Seule une commande annulée peut être supprimée.'
+            );
+
+            return $this->redirectToRoute(
+                'app_front_commande_show',
+                [
+                    'id' => $commande->getId(),
+                ]
+            );
+        }
+
+        // Supprime d'abord les lignes de commande.
+        foreach ($commande->getDetails()->toArray() as $detail) {
+            $entityManager->remove(
+                $detail
+            );
+        }
+
+        // Supprime ensuite la commande.
+        $entityManager->remove(
+            $commande
+        );
+
+        $entityManager->flush();
+
+        $this->addFlash(
+            'success',
+            'La commande a été supprimée définitivement.'
+        );
+
+        return $this->redirectToRoute(
+            'app_front_commande',
+            [],
+            Response::HTTP_SEE_OTHER
         );
     }
 
@@ -723,6 +988,11 @@ class FrontCommandeController extends AbstractController
         $total = 0.0;
 
         foreach ($commande->getDetails() as $detail) {
+            // Ignore un ancien produit supprimé.
+            if ($detail->getProduit() === null) {
+                continue;
+            }
+
             $this->updateDetailTotal(
                 $detail
             );

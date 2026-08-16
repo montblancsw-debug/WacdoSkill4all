@@ -12,7 +12,12 @@
 		</title>
 
 		<link rel="stylesheet" href="{{ asset('css/app.css') }}">
-		<link rel="stylesheet" href="{{ asset('css/backend-wacdo.css') }}">
+
+		{# Force le navigateur à recharger la CSS Wacdo. #}
+		<link
+			rel="stylesheet"
+			href="{{ asset('css/backend-wacdo.css') }}?v=20260816-2"
+		>
 
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
@@ -104,7 +109,10 @@
 									{% set flashClass = 'wacdo-flash-info' %}
 								{% endif %}
 
-								<div class="wacdo-flash {{ flashClass }}" role="alert">
+								<div
+									class="wacdo-flash {{ flashClass }}"
+									role="alert"
+								>
 									{{ message }}
 
 									<button
@@ -126,27 +134,34 @@
 
 				<footer class="footer">
 					<div class="container-fluid">
+
 						<div class="row text-muted">
 
 							<div class="col-6 text-start">
+
 								<p class="mb-0">
 									<strong>Wacdo</strong>
 									&copy;
 									{{ "now"|date("Y") }}
 								</p>
+
 							</div>
 
 							<div class="col-6 text-end">
+
 								<span>
 									Administration Wacdo
 								</span>
+
 							</div>
 
 						</div>
+
 					</div>
 				</footer>
 
 			</div>
+
 		</div>
 
 		<script src="{{ asset('js/app.js') }}"></script>

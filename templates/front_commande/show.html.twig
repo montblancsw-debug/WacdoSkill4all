@@ -1,182 +1,75 @@
-{# Détail d'une commande client. #}
+{# Page d'accueil du back-office Wacdo. #}
 
-{% extends 'base.html.twig' %}
+{% extends 'base-backend.html.twig' %}
 
 {% block title %}
-	Commande #{{ commande.id }} | Wacdo
+	Tableau de bord | Wacdo
 {% endblock %}
 
 {% block body %}
 
-	<section class="front-section">
+	<div class="mb-4">
 
-		<div class="mb-4">
+		<h1 class="h3 mb-1">
+			Tableau de bord
+		</h1>
 
-			<a
-				href="{{ path('app_front_commande') }}"
-				class="btn btn-secondary"
-			>
-				Retour à mes commandes
-			</a>
+		<p class="text-muted mb-0">
+			Vue générale de l'administration Wacdo.
+		</p>
 
-		</div>
+	</div>
 
-		<div class="d-flex justify-content-between align-items-start mb-4">
+	<div class="row">
 
-			<div>
+		{# Les informations du catalogue sont réservées à l'administrateur. #}
+		{% if is_granted('ROLE_ADMIN') %}
 
-				<h1 class="h2 mb-1">
-					Commande #{{ commande.id }}
-				</h1>
+			{# Carte des catégories. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
 
-				<p class="text-muted mb-0">
-					{{ commande.commandeDate
-						? commande.commandeDate|date('d/m/Y à H:i')
-						: ''
-					}}
-				</p>
-
-			</div>
-
-			<div>
-
-				{% if commande.commandeStatut == 'en attente' %}
-
-					<span class="badge text-bg-warning">
-						En attente
-					</span>
-
-				{% elseif commande.commandeStatut == 'préparée' %}
-
-					<span class="badge text-bg-info">
-						Préparée
-					</span>
-
-				{% elseif commande.commandeStatut == 'livrée' %}
-
-					<span class="badge text-bg-success">
-						Livrée
-					</span>
-
-				{% endif %}
-
-			</div>
-
-		</div>
-
-		<div class="card front-card">
-
-			<div class="card-body">
-
-				<div class="table-responsive">
-
-					<table class="table align-middle">
-
-						<thead>
-							<tr>
-								<th>Image</th>
-								<th>Produit</th>
-								<th>Prix unitaire</th>
-								<th>Quantité</th>
-								<th>Total</th>
-							</tr>
-						</thead>
-
-						<tbody>
-
-							{% for detail in commande.details %}
-
-								{% if detail.produit %}
-
-									<tr>
-
-										<td>
-
-											{% if detail.produit.produitImage %}
-
-												<img
-													src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
-													alt="{{ detail.produit.produitNom }}"
-													class="front-cart-image"
-												>
-
-											{% endif %}
-
-										</td>
-
-										<td>
-
-											<strong>
-												{{ detail.produit.produitNom }}
-											</strong>
-
-										</td>
-
-										<td>
-											{{ detail.detailUnitaire|number_format(2, ',', ' ') }}
-											€
-										</td>
-
-										<td>
-											{{ detail.detailQuantite }}
-										</td>
-
-										<td>
-
-											<strong>
-												{{ detail.detailTotal|number_format(2, ',', ' ') }}
-												€
-											</strong>
-
-										</td>
-
-									</tr>
-
-								{% endif %}
-
-							{% else %}
-
-								<tr>
-
-									<td
-										colspan="5"
-										class="text-center text-muted"
-									>
-										Aucun article.
-									</td>
-
-								</tr>
-
-							{% endfor %}
-
-						</tbody>
-
-					</table>
-
-				</div>
-
-			</div>
-
-		</div>
-
-		<div class="row justify-content-end mt-4">
-
-			<div class="col-12 col-md-6 col-lg-4">
-
-				<div class="card front-cart-summary">
+				<div class="card flex-fill wacdo-dashboard-card">
 
 					<div class="card-body">
 
-						<div class="front-cart-total">
+						<div class="row">
 
-							<span>
-								Total
+							<div class="col mt-0">
+
+								<h5 class="card-title">
+
+									<a href="{{ path('app_admin_categorie_index') }}">
+										Catégories
+									</a>
+
+								</h5>
+
+							</div>
+
+							<div class="col-auto">
+
+								<div class="stat wacdo-dashboard-stat">
+
+									<i
+										class="align-middle"
+										data-feather="grid"
+									></i>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<h1 class="mt-1 mb-3">
+							{{ numCategorie }}
+						</h1>
+
+						<div class="mb-0">
+
+							<span class="text-muted">
+								Catégories enregistrées
 							</span>
-
-							<strong>
-								{{ commande.commandeTotal|number_format(2, ',', ' ') }}
-								€
-							</strong>
 
 						</div>
 
@@ -186,8 +79,184 @@
 
 			</div>
 
-		</div>
+			{# Carte des produits. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
 
-	</section>
+				<div class="card flex-fill wacdo-dashboard-card">
+
+					<div class="card-body">
+
+						<div class="row">
+
+							<div class="col mt-0">
+
+								<h5 class="card-title">
+
+									<a href="{{ path('app_admin_produit_index') }}">
+										Produits
+									</a>
+
+								</h5>
+
+							</div>
+
+							<div class="col-auto">
+
+								<div class="stat wacdo-dashboard-stat">
+
+									<i
+										class="align-middle"
+										data-feather="package"
+									></i>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<h1 class="mt-1 mb-3">
+							{{ numProduit }}
+						</h1>
+
+						<div class="mb-0">
+
+							<span class="text-muted">
+								Produits enregistrés
+							</span>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		{% endif %}
+
+		{# Les trois rôles peuvent consulter les commandes. #}
+		{% if
+			is_granted('ROLE_ADMIN')
+			or is_granted('ROLE_PREPARATEUR')
+			or is_granted('ROLE_ACCUEIL')
+		%}
+
+			{# Carte des commandes. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+
+				<div class="card flex-fill wacdo-dashboard-card">
+
+					<div class="card-body">
+
+						<div class="row">
+
+							<div class="col mt-0">
+
+								<h5 class="card-title">
+
+									<a href="{{ path('app_admin_commande_index') }}">
+										Commandes
+									</a>
+
+								</h5>
+
+							</div>
+
+							<div class="col-auto">
+
+								<div class="stat wacdo-dashboard-stat">
+
+									<i
+										class="align-middle"
+										data-feather="shopping-cart"
+									></i>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<h1 class="mt-1 mb-3">
+							{{ numCommande }}
+						</h1>
+
+						<div class="mb-0">
+
+							<span class="text-muted">
+								Commandes enregistrées
+							</span>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		{% endif %}
+
+		{# La gestion des utilisateurs est réservée à l'administrateur. #}
+		{% if is_granted('ROLE_ADMIN') %}
+
+			{# Carte des utilisateurs. #}
+			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+
+				<div class="card flex-fill wacdo-dashboard-card">
+
+					<div class="card-body">
+
+						<div class="row">
+
+							<div class="col mt-0">
+
+								<h5 class="card-title">
+
+									<a href="{{ path('app_admin_utilisateur_index') }}">
+										Utilisateurs
+									</a>
+
+								</h5>
+
+							</div>
+
+							<div class="col-auto">
+
+								<div class="stat wacdo-dashboard-stat">
+
+									<i
+										class="align-middle"
+										data-feather="users"
+									></i>
+
+								</div>
+
+							</div>
+
+						</div>
+
+						<h1 class="mt-1 mb-3">
+							{{ numUtilisateur }}
+						</h1>
+
+						<div class="mb-0">
+
+							<span class="text-muted">
+								Utilisateurs enregistrés
+							</span>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		{% endif %}
+
+	</div>
 
 {% endblock %}

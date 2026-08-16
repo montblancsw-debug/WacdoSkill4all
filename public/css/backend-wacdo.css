@@ -4,56 +4,444 @@
 
 :root {
     --wacdo-orange: #F25C05;
+    --wacdo-orange-dark: #D94F00;
+
     --wacdo-brown: #361F14;
+    --wacdo-brown-light: #4A2A1C;
+    --wacdo-brown-dark: #29170F;
+
     --wacdo-white: #FFFFFF;
     --wacdo-gray: #D8D9DD;
+    --wacdo-background: #F0F1F3;
+
     --wacdo-gold: #E59B27;
+    --wacdo-gold-dark: #CF861B;
+
+    --wacdo-view: #169DB2;
+    --wacdo-view-dark: #118497;
+
+    --wacdo-danger: #DC3545;
+    --wacdo-danger-dark: #BB2D3B;
+
     --wacdo-secondary: #6C757D;
+
+    --wacdo-divider: #1A1A1A;
 }
 
 /* ====================================================== */
 /* ==================== Back-office. ==================== */
 /* ====================================================== */
 
+html,
 body {
-    background-color: #f5f6f8;
+    background-color: var(--wacdo-background);
 }
+
+body {
+    color: var(--wacdo-brown);
+}
+
+.wrapper,
+.main,
+.content {
+    background-color: var(--wacdo-background);
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+    color: var(--wacdo-brown);
+}
+
+/* ====================================================== */
+/* ======================= Sidebar. ===================== */
+/* ====================================================== */
 
 .sidebar,
-.sidebar-content {
-    background-color: var(--wacdo-brown);
+.sidebar-content,
+.sidebar-nav {
+    background-color: var(--wacdo-gray) !important;
 }
+
+/* La sidebar sert de référence au liseré. */
+.sidebar {
+    position: relative;
+    border-right: 0 !important;
+    box-shadow: 3px 0 12px rgba(54, 31, 20, 0.08);
+}
+
+/* Liseré noir visible sur toute la hauteur. */
+.sidebar::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 4px;
+
+    background-color: var(--wacdo-divider);
+
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* ====================================================== */
+/* ================== Marque Wacdo sidebar. ============= */
+/* ====================================================== */
+
+.sidebar-brand,
+a.sidebar-brand {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gray) !important;
+    border-bottom: 3px solid var(--wacdo-orange);
+    font-weight: 700;
+}
+
+.sidebar-brand:hover,
+.sidebar-brand:focus {
+    color: var(--wacdo-orange) !important;
+    background-color: var(--wacdo-white) !important;
+}
+
+/* ====================================================== */
+/* ================= Rubriques sidebar. ================= */
+/* ====================================================== */
+
+.sidebar-header {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gray) !important;
+    font-weight: 700;
+    opacity: 1;
+}
+
+/* ====================================================== */
+/* ==================== Liens sidebar. ================== */
+/* ====================================================== */
+
+.sidebar-link,
+a.sidebar-link {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gray) !important;
+    border-left: 4px solid transparent;
+    font-weight: 500;
+
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.sidebar-link span,
+a.sidebar-link span {
+    color: inherit !important;
+}
+
+.sidebar-link svg,
+a.sidebar-link svg,
+.sidebar-link i,
+a.sidebar-link i {
+    color: var(--wacdo-brown) !important;
+    stroke: var(--wacdo-brown) !important;
+}
+
+/* ====================================================== */
+/* ================= Survol sidebar. ==================== */
+/* ====================================================== */
 
 .sidebar-link:hover,
-.sidebar-link.active {
-    color: var(--wacdo-white);
-    background-color: rgba(242, 92, 5, 0.18);
+a.sidebar-link:hover {
+    color: var(--wacdo-orange) !important;
+    background-color: var(--wacdo-white) !important;
+    border-left-color: var(--wacdo-orange) !important;
 }
 
-.sidebar-link.active {
-    border-left-color: var(--wacdo-orange);
+.sidebar-link:hover span,
+a.sidebar-link:hover span {
+    color: var(--wacdo-orange) !important;
 }
 
+.sidebar-link:hover svg,
+a.sidebar-link:hover svg,
+.sidebar-link:hover i,
+a.sidebar-link:hover i {
+    color: var(--wacdo-orange) !important;
+    stroke: var(--wacdo-orange) !important;
+}
+
+/* ====================================================== */
+/* ================= Lien actif sidebar. ================ */
+/* ====================================================== */
+
+.sidebar-item.active > .sidebar-link,
+.sidebar-item.active > a.sidebar-link {
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-orange) !important;
+    border-left-color: var(--wacdo-brown) !important;
+    font-weight: 700;
+}
+
+.sidebar-item.active > .sidebar-link span,
+.sidebar-item.active > a.sidebar-link span {
+    color: var(--wacdo-white) !important;
+}
+
+.sidebar-item.active > .sidebar-link svg,
+.sidebar-item.active > a.sidebar-link svg,
+.sidebar-item.active > .sidebar-link i,
+.sidebar-item.active > a.sidebar-link i {
+    color: var(--wacdo-white) !important;
+    stroke: var(--wacdo-white) !important;
+}
+
+.sidebar-item.active > .sidebar-link:hover,
+.sidebar-item.active > a.sidebar-link:hover {
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-orange-dark) !important;
+    border-left-color: var(--wacdo-brown) !important;
+}
+
+/* ====================================================== */
+/* ======================= Topbar. ====================== */
+/* ====================================================== */
+
+.main > .navbar,
+.navbar.navbar-expand.navbar-light.navbar-bg,
 .navbar-bg {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gray) !important;
+    border-bottom: 3px solid var(--wacdo-orange) !important;
+    box-shadow: 0 3px 12px rgba(54, 31, 20, 0.10);
+}
+
+/* ====================================================== */
+/* ================= Menu hamburger. ==================== */
+/* ====================================================== */
+
+.sidebar-toggle,
+a.sidebar-toggle {
+    width: 42px;
+    height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-orange) !important;
+
+    border: 1px solid var(--wacdo-orange);
+    border-radius: 0.5rem;
+
+    transition:
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.sidebar-toggle:hover,
+.sidebar-toggle:focus {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gold) !important;
+    border-color: var(--wacdo-gold);
+    transform: translateY(-1px);
+}
+
+.hamburger,
+.hamburger::before,
+.hamburger::after {
+    background-color: var(--wacdo-brown) !important;
+}
+
+.sidebar-toggle:hover .hamburger,
+.sidebar-toggle:hover .hamburger::before,
+.sidebar-toggle:hover .hamburger::after,
+.sidebar-toggle:focus .hamburger,
+.sidebar-toggle:focus .hamburger::before,
+.sidebar-toggle:focus .hamburger::after {
+    background-color: var(--wacdo-brown) !important;
+}
+
+/* ====================================================== */
+/* ================== Menu utilisateur. ================= */
+/* ====================================================== */
+
+.navbar .wacdo-account-trigger,
+.navbar-nav .wacdo-account-trigger,
+.wacdo-account-trigger {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-white) !important;
+
+    border: 1px solid var(--wacdo-orange) !important;
+    border-radius: 0.5rem;
+
+    padding: 0.45rem 0.8rem !important;
+
+    box-shadow: none !important;
+}
+
+.navbar .wacdo-account-trigger:hover,
+.navbar .wacdo-account-trigger:focus,
+.navbar-nav .wacdo-account-trigger:hover,
+.navbar-nav .wacdo-account-trigger:focus,
+.wacdo-account-trigger:hover,
+.wacdo-account-trigger:focus {
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-orange) !important;
+    border-color: var(--wacdo-orange) !important;
+}
+
+.nav-item.dropdown.show > .wacdo-account-trigger,
+.dropdown.show > .wacdo-account-trigger,
+.wacdo-account-trigger.show {
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-orange) !important;
+    border-color: var(--wacdo-orange) !important;
+}
+
+.wacdo-account-trigger::after {
+    color: var(--wacdo-brown);
+}
+
+.wacdo-account-trigger:hover::after,
+.wacdo-account-trigger:focus::after,
+.wacdo-account-trigger.show::after {
+    color: var(--wacdo-white);
+}
+
+.wacdo-account-menu {
+    min-width: 230px;
+
+    overflow: hidden;
+
+    background-color: var(--wacdo-white);
+
+    border: 1px solid var(--wacdo-gray);
+    border-top: 3px solid var(--wacdo-orange);
+    border-radius: 0.4rem;
+
+    box-shadow: 0 0.5rem 1.25rem rgba(54, 31, 20, 0.18);
+}
+
+.wacdo-account-menu .dropdown-header {
+    color: var(--wacdo-brown);
     background-color: var(--wacdo-white);
 }
 
+.wacdo-account-menu .dropdown-header strong {
+    color: var(--wacdo-brown);
+}
+
+.wacdo-account-menu .dropdown-divider {
+    border-color: var(--wacdo-gray);
+}
+
+.wacdo-account-menu .dropdown-item {
+    color: var(--wacdo-brown);
+    background-color: var(--wacdo-white);
+
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease;
+}
+
+.wacdo-account-menu .dropdown-item:hover,
+.wacdo-account-menu .dropdown-item:focus {
+    color: var(--wacdo-brown);
+    background-color: rgba(242, 92, 5, 0.10);
+}
+
+.wacdo-account-menu .dropdown-item:active {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+}
+
 /* ====================================================== */
-/* ======================= Cartes. ====================== */
+/* ======================== Cartes. ===================== */
 /* ====================================================== */
 
 .card {
-    border: 1px solid rgba(216, 217, 221, 0.8);
-    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.06);
+    background-color: var(--wacdo-white);
+
+    border: 1px solid rgba(216, 217, 221, 0.85);
+    border-radius: 0.5rem;
+
+    box-shadow: 0 0.2rem 0.75rem rgba(54, 31, 20, 0.07);
 }
 
 .card-header {
     background-color: var(--wacdo-white);
+    border-bottom-color: var(--wacdo-gray);
 }
 
 /* ====================================================== */
-/* ====================== Boutons. ====================== */
+/* ================= Cartes Dashboard. ================== */
 /* ====================================================== */
+
+.wacdo-dashboard-card {
+    position: relative;
+    overflow: hidden;
+
+    border-top: 4px solid var(--wacdo-orange);
+
+    transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.wacdo-dashboard-card:hover {
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 0.65rem 1.4rem rgba(54, 31, 20, 0.12);
+}
+
+.wacdo-dashboard-card .card-title a {
+    color: var(--wacdo-brown);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.wacdo-dashboard-card .card-title a:hover {
+    color: var(--wacdo-orange);
+}
+
+.wacdo-dashboard-card h1 {
+    color: var(--wacdo-brown);
+}
+
+.wacdo-dashboard-stat {
+    color: var(--wacdo-orange) !important;
+
+    background-color:
+        rgba(229, 155, 39, 0.18) !important;
+}
+
+.wacdo-dashboard-stat svg {
+    color: var(--wacdo-orange) !important;
+    stroke: var(--wacdo-orange) !important;
+}
+
+/* ====================================================== */
+/* ======================= Boutons. ===================== */
+/* ====================================================== */
+
+.btn {
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
 
 .btn-primary {
     color: var(--wacdo-white);
@@ -64,46 +452,87 @@ body {
 .btn-primary:hover,
 .btn-primary:focus {
     color: var(--wacdo-white);
-    background-color: #d94f00;
-    border-color: #d94f00;
+    background-color: var(--wacdo-orange-dark);
+    border-color: var(--wacdo-orange-dark);
 }
 
 .btn-outline-primary {
     color: var(--wacdo-orange);
+    background-color: transparent;
     border-color: var(--wacdo-orange);
 }
 
-.btn-outline-primary:hover {
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
     color: var(--wacdo-white);
     background-color: var(--wacdo-orange);
     border-color: var(--wacdo-orange);
 }
 
+/* Voir. */
+.btn-info {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-view);
+    border-color: var(--wacdo-view);
+}
+
+.btn-info:hover,
+.btn-info:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-view-dark);
+    border-color: var(--wacdo-view-dark);
+}
+
+/* Modifier. */
 .btn-warning {
-    color: var(--wacdo-brown);
-    background-color: var(--wacdo-gold);
-    border-color: var(--wacdo-gold);
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
 }
 
-.btn-warning:hover {
-    color: var(--wacdo-brown);
-    background-color: #d58b1d;
-    border-color: #d58b1d;
+.btn-warning:hover,
+.btn-warning:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange-dark);
+    border-color: var(--wacdo-orange-dark);
 }
 
+/* Retour. */
 .btn-secondary {
     color: var(--wacdo-white);
     background-color: var(--wacdo-secondary);
     border-color: var(--wacdo-secondary);
 }
 
-/* Uniformise les boutons de suppression. */
+.btn-secondary:hover,
+.btn-secondary:focus {
+    color: var(--wacdo-white);
+    background-color: #5C636A;
+    border-color: #565E64;
+}
+
+/* Supprimer. */
+.btn-danger {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-danger);
+    border-color: var(--wacdo-danger);
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-danger-dark);
+    border-color: var(--wacdo-danger-dark);
+}
+
 .wacdo-delete-button {
     min-width: 108px;
     height: 32px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     gap: 0.35rem;
     padding: 0.25rem 0.65rem;
 }
@@ -114,34 +543,61 @@ body {
 }
 
 /* ====================================================== */
-/* ================== Menu utilisateur. ================= */
+/* ======================= Tableaux. ==================== */
 /* ====================================================== */
 
-.wacdo-account-trigger {
-    border: 1px solid var(--wacdo-gray);
-    border-radius: 0.5rem;
-    padding: 0.45rem 0.8rem !important;
+.table {
+    color: var(--wacdo-brown);
 }
 
-.wacdo-account-trigger:hover,
-.wacdo-account-trigger:focus {
+.table thead th {
+    color: var(--wacdo-brown);
+    background-color: #F5F5F6;
+    border-bottom-color: var(--wacdo-gray);
+}
+
+.table > :not(caption) > * > * {
+    border-bottom-color:
+        rgba(216, 217, 221, 0.85);
+}
+
+.table-hover tbody tr:hover > * {
+    background-color:
+        rgba(242, 92, 5, 0.055);
+}
+
+/* ====================================================== */
+/* ===================== Formulaires. =================== */
+/* ====================================================== */
+
+.form-control,
+.form-select {
+    border-color: var(--wacdo-gray);
+}
+
+.form-control:focus,
+.form-select:focus {
     border-color: var(--wacdo-orange);
-}
 
-.wacdo-account-menu {
-    min-width: 230px;
-}
-
-.wacdo-account-menu .dropdown-item:active {
-    background-color: var(--wacdo-orange);
+    box-shadow:
+        0 0 0 0.2rem rgba(242, 92, 5, 0.12);
 }
 
 /* ====================================================== */
-/* ======================= Tables. ====================== */
+/* ======================= Badges. ====================== */
 /* ====================================================== */
 
-.table-hover tbody tr:hover {
-    background-color: rgba(242, 92, 5, 0.04);
+.badge.bg-primary {
+    background-color: var(--wacdo-orange) !important;
+}
+
+.badge.bg-warning {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gold) !important;
+}
+
+.badge.bg-danger {
+    background-color: var(--wacdo-danger) !important;
 }
 
 /* ====================================================== */
@@ -151,9 +607,13 @@ body {
 .wacdo-order-product-image {
     width: 72px;
     height: 72px;
+
     object-fit: contain;
+
     padding: 0.35rem;
+
     background-color: var(--wacdo-white);
+
     border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
@@ -161,11 +621,14 @@ body {
 .wacdo-order-product-placeholder {
     width: 72px;
     height: 72px;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     color: var(--wacdo-secondary);
-    background-color: #f5f6f8;
+    background-color: #F5F6F8;
+
     border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
@@ -173,9 +636,13 @@ body {
 .wacdo-edit-image-preview {
     width: 120px;
     height: 120px;
+
     object-fit: contain;
+
     padding: 0.5rem;
+
     background-color: var(--wacdo-white);
+
     border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
@@ -198,10 +665,13 @@ body {
 .wacdo-quantity-button {
     width: 34px;
     height: 34px;
+
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
     padding: 0;
+
     font-size: 1.1rem;
     font-weight: 600;
 }
@@ -210,6 +680,47 @@ body {
     min-width: 30px;
     text-align: center;
     font-weight: 600;
+}
+
+/* ====================================================== */
+/* ======================== Footer. ===================== */
+/* ====================================================== */
+
+.footer {
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-brown) !important;
+    border-top: 3px solid var(--wacdo-orange);
+}
+
+.footer .text-muted,
+.footer p,
+.footer span,
+.footer strong,
+.footer a {
+    color:
+        rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ====================================================== */
+/* ======================= Flashs. ====================== */
+/* ====================================================== */
+
+.alert-success {
+    color: #155724;
+    background-color: #D4EDDA;
+    border-color: #C3E6CB;
+}
+
+.alert-danger {
+    color: #721C24;
+    background-color: #F8D7DA;
+    border-color: #F5C6CB;
+}
+
+.alert-warning {
+    color: #664D03;
+    background-color: #FFF3CD;
+    border-color: #FFECB5;
 }
 
 /* ====================================================== */

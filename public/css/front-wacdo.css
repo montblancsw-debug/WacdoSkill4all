@@ -4,10 +4,24 @@
 
 :root {
     --wacdo-orange: #F25C05;
+    --wacdo-orange-dark: #D94F00;
+
     --wacdo-brown: #361F14;
+    --wacdo-brown-light: #4A2A1C;
+
     --wacdo-white: #FFFFFF;
     --wacdo-gray: #D8D9DD;
+    --wacdo-background: #F0F1F3;
+
     --wacdo-gold: #E59B27;
+    --wacdo-gold-dark: #CF861B;
+
+    --wacdo-view: #169DB2;
+    --wacdo-view-dark: #118497;
+
+    --wacdo-danger: #DC3545;
+    --wacdo-danger-dark: #BB2D3B;
+
     --wacdo-secondary: #6C757D;
 }
 
@@ -20,12 +34,28 @@ html {
 }
 
 body {
-    background-color: #f5f6f8;
+    background-color: var(--wacdo-background);
     color: var(--wacdo-brown);
 }
 
 .front-main {
     width: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--wacdo-brown);
+}
+
+a {
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease;
 }
 
 /* ====================================================== */
@@ -34,7 +64,9 @@ body {
 
 .navbar {
     width: 100%;
-    box-shadow: 0 2px 10px rgba(54, 31, 20, 0.05);
+    background-color: var(--wacdo-brown) !important;
+    border-bottom: 3px solid var(--wacdo-orange) !important;
+    box-shadow: 0 3px 12px rgba(54, 31, 20, 0.18);
 }
 
 .front-navbar-shell {
@@ -44,49 +76,93 @@ body {
 }
 
 .navbar-brand {
-    color: var(--wacdo-brown);
+    color: var(--wacdo-white);
     font-size: 1.5rem;
 }
 
-.navbar-brand:hover {
-    color: var(--wacdo-orange);
+.navbar-brand:hover,
+.navbar-brand:focus {
+    color: var(--wacdo-gold);
 }
 
 .navbar .nav-link {
+    color: rgba(255, 255, 255, 0.82);
     white-space: nowrap;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus {
+    color: var(--wacdo-orange);
 }
 
 .navbar .nav-link.active {
     color: var(--wacdo-orange);
-    font-weight: 600;
+    font-weight: 700;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.navbar-toggler:focus {
+    box-shadow: 0 0 0 0.2rem rgba(242, 92, 5, 0.25);
+}
+
+.navbar-toggler-icon {
+    filter: brightness(0) invert(1);
 }
 
 .front-navbar-actions {
     gap: 0.75rem;
 }
 
+.front-navbar-actions .nav-link {
+    display: flex;
+    align-items: center;
+}
+
+/* ====================================================== */
+/* ================== Menu utilisateur. ================= */
+/* ====================================================== */
+
 .wacdo-account-trigger {
-    color: var(--wacdo-brown);
-    border: 1px solid var(--wacdo-gray);
+    color: var(--wacdo-white) !important;
+    border: 1px solid var(--wacdo-orange);
     border-radius: 0.5rem;
     padding: 0.45rem 0.8rem !important;
 }
 
 .wacdo-account-trigger:hover,
 .wacdo-account-trigger:focus {
-    color: var(--wacdo-orange);
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-orange);
     border-color: var(--wacdo-orange);
 }
 
 .wacdo-account-menu {
     min-width: 230px;
     border: 1px solid var(--wacdo-gray);
-    box-shadow: 0 0.5rem 1rem rgba(54, 31, 20, 0.12);
+    border-top: 3px solid var(--wacdo-orange);
+    box-shadow: 0 0.5rem 1.25rem rgba(54, 31, 20, 0.18);
+}
+
+.wacdo-account-menu .dropdown-item {
+    color: var(--wacdo-brown);
+}
+
+.wacdo-account-menu .dropdown-item:hover {
+    color: var(--wacdo-brown);
+    background-color: rgba(242, 92, 5, 0.08);
 }
 
 .wacdo-account-menu .dropdown-item:active {
+    color: var(--wacdo-white);
     background-color: var(--wacdo-orange);
 }
+
+/* ====================================================== */
+/* ======================== Panier. ===================== */
+/* ====================================================== */
 
 .front-cart-link {
     display: flex;
@@ -94,10 +170,28 @@ body {
     gap: 0.35rem;
 }
 
+.front-cart-badge {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+}
+
 /* ====================================================== */
 /* ====================== Boutons. ====================== */
 /* ====================================================== */
 
+.btn {
+    transition:
+        color 0.15s ease,
+        background-color 0.15s ease,
+        border-color 0.15s ease,
+        transform 0.15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Action principale. */
 .btn-primary {
     color: var(--wacdo-white);
     background-color: var(--wacdo-orange);
@@ -107,31 +201,176 @@ body {
 .btn-primary:hover,
 .btn-primary:focus {
     color: var(--wacdo-white);
-    background-color: #d94f00;
-    border-color: #d94f00;
+    background-color: var(--wacdo-orange-dark);
+    border-color: var(--wacdo-orange-dark);
 }
 
+/* Action principale avec contour. */
 .btn-outline-primary {
     color: var(--wacdo-orange);
+    background-color: transparent;
     border-color: var(--wacdo-orange);
 }
 
-.btn-outline-primary:hover {
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
     color: var(--wacdo-white);
     background-color: var(--wacdo-orange);
     border-color: var(--wacdo-orange);
 }
 
+/* Voir / Voir le détail. */
+.btn-info {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-view);
+    border-color: var(--wacdo-view);
+}
+
+.btn-info:hover,
+.btn-info:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-view-dark);
+    border-color: var(--wacdo-view-dark);
+}
+
+/* Modifier. */
+.btn-warning {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
+}
+
+.btn-warning:hover,
+.btn-warning:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange-dark);
+    border-color: var(--wacdo-orange-dark);
+}
+
+/* Retour. */
 .btn-secondary {
     color: var(--wacdo-white);
     background-color: var(--wacdo-secondary);
     border-color: var(--wacdo-secondary);
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover,
+.btn-secondary:focus {
     color: var(--wacdo-white);
-    background-color: #5c636a;
-    border-color: #565e64;
+    background-color: #5C636A;
+    border-color: #565E64;
+}
+
+/* Suppression. */
+.btn-danger {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-danger);
+    border-color: var(--wacdo-danger);
+}
+
+.btn-danger:hover,
+.btn-danger:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-danger-dark);
+    border-color: var(--wacdo-danger-dark);
+}
+
+/* Annulation d'une commande. */
+.wacdo-cancel-button {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-brown);
+    border-color: var(--wacdo-brown);
+}
+
+.wacdo-cancel-button:hover,
+.wacdo-cancel-button:focus {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-brown-light);
+    border-color: var(--wacdo-brown-light);
+}
+
+/* Relance d'une commande. */
+.wacdo-relaunch-button {
+    color: var(--wacdo-brown);
+    background-color: var(--wacdo-gold);
+    border-color: var(--wacdo-gold);
+}
+
+.wacdo-relaunch-button:hover,
+.wacdo-relaunch-button:focus {
+    color: var(--wacdo-brown);
+    background-color: var(--wacdo-gold-dark);
+    border-color: var(--wacdo-gold-dark);
+}
+
+/* ====================================================== */
+/* ======================== Cartes. ===================== */
+/* ====================================================== */
+
+.front-card {
+    height: 100%;
+    overflow: hidden;
+    background-color: var(--wacdo-white);
+    border: 1px solid rgba(216, 217, 221, 0.85);
+    border-radius: 0.75rem;
+    box-shadow: 0 0.2rem 0.75rem rgba(54, 31, 20, 0.08);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.front-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(242, 92, 5, 0.35);
+    box-shadow: 0 0.6rem 1.4rem rgba(54, 31, 20, 0.12);
+}
+
+.front-card .card-header {
+    color: var(--wacdo-brown);
+    background-color: #FBFBFC;
+    border-bottom: 1px solid var(--wacdo-gray);
+}
+
+.front-card .card-body {
+    padding: 1.5rem;
+}
+
+/* ====================================================== */
+/* ======================= Tableaux. ==================== */
+/* ====================================================== */
+
+.table {
+    color: var(--wacdo-brown);
+}
+
+.table thead th {
+    color: var(--wacdo-brown);
+    background-color: #F5F5F6;
+    border-bottom-color: var(--wacdo-gray);
+}
+
+.table > :not(caption) > * > * {
+    border-bottom-color: rgba(216, 217, 221, 0.85);
+}
+
+.table-hover tbody tr:hover > * {
+    background-color: rgba(242, 92, 5, 0.045);
+}
+
+/* ====================================================== */
+/* ===================== Formulaires. =================== */
+/* ====================================================== */
+
+.form-control,
+.form-select {
+    border-color: var(--wacdo-gray);
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--wacdo-orange);
+    box-shadow: 0 0 0 0.2rem rgba(242, 92, 5, 0.12);
 }
 
 /* ====================================================== */
@@ -141,9 +380,10 @@ body {
 .front-hero {
     padding: 4rem 2rem;
     background-color: var(--wacdo-white);
+    border: 1px solid rgba(216, 217, 221, 0.75);
     border-top: 4px solid var(--wacdo-orange);
     border-radius: 0.75rem;
-    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.06);
+    box-shadow: 0 0.25rem 1rem rgba(54, 31, 20, 0.08);
 }
 
 .front-hero-title {
@@ -158,36 +398,14 @@ body {
 }
 
 /* ====================================================== */
-/* ================== Cartes du front. ================== */
+/* ================= Catalogue produits. ================ */
 /* ====================================================== */
-
-.front-card {
-    height: 100%;
-    border: 1px solid rgba(216, 217, 221, 0.7);
-    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.08);
-    transition:
-        transform 0.2s ease,
-        box-shadow 0.2s ease;
-}
-
-.front-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 0.5rem 1rem rgba(54, 31, 20, 0.1);
-}
-
-.front-card .card-body {
-    padding: 1.5rem;
-}
 
 .card-img-top {
     max-height: 200px;
     width: auto;
     object-fit: contain;
 }
-
-/* ====================================================== */
-/* ================= Catalogue produits. ================ */
-/* ====================================================== */
 
 .front-product-image {
     height: 220px;
@@ -208,7 +426,7 @@ body {
 
 .front-product-image-empty {
     color: var(--wacdo-secondary);
-    background-color: #f8f9fa;
+    background-color: #F8F9FA;
 }
 
 .front-product-price {
@@ -282,7 +500,7 @@ body {
 
 .front-category-image-empty {
     color: var(--wacdo-secondary);
-    background-color: #f8f9fa;
+    background-color: #F8F9FA;
 }
 
 .front-category-title {
@@ -293,9 +511,10 @@ body {
 .front-category-header {
     padding: 2rem;
     background-color: var(--wacdo-white);
+    border: 1px solid rgba(216, 217, 221, 0.8);
     border-top: 4px solid var(--wacdo-orange);
     border-radius: 0.75rem;
-    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.08);
+    box-shadow: 0 0.25rem 1rem rgba(54, 31, 20, 0.08);
 }
 
 .front-category-detail-image {
@@ -332,11 +551,6 @@ body {
 /* ======================== Panier. ===================== */
 /* ====================================================== */
 
-.front-cart-badge {
-    color: var(--wacdo-white);
-    background-color: var(--wacdo-orange);
-}
-
 .front-cart-image {
     width: 80px;
     height: 80px;
@@ -354,7 +568,7 @@ body {
     align-items: center;
     justify-content: center;
     color: var(--wacdo-secondary);
-    background-color: #f8f9fa;
+    background-color: #F8F9FA;
     border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
@@ -425,13 +639,14 @@ body {
 }
 
 /* ====================================================== */
-/* ======================= Footer. ====================== */
+/* ======================== Footer. ===================== */
 /* ====================================================== */
 
 .front-footer {
     width: 100%;
-    background-color: var(--wacdo-white);
-    border-top: 1px solid var(--wacdo-gray);
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-brown);
+    border-top: 3px solid var(--wacdo-orange);
 }
 
 .front-footer-shell {
@@ -441,17 +656,19 @@ body {
     min-height: 64px;
     padding-left: 1rem;
     padding-right: 1rem;
-    color: var(--wacdo-secondary);
     font-size: 0.9rem;
 }
 
 .front-footer-left {
     justify-self: start;
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .front-footer-center {
     justify-self: center;
+    color: var(--wacdo-gold);
     text-align: center;
+    font-weight: 600;
 }
 
 .front-footer-right {
@@ -463,7 +680,6 @@ body {
 /* ====================================================== */
 
 @media (max-width: 991.98px) {
-
     .front-navbar-shell {
         padding-left: 1rem;
         padding-right: 1rem;
@@ -487,7 +703,6 @@ body {
 }
 
 @media (max-width: 767.98px) {
-
     .front-footer-shell {
         grid-template-columns: 1fr;
         gap: 0.4rem;
@@ -504,7 +719,6 @@ body {
 }
 
 @media (max-width: 575.98px) {
-
     .front-hero {
         padding: 2.5rem 1.25rem;
     }
