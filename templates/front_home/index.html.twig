@@ -23,7 +23,7 @@
 				</p>
 
 				<a
-					href="{{ path('app_front_produit') }}"
+					href="{{ path('app_front_categorie') }}"
 					class="btn btn-primary btn-lg"
 				>
 					Découvrir le catalogue
@@ -104,7 +104,7 @@
 						</h3>
 
 						<p class="text-muted">
-							Consultez les produits proposés par Wacdo.
+							Consultez tous les produits proposés par Wacdo.
 						</p>
 
 						<div class="mt-auto">
@@ -128,15 +128,53 @@
 
 				<div class="card front-card">
 
-					<div class="card-body">
+					<div class="card-body d-flex flex-column">
 
 						<h3 class="h5">
 							Commandes
 						</h3>
 
-						<p class="text-muted mb-0">
-							Le parcours de commande sera intégré progressivement.
-						</p>
+						{% if is_granted('ROLE_USER') %}
+
+							<p class="text-muted">
+								Consultez l'historique et le statut de vos commandes.
+							</p>
+
+							<div class="mt-auto">
+
+								<a
+									href="{{ path('app_front_commande') }}"
+									class="btn btn-outline-primary"
+								>
+									Mes commandes
+								</a>
+
+							</div>
+
+						{% elseif not app.user %}
+
+							<p class="text-muted">
+								Connectez-vous pour passer et suivre vos commandes.
+							</p>
+
+							<div class="mt-auto">
+
+								<a
+									href="{{ path('app_login') }}"
+									class="btn btn-outline-primary"
+								>
+									Se connecter
+								</a>
+
+							</div>
+
+						{% else %}
+
+							<p class="text-muted mb-0">
+								Le suivi des commandes clients est accessible depuis le dashboard.
+							</p>
+
+						{% endif %}
 
 					</div>
 
