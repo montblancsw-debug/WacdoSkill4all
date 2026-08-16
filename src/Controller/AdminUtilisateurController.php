@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/utilisateur')]
 final class AdminUtilisateurController extends AbstractController
 {
-    // Affiche, recherche et filtre les utilisateurs.
+    // Affiche, recherche, filtre et trie les utilisateurs.
     #[Route(
         name: 'app_admin_utilisateur_index',
         methods: ['GET', 'POST']
@@ -41,13 +41,24 @@ final class AdminUtilisateurController extends AbstractController
                 )
         );
 
+        $triRole = trim(
+            (string) $request
+                ->request
+                ->get(
+                    'tri_role',
+                    ''
+                )
+        );
+
         if (
             $search !== ''
             || $role !== ''
+            || $triRole !== ''
         ) {
             $utilisateurs = $utilisateurRepository->search(
                 $search,
-                $role
+                $role,
+                $triRole
             );
         } else {
             $utilisateurs = $utilisateurRepository->findBy(
@@ -64,6 +75,7 @@ final class AdminUtilisateurController extends AbstractController
                 'utilisateurs' => $utilisateurs,
                 'search' => $search,
                 'role' => $role,
+                'triRole' => $triRole,
             ]
         );
     }

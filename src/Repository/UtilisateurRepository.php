@@ -20,53 +20,64 @@ class UtilisateurRepository extends ServiceEntityRepository
         );
     }
 
-    // Recherche et filtre les utilisateurs.
+    // Recherche, filtre et trie les utilisateurs.
     public function search(
         string $value = '',
-        string $role = ''
+        string $role = '',
+        string $triRole = ''
     ): array {
-        $value = trim(
-            $value
-        );
-
-        $role = trim(
-            $role
-        );
+        $value = trim($value);
+        $role = trim($role);
+        $triRole = trim($triRole);
 
         $queryBuilder = $this
             ->createQueryBuilder('u');
 
+        // Recherche par identité, email ou ID.
         if ($value !== '') {
-            $queryBuilder
-                ->andWhere(
-                    'u.utilisateur_nom LIKE :val
-                    OR u.utilisateur_prenom LIKE :val
-                    OR u.utilisateur_email LIKE :val
-                    OR u.utilisateur_role LIKE :val'
-                )
-                ->setParameter(
-                    'val',
-                    '%' . $value . '%'
-                );
+            $conditions = $queryBuilder
+                ->expr()
+                ->orX();
 
-            // Accepte par exemple 16 ou #16.
+            $conditions->add(
+                'u.utilisateur_nom LIKE :val'
+            );
+
+            $conditions->add(
+                'u.utilisateur_prenom LIKE :val'
+            );
+
+            $conditions->add(
+                'u.utilisateur_email LIKE :val'
+            );
+
+            $queryBuilder->setParameter(
+                'val',
+                '%' . $value . '%'
+            );
+
             $idValue = ltrim(
                 $value,
                 '#'
             );
 
             if (ctype_digit($idValue)) {
-                $queryBuilder
-                    ->orWhere(
-                        'u.id = :id'
-                    )
-                    ->setParameter(
-                        'id',
-                        (int) $idValue
-                    );
+                $conditions->add(
+                    'u.id = :id'
+                );
+
+                $queryBuilder->setParameter(
+                    'id',
+                    (int) $idValue
+                );
             }
+
+            $queryBuilder->andWhere(
+                $conditions
+            );
         }
 
+        // Filtre selon le rôle.
         if ($role !== '') {
             $queryBuilder
                 ->andWhere(
@@ -78,15 +89,40 @@ class UtilisateurRepository extends ServiceEntityRepository
                 );
         }
 
+        // Trie les résultats selon le rôle.
+        if ($triRole === 'asc') {
+            $queryBuilder
+                ->orderBy(
+                    'u.utilisateur_role',
+                    'ASC'
+                )
+                ->addOrderBy(
+                    'u.utilisateur_nom',
+                    'ASC'
+                );
+        } elseif ($triRole === 'desc') {
+            $queryBuilder
+                ->orderBy(
+                    'u.utilisateur_role',
+                    'DESC'
+                )
+                ->addOrderBy(
+                    'u.utilisateur_nom',
+                    'ASC'
+                );
+        } else {
+            $queryBuilder
+                ->orderBy(
+                    'u.utilisateur_nom',
+                    'ASC'
+                )
+                ->addOrderBy(
+                    'u.utilisateur_prenom',
+                    'ASC'
+                );
+        }
+
         return $queryBuilder
-            ->orderBy(
-                'u.utilisateur_nom',
-                'ASC'
-            )
-            ->addOrderBy(
-                'u.utilisateur_prenom',
-                'ASC'
-            )
             ->getQuery()
             ->getResult();
     }

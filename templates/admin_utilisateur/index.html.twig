@@ -41,13 +41,14 @@
 
 		<div class="card-body">
 
+			{# Recherche, filtre et trie les utilisateurs. #}
 			<form
 				method="post"
 				action="{{ path('app_admin_utilisateur_index') }}"
 				class="row g-2 mb-4"
 			>
 
-				<div class="col-12 col-lg">
+				<div class="col-12 col-xl">
 
 					<input
 						type="text"
@@ -59,7 +60,7 @@
 
 				</div>
 
-				<div class="col-12 col-md-4 col-lg-3">
+				<div class="col-12 col-md-6 col-xl-3">
 
 					<select
 						name="role"
@@ -110,7 +111,40 @@
 
 				</div>
 
-				<div class="col-12 col-md-auto">
+				<div class="col-12 col-md-6 col-xl-2">
+
+					<select
+						name="tri_role"
+						class="form-select"
+					>
+
+						<option value="">
+							Tri par défaut
+						</option>
+
+						<option
+							value="asc"
+							{% if triRole|default('') == 'asc' %}
+								selected
+							{% endif %}
+						>
+							Rôles A → Z
+						</option>
+
+						<option
+							value="desc"
+							{% if triRole|default('') == 'desc' %}
+								selected
+							{% endif %}
+						>
+							Rôles Z → A
+						</option>
+
+					</select>
+
+				</div>
+
+				<div class="col-12 col-xl-auto">
 
 					<button
 						type="submit"
@@ -241,7 +275,7 @@
 									colspan="6"
 									class="text-center text-muted"
 								>
-									Aucun utilisateur ne correspond à votre recherche.
+									Aucun utilisateur ne correspond aux critères sélectionnés.
 								</td>
 
 							</tr>

@@ -1,237 +1,201 @@
-{% extends 'base-backend.html.twig' %}
+{# Liste des commandes du client. #}
+
+{% extends 'base.html.twig' %}
 
 {% block title %}
-	Gestion des commandes | Wacdo
+	Mes commandes | Wacdo
 {% endblock %}
 
 {% block body %}
 
-	<div class="d-flex justify-content-between align-items-center mb-4">
+	<section class="front-section">
 
-		<div>
+		<div class="mb-4">
 
-			<h1 class="h3 mb-1">
-				Gestion des commandes
+			<h1 class="h2 mb-1">
+				Mes commandes
 			</h1>
 
 			<p class="text-muted mb-0">
-				Consultez et gérez les commandes Wacdo.
+				Consultez l'historique et le statut de vos commandes Wacdo.
 			</p>
 
 		</div>
 
-		<a
-			href="{{ path('app_admin_commande_new') }}"
-			class="btn btn-primary"
-		>
-			Ajouter une commande
-		</a>
+		<div class="card front-card">
 
-	</div>
+			<div class="card-body">
 
-	<div class="card">
+				<div class="table-responsive">
 
-		<div class="card-header">
+					<table class="table table-hover align-middle">
 
-			<h5 class="card-title mb-0">
-				Liste des commandes
-			</h5>
-
-		</div>
-
-		<div class="card-body">
-
-			<form
-				method="post"
-				action="{{ path('app_admin_commande_index') }}"
-				class="row g-2 mb-4"
-			>
-
-				<div class="col">
-
-					<input
-						type="text"
-						name="search"
-						class="form-control"
-						placeholder="Rechercher par numéro, utilisateur ou statut..."
-						value="{{ search|default('') }}"
-					>
-
-				</div>
-
-				<div class="col-auto">
-
-					<button
-						type="submit"
-						class="btn btn-primary"
-					>
-						Rechercher
-					</button>
-
-				</div>
-
-			</form>
-
-			<div class="table-responsive">
-
-				<table class="table table-hover align-middle">
-
-					<thead>
-						<tr>
-							<th>N°</th>
-							<th>Date</th>
-							<th>Utilisateur</th>
-							<th>Statut</th>
-							<th>Articles</th>
-							<th>Total</th>
-							<th class="text-end">
-								Actions
-							</th>
-						</tr>
-					</thead>
-
-					<tbody>
-
-						{% for commande in commandes %}
+						<thead>
 
 							<tr>
-
-								<td>
-									<strong>
-										#{{ commande.id }}
-									</strong>
-								</td>
-
-								<td>
-									{{ commande.commandeDate
-										? commande.commandeDate|date('d/m/Y H:i')
-										: 'Non renseignée'
-									}}
-								</td>
-
-								<td>
-
-									{% if commande.utilisateur %}
-
-										{{ commande.utilisateur.utilisateurPrenom }}
-										{{ commande.utilisateur.utilisateurNom }}
-
-									{% else %}
-
-										<span class="text-muted">
-											Utilisateur supprimé
-										</span>
-
-									{% endif %}
-
-								</td>
-
-								<td>
-
-									{% if commande.commandeStatut == 'en attente' %}
-
-										<span class="badge bg-warning">
-											En attente
-										</span>
-
-									{% elseif commande.commandeStatut == 'en préparation' %}
-
-										<span class="badge bg-info">
-											En préparation
-										</span>
-
-									{% elseif commande.commandeStatut == 'prête' %}
-
-										<span class="badge bg-primary">
-											Prête
-										</span>
-
-									{% elseif commande.commandeStatut == 'en livraison' %}
-
-										<span class="badge bg-info">
-											En livraison
-										</span>
-
-									{% elseif commande.commandeStatut == 'livrée' %}
-
-										<span class="badge bg-success">
-											Livrée
-										</span>
-
-									{% elseif commande.commandeStatut == 'annulée' %}
-
-										<span class="badge bg-danger">
-											Annulée
-										</span>
-
-									{% else %}
-
-										<span class="badge bg-secondary">
-											{{ commande.commandeStatut }}
-										</span>
-
-									{% endif %}
-
-								</td>
-
-								<td>
-									{{ commande.details|length }}
-								</td>
-
-								<td>
-
-									<strong>
-										{{ commande.commandeTotal|number_format(2, ',', ' ') }}
-										€
-									</strong>
-
-								</td>
-
-								<td class="text-end">
-
-									<a
-										href="{{ path('app_admin_commande_show', {'id': commande.id}) }}"
-										class="btn btn-info btn-sm"
-									>
-										Voir
-									</a>
-
-									<a
-										href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
-										class="btn btn-warning btn-sm"
-									>
-										Modifier
-									</a>
-
-									{{ include('admin_commande/_delete_form.html.twig') }}
-
-								</td>
-
+								<th>Commande</th>
+								<th>Date</th>
+								<th>Articles</th>
+								<th>Statut</th>
+								<th>Total</th>
+								<th class="text-end">
+									Actions
+								</th>
 							</tr>
 
-						{% else %}
+						</thead>
 
-							<tr>
+						<tbody>
 
-								<td
-									colspan="7"
-									class="text-center text-muted"
-								>
-									Aucune commande ne correspond à votre recherche.
-								</td>
+							{% for commande in commandes %}
 
-							</tr>
+								<tr>
 
-						{% endfor %}
+									<td>
 
-					</tbody>
+										<strong>
+											#{{ commande.id }}
+										</strong>
 
-				</table>
+									</td>
+
+									<td>
+										{{ commande.commandeDate
+											? commande.commandeDate|date('d/m/Y à H:i')
+											: 'Non renseignée'
+										}}
+									</td>
+
+									<td>
+										{{ commande.details|length }}
+									</td>
+
+									<td>
+
+										{% if commande.commandeStatut == 'en attente' %}
+
+											<span class="badge bg-warning">
+												En attente
+											</span>
+
+										{% elseif commande.commandeStatut == 'en préparation' %}
+
+											<span class="badge bg-info">
+												En préparation
+											</span>
+
+										{% elseif commande.commandeStatut == 'prête' %}
+
+											<span class="badge bg-primary">
+												Prête
+											</span>
+
+										{% elseif commande.commandeStatut == 'en livraison' %}
+
+											<span class="badge bg-info">
+												En livraison
+											</span>
+
+										{% elseif commande.commandeStatut == 'livrée' %}
+
+											<span class="badge bg-success">
+												Livrée
+											</span>
+
+										{% elseif commande.commandeStatut == 'annulée' %}
+
+											<span class="badge bg-danger">
+												Annulée
+											</span>
+
+										{% endif %}
+
+									</td>
+
+									<td>
+
+										<strong>
+											{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+											€
+										</strong>
+
+									</td>
+
+									<td class="text-end">
+
+										<a
+											href="{{ path('app_front_commande_show', {'id': commande.id}) }}"
+											class="btn btn-outline-primary btn-sm"
+										>
+											Voir le détail
+										</a>
+
+										{% if commande.commandeStatut in ['en attente', 'en préparation'] %}
+
+											<a
+												href="{{ path('app_front_commande_edit', {'id': commande.id}) }}"
+												class="btn btn-primary btn-sm"
+											>
+												Modifier
+											</a>
+
+										{% endif %}
+
+										{% if commande.commandeStatut in ['en attente', 'en préparation', 'prête'] %}
+
+											<form
+												method="post"
+												action="{{ path('app_front_commande_cancel', {'id': commande.id}) }}"
+												class="d-inline"
+												onsubmit="return confirm('Voulez-vous vraiment annuler cette commande ?');"
+											>
+
+												<input
+													type="hidden"
+													name="_token"
+													value="{{ csrf_token('front_commande_cancel' ~ commande.id) }}"
+												>
+
+												<button
+													type="submit"
+													class="btn btn-danger btn-sm"
+												>
+													Annuler
+												</button>
+
+											</form>
+
+										{% endif %}
+
+									</td>
+
+								</tr>
+
+							{% else %}
+
+								<tr>
+
+									<td
+										colspan="6"
+										class="text-center text-muted"
+									>
+										Vous n'avez encore aucune commande.
+									</td>
+
+								</tr>
+
+							{% endfor %}
+
+						</tbody>
+
+					</table>
+
+				</div>
 
 			</div>
 
 		</div>
 
-	</div>
+	</section>
 
 {% endblock %}

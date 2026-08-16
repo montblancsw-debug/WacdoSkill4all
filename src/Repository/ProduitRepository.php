@@ -21,38 +21,96 @@ class ProduitRepository extends ServiceEntityRepository
         );
     }
 
-    // Recherche un produit par son nom ou son ID.
+    // Recherche et filtre les produits.
     public function search(
-        string $value
+        string $value = '',
+        string $stock = '',
+        string $categorieId = ''
     ): array {
-        $value = trim(
-            $value
-        );
+        $value = trim($value);
+        $stock = trim($stock);
+        $categorieId = trim($categorieId);
 
         $queryBuilder = $this
             ->createQueryBuilder('p')
-            ->andWhere(
-                'p.produit_nom LIKE :val'
-            )
-            ->setParameter(
+            ->leftJoin(
+                'p.categorie',
+                'c'
+            );
+
+        // Recherche par nom ou ID.
+        if ($value !== '') {
+            $conditions = $queryBuilder
+                ->expr()
+                ->orX();
+
+            $conditions->add(
+                $queryBuilder
+                    ->expr()
+                    ->like(
+                        'p.produit_nom',
+                        ':val'
+                    )
+            );
+
+            $queryBuilder->setParameter(
                 'val',
                 '%' . $value . '%'
             );
 
-        // Accepte par exemple 20 ou #20.
-        $idValue = ltrim(
-            $value,
-            '#'
-        );
+            $idValue = ltrim(
+                $value,
+                '#'
+            );
 
-        if (ctype_digit($idValue)) {
-            $queryBuilder
-                ->orWhere(
-                    'p.id = :id'
-                )
-                ->setParameter(
+            if (ctype_digit($idValue)) {
+                $conditions->add(
+                    $queryBuilder
+                        ->expr()
+                        ->eq(
+                            'p.id',
+                            ':id'
+                        )
+                );
+
+                $queryBuilder->setParameter(
                     'id',
                     (int) $idValue
+                );
+            }
+
+            $queryBuilder->andWhere(
+                $conditions
+            );
+        }
+
+        // Filtre selon la catégorie.
+        if (
+            $categorieId !== ''
+            && ctype_digit($categorieId)
+        ) {
+            $queryBuilder
+                ->andWhere(
+                    'c.id = :categorieId'
+                )
+                ->setParameter(
+                    'categorieId',
+                    (int) $categorieId
+                );
+        }
+
+        // Filtre selon la disponibilité.
+        if (
+            $stock === '1'
+            || $stock === '0'
+        ) {
+            $queryBuilder
+                ->andWhere(
+                    'p.produit_stock = :stock'
+                )
+                ->setParameter(
+                    'stock',
+                    $stock === '1'
                 );
         }
 

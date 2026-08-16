@@ -9,6 +9,7 @@
 	<div class="d-flex justify-content-between align-items-center mb-4">
 
 		<div>
+
 			<h1 class="h3 mb-1">
 				Gestion des produits
 			</h1>
@@ -16,6 +17,7 @@
 			<p class="text-muted mb-0">
 				Consultez et gérez les produits disponibles chez Wacdo.
 			</p>
+
 		</div>
 
 		<a
@@ -39,29 +41,91 @@
 
 		<div class="card-body">
 
+			{# Recherche et filtre les produits. #}
 			<form
 				method="post"
 				action="{{ path('app_admin_produit_index') }}"
 				class="row g-2 mb-4"
 			>
 
-				<div class="col">
+				<div class="col-12 col-xl">
 
 					<input
 						type="text"
 						name="search"
 						class="form-control"
-						placeholder="Rechercher un produit..."
+						placeholder="Rechercher par ID ou nom..."
 						value="{{ search|default('') }}"
 					>
 
 				</div>
 
-				<div class="col-auto">
+				<div class="col-12 col-md-6 col-xl-3">
+
+					<select
+						name="categorie"
+						class="form-select"
+					>
+
+						<option value="">
+							Toutes les catégories
+						</option>
+
+						{% for categorie in categories %}
+
+							<option
+								value="{{ categorie.id }}"
+								{% if categorieSelectionnee|default('') == categorie.id ~ '' %}
+									selected
+								{% endif %}
+							>
+								{{ categorie.categorieNom }}
+							</option>
+
+						{% endfor %}
+
+					</select>
+
+				</div>
+
+				<div class="col-12 col-md-6 col-xl-2">
+
+					<select
+						name="stock"
+						class="form-select"
+					>
+
+						<option value="">
+							Tous les stocks
+						</option>
+
+						<option
+							value="1"
+							{% if stock|default('') == '1' %}
+								selected
+							{% endif %}
+						>
+							Disponible
+						</option>
+
+						<option
+							value="0"
+							{% if stock|default('') == '0' %}
+								selected
+							{% endif %}
+						>
+							Indisponible
+						</option>
+
+					</select>
+
+				</div>
+
+				<div class="col-12 col-xl-auto">
 
 					<button
 						type="submit"
-						class="btn btn-primary"
+						class="btn btn-primary w-100"
 					>
 						Rechercher
 					</button>
@@ -75,6 +139,7 @@
 				<table class="table table-hover align-middle">
 
 					<thead>
+
 						<tr>
 							<th>ID</th>
 							<th>Nom</th>
@@ -82,10 +147,12 @@
 							<th>Prix</th>
 							<th>Stock</th>
 							<th>Image</th>
+
 							<th class="text-end">
 								Actions
 							</th>
 						</tr>
+
 					</thead>
 
 					<tbody>
@@ -99,9 +166,11 @@
 								</td>
 
 								<td>
+
 									<strong>
 										{{ produit.produitNom }}
 									</strong>
+
 								</td>
 
 								<td>
@@ -194,7 +263,7 @@
 									colspan="7"
 									class="text-center text-muted"
 								>
-									Aucun produit ne correspond à votre recherche.
+									Aucun produit ne correspond aux critères sélectionnés.
 								</td>
 
 							</tr>

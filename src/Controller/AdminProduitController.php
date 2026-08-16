@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Produit;
 use App\Form\ProduitType;
+use App\Repository\CategorieRepository;
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,24 +15,52 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/produit')]
 final class AdminProduitController extends AbstractController
 {
-    // Affiche et recherche les produits.
+    // Affiche, recherche et filtre les produits.
     #[Route(
         name: 'app_admin_produit_index',
         methods: ['GET', 'POST']
     )]
     public function index(
         ProduitRepository $produitRepository,
+        CategorieRepository $categorieRepository,
         Request $request
     ): Response {
         $search = trim(
             (string) $request
                 ->request
-                ->get('search', '')
+                ->get(
+                    'search',
+                    ''
+                )
         );
 
-        if ($search !== '') {
+        $stock = trim(
+            (string) $request
+                ->request
+                ->get(
+                    'stock',
+                    ''
+                )
+        );
+
+        $categorieId = trim(
+            (string) $request
+                ->request
+                ->get(
+                    'categorie',
+                    ''
+                )
+        );
+
+        if (
+            $search !== ''
+            || $stock !== ''
+            || $categorieId !== ''
+        ) {
             $produits = $produitRepository->search(
-                $search
+                $search,
+                $stock,
+                $categorieId
             );
         } else {
             $produits = $produitRepository->findBy(
@@ -46,7 +75,15 @@ final class AdminProduitController extends AbstractController
             'admin_produit/index.html.twig',
             [
                 'produits' => $produits,
+                'categories' => $categorieRepository->findBy(
+                    [],
+                    [
+                        'categorie_nom' => 'ASC',
+                    ]
+                ),
                 'search' => $search,
+                'stock' => $stock,
+                'categorieSelectionnee' => $categorieId,
             ]
         );
     }
@@ -72,7 +109,10 @@ final class AdminProduitController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+        ) {
             $entityManager->persist(
                 $produit
             );
@@ -137,7 +177,10 @@ final class AdminProduitController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+        ) {
             $entityManager->flush();
 
             $this->addFlash(
@@ -175,7 +218,9 @@ final class AdminProduitController extends AbstractController
         if (
             $this->isCsrfTokenValid(
                 'delete' . $produit->getId(),
-                $request->getPayload()->getString('_token')
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             $entityManager->remove(
