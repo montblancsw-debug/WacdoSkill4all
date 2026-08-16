@@ -156,14 +156,11 @@
 
 								{% if detail.produit.produitImage %}
 
-									<img
-										src="{{ asset(
-											'images/produits/'
-											~ detail.produit.produitImage
-										) }}"
-										alt="{{ detail.produit.produitNom }}"
-										class="wacdo-order-product-image"
-									>
+								<img
+									src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
+									alt="{{ detail.produit.produitNom }}"
+									class="wacdo-order-product-image"
+								>
 
 								{% else %}
 

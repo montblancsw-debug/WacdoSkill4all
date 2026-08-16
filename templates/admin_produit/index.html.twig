@@ -5,22 +5,30 @@
 {% endblock %}
 
 {% block body %}
+
 	<div class="d-flex justify-content-between align-items-center mb-4">
+
 		<div>
 			<h1 class="h3 mb-1">
 				Gestion des produits
 			</h1>
+
 			<p class="text-muted mb-0">
 				Consultez et gérez les produits disponibles chez Wacdo.
 			</p>
 		</div>
 
-		<a href="{{ path('app_admin_produit_new') }}" class="btn btn-primary">
+		<a
+			href="{{ path('app_admin_produit_new') }}"
+			class="btn btn-primary"
+		>
 			Ajouter un produit
 		</a>
+
 	</div>
 
 	<div class="card">
+
 		<div class="card-header">
 			<h5 class="card-title mb-0">
 				Liste des produits
@@ -28,8 +36,11 @@
 		</div>
 
 		<div class="card-body">
+
 			<div class="table-responsive">
+
 				<table class="table table-hover align-middle">
+
 					<thead>
 						<tr>
 							<th>ID</th>
@@ -38,13 +49,18 @@
 							<th>Prix</th>
 							<th>Stock</th>
 							<th>Image</th>
-							<th class="text-end">Actions</th>
+							<th class="text-end">
+								Actions
+							</th>
 						</tr>
 					</thead>
 
 					<tbody>
+
 						{% for produit in produits %}
+
 							<tr>
+
 								<td>
 									{{ produit.id }}
 								</td>
@@ -56,13 +72,19 @@
 								</td>
 
 								<td>
+
 									{% if produit.categorie %}
+
 										{{ produit.categorie.categorieNom }}
+
 									{% else %}
+
 										<span class="badge bg-secondary">
 											Sans catégorie
 										</span>
+
 									{% endif %}
+
 								</td>
 
 								<td>
@@ -71,33 +93,46 @@
 								</td>
 
 								<td>
+
 									{% if produit.produitStock %}
+
 										<span class="badge bg-success">
 											Disponible
 										</span>
+
 									{% else %}
+
 										<span class="badge bg-danger">
 											Indisponible
 										</span>
+
 									{% endif %}
+
 								</td>
 
 								<td>
+
 									{% if produit.produitImage %}
+
 										<img
-											src="{{ asset('images/produits/' ~ produit.produitImage) }}"
+											src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
 											alt="{{ produit.produitNom }}"
 											class="img-fluid rounded"
 											style="max-width: 80px; max-height: 80px;"
 										>
+
 									{% else %}
+
 										<span class="text-muted">
 											Aucune image
 										</span>
+
 									{% endif %}
+
 								</td>
 
 								<td class="text-end">
+
 									<a
 										href="{{ path('app_admin_produit_show', {'id': produit.id}) }}"
 										class="btn btn-info btn-sm"
@@ -113,19 +148,32 @@
 									</a>
 
 									{{ include('admin_produit/_delete_form.html.twig') }}
+
 								</td>
+
 							</tr>
 
 						{% else %}
+
 							<tr>
-								<td colspan="7" class="text-center text-muted">
+								<td
+									colspan="7"
+									class="text-center text-muted"
+								>
 									Aucun produit enregistré.
 								</td>
 							</tr>
+
 						{% endfor %}
+
 					</tbody>
+
 				</table>
+
 			</div>
+
 		</div>
+
 	</div>
+
 {% endblock %}

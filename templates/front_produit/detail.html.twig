@@ -11,15 +11,18 @@
 	<section class="front-section">
 
 		<div class="mb-4">
+
 			<a
 				href="{{ path('app_front_produit') }}"
 				class="btn btn-secondary"
 			>
 				Retour au catalogue
 			</a>
+
 		</div>
 
 		<div class="card front-card">
+
 			<div class="card-body p-4">
 
 				<div class="row g-5 align-items-start">
@@ -27,17 +30,23 @@
 					<div class="col-12 col-lg-5">
 
 						{% if produit.produitImage %}
+
 							<div class="front-product-detail-image">
+
 								<img
-									src="{{ asset('images/produits/' ~ produit.produitImage) }}"
+									src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
 									alt="{{ produit.produitNom }}"
 									class="img-fluid"
 								>
+
 							</div>
+
 						{% else %}
+
 							<div class="front-product-detail-image front-product-image-empty">
 								Aucune image
 							</div>
+
 						{% endif %}
 
 					</div>
@@ -45,11 +54,15 @@
 					<div class="col-12 col-lg-7">
 
 						{% if produit.categorie %}
+
 							<div class="mb-3">
+
 								<span class="badge text-bg-secondary">
 									{{ produit.categorie.categorieNom }}
 								</span>
+
 							</div>
+
 						{% endif %}
 
 						<h1 class="display-6 fw-bold mb-3">
@@ -64,13 +77,17 @@
 							</strong>
 
 							{% if produit.produitStock %}
+
 								<span class="badge text-bg-success">
 									Disponible
 								</span>
+
 							{% else %}
+
 								<span class="badge text-bg-danger">
 									Indisponible
 								</span>
+
 							{% endif %}
 
 						</div>
@@ -82,11 +99,15 @@
 							</h2>
 
 							{% if produit.produitDescription %}
+
 								{{ produit.produitDescription|raw }}
+
 							{% else %}
+
 								<p class="text-muted">
 									Aucune description pour ce produit.
 								</p>
+
 							{% endif %}
 
 						</div>
@@ -96,6 +117,7 @@
 				</div>
 
 			</div>
+
 		</div>
 
 	</section>

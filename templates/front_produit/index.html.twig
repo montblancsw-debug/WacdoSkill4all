@@ -9,7 +9,9 @@
 {% block body %}
 
 	<section class="front-section">
+
 		<div class="mb-4">
+
 			<h1 class="h2 mb-2">
 				Notre catalogue
 			</h1>
@@ -17,76 +19,98 @@
 			<p class="text-muted mb-0">
 				Découvrez les produits proposés par Wacdo.
 			</p>
+
 		</div>
 
 		<div class="row g-4">
+
 			{% for produit in produits %}
 
 				<div class="col-12 col-sm-6 col-lg-4">
+
 					<div class="card front-card">
 
-						{# Affiche l'image du produit. #}
 						{% if produit.produitImage %}
+
 							<div class="front-product-image">
+
 								<img
-									src="{{ asset('images/produits/' ~ produit.produitImage) }}"
+									src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
 									class="card-img-top"
 									alt="{{ produit.produitNom }}"
 								>
+
 							</div>
+
 						{% else %}
+
 							<div class="front-product-image front-product-image-empty">
 								Aucune image
 							</div>
+
 						{% endif %}
 
 						<div class="card-body d-flex flex-column">
 
-							{# Affiche la catégorie du produit. #}
 							{% if produit.categorie %}
+
 								<div class="mb-2">
+
 									<span class="badge text-bg-secondary">
 										{{ produit.categorie.categorieNom }}
 									</span>
+
 								</div>
+
 							{% endif %}
 
 							<h2 class="h5 card-title">
 								{{ produit.produitNom }}
 							</h2>
 
-							{# Affiche une partie de la description. #}
 							{% if produit.produitDescription %}
+
 								<p class="card-text text-muted">
+
 									{{ produit.produitDescription|striptags|slice(0, 120) }}
 
 									{% if produit.produitDescription|striptags|length > 120 %}
 										...
 									{% endif %}
+
 								</p>
+
 							{% else %}
+
 								<p class="card-text text-muted">
 									Aucune description.
 								</p>
+
 							{% endif %}
 
 							<div class="mt-auto">
 
 								<div class="d-flex justify-content-between align-items-center mb-3">
+
 									<strong class="front-product-price">
 										{{ produit.produitPrix|number_format(2, ',', ' ') }}
 										€
 									</strong>
 
 									{% if produit.produitStock %}
+
 										<span class="badge text-bg-success">
 											Disponible
 										</span>
+
 									{% else %}
+
 										<span class="badge text-bg-danger">
 											Indisponible
 										</span>
+
 									{% endif %}
+
 								</div>
 
 								<a
@@ -97,20 +121,27 @@
 								</a>
 
 							</div>
+
 						</div>
+
 					</div>
+
 				</div>
 
 			{% else %}
 
 				<div class="col-12">
+
 					<div class="alert alert-info mb-0">
 						Aucun produit n'est actuellement disponible dans le catalogue.
 					</div>
+
 				</div>
 
 			{% endfor %}
+
 		</div>
+
 	</section>
 
 {% endblock %}
