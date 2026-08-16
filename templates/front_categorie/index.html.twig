@@ -1,0 +1,119 @@
+{# Liste publique des catégories Wacdo. #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Catégories | Wacdo
+{% endblock %}
+
+{% block body %}
+
+	<section class="front-section">
+
+		<div class="mb-4">
+			<h1 class="h2 mb-2">
+				Nos catégories
+			</h1>
+
+			<p class="text-muted mb-0">
+				Découvrez les produits Wacdo classés par catégorie.
+			</p>
+		</div>
+
+		<div class="row g-4">
+
+			{% for categorie in categories %}
+
+				<div class="col-12 col-md-6 col-lg-4">
+
+					<div class="card front-card front-category-card">
+
+						{% if categorie.categorieNomdefichier %}
+
+							<div class="front-category-image">
+
+								<img
+									src="{{ asset('images/categories/' ~ categorie.categorieNomdefichier) }}?v={{ categorie.updatedAt ? categorie.updatedAt|date('U') : '1' }}"
+									alt="{{ categorie.categorieNom }}"
+								>
+
+							</div>
+
+						{% else %}
+
+							<div class="front-category-image front-category-image-empty">
+								Aucune image
+							</div>
+
+						{% endif %}
+
+						<div class="card-body d-flex flex-column">
+
+							<h2 class="h4 front-category-title">
+								{{ categorie.categorieNom }}
+							</h2>
+
+							{% if categorie.categorieDescription %}
+
+								<p class="text-muted">
+									{{ categorie.categorieDescription
+										|striptags
+										|slice(0, 140)
+									}}
+
+									{% if
+										categorie.categorieDescription
+											|striptags
+											|length > 140
+									%}
+										...
+									{% endif %}
+								</p>
+
+							{% else %}
+
+								<p class="text-muted">
+									Découvrez les produits de cette catégorie.
+								</p>
+
+							{% endif %}
+
+							<div class="mt-auto">
+
+								<a
+									href="{{ path(
+										'app_front_categorie_detail',
+										{
+											'id': categorie.id
+										}
+									) }}"
+									class="btn btn-primary w-100"
+								>
+									Voir les produits
+								</a>
+
+							</div>
+
+						</div>
+
+					</div>
+
+				</div>
+
+			{% else %}
+
+				<div class="col-12">
+
+					<div class="alert alert-info">
+						Aucune catégorie n'est actuellement disponible.
+					</div>
+
+				</div>
+
+			{% endfor %}
+
+		</div>
+
+	</section>
+
+{% endblock %}

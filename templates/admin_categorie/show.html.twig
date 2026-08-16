@@ -95,10 +95,10 @@
 						<td>
 							{% if categorie.categorieNomdefichier %}
 								<img
-									src="{{ asset('images/categories/' ~ categorie.categorieNomdefichier) }}"
-									alt="{{ categorie.categorieNom }}"
-									class="img-fluid rounded"
-									style="max-width: 300px; max-height: 300px;"
+								src="{{ asset('images/categories/' ~ categorie.categorieNomdefichier) }}?v={{ categorie.updatedAt ? categorie.updatedAt|date('U') : '1' }}"
+								alt="{{ categorie.categorieNom }}"
+								class="img-fluid rounded"
+								style="max-width: 300px; max-height: 300px;"
 								>
 							{% else %}
 								<span class="text-muted">
