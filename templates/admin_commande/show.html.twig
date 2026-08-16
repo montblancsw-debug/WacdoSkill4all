@@ -1,208 +1,159 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-    Commande #{{ commande.id }} | Wacdo
+	Commande #{{ commande.id }} | Wacdo
 {% endblock %}
 
 {% block body %}
 
-    {# Affiche l'en-tête de la commande. #}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1">
-                Commande #{{ commande.id }}
-            </h1>
-            <p class="text-muted mb-0">
-                Détail de la commande
-            </p>
-        </div>
-        <div>
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<div>
+			<h1 class="h3 mb-1">
+				Commande #{{ commande.id }}
+			</h1>
 
-            {# Ouvre la modification. #}
-            <a
-                href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
-                class="btn btn-warning"
-            >
-                Modifier
-            </a>
+			<p class="text-muted mb-0">
+				Détail de la commande
+			</p>
+		</div>
 
-            {# Permet de supprimer la commande. #}
-            {{ include('admin_commande/_delete_form.html.twig') }}
-        </div>
-    </div>
+		<div class="d-flex gap-2">
 
-    {# Affiche les informations générales. #}
-    <div class="card mb-4">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                Informations de la commande
-            </h5>
-        </div>
-        <div class="card-body">
-            <table class="table">
-                <tbody>
+			<a
+				href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
+				class="btn btn-warning"
+			>
+				Modifier
+			</a>
 
-                    <tr>
-                        <th style="width: 250px;">
-                            Numéro
-                        </th>
-                        <td>
-                            #{{ commande.id }}
-                        </td>
-                    </tr>
+			{{ include('admin_commande/_delete_form.html.twig') }}
 
-                    <tr>
-                        <th>
-                            Date
-                        </th>
-                        <td>
-                            {{ commande.commandeDate
-                                ? commande.commandeDate|date('d/m/Y à H:i')
-                                : 'Non renseignée'
-                            }}
-                        </td>
-                    </tr>
+		</div>
+	</div>
 
-                    <tr>
-                        <th>
-                            Utilisateur
-                        </th>
-                        <td>
-                            {% if commande.utilisateur %}
-                                {{ commande.utilisateur.utilisateurPrenom }}
-                                {{ commande.utilisateur.utilisateurNom }}
-                                <br>
-                                <span class="text-muted">
-                                    {{ commande.utilisateur.utilisateurEmail }}
-                                </span>
-                            {% else %}
-                                <span class="text-muted">
-                                    Utilisateur supprimé
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
+	<div class="card">
+		<div class="card-header">
+			<h5 class="card-title mb-0">
+				Informations de la commande
+			</h5>
+		</div>
 
-                    <tr>
-                        <th>
-                            Statut
-                        </th>
+		<div class="card-body">
+			<table class="table align-middle">
+				<tbody>
 
-                        <td>
-                            {% if commande.commandeStatut == 'en attente' %}
-                                <span class="badge bg-warning">
-                                    En attente
-                                </span>
-                            {% elseif commande.commandeStatut == 'préparée' %}
-                                <span class="badge bg-info">
-                                    Préparée
-                                </span>
-                            {% elseif commande.commandeStatut == 'livrée' %}
-                                <span class="badge bg-success">
-                                    Livrée
-                                </span>
-                            {% else %}
-                                <span class="badge bg-secondary">
-                                    {{ commande.commandeStatut }}
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
+					<tr>
+						<th style="width: 250px;">
+							Numéro
+						</th>
+						<td>
+							#{{ commande.id }}
+						</td>
+					</tr>
 
-                    <tr>
-                        <th>
-                            Total
-                        </th>
-                        <td>
-                            <strong>
-                                {{ commande.commandeTotal|number_format(2, ',', ' ') }}
-                                €
-                            </strong>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+					<tr>
+						<th>
+							Date
+						</th>
 
-    {# Affiche les produits présents dans la commande. #}
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                Détail des articles
-            </h5>
-        </div>
+						<td>
+							{{ commande.commandeDate
+								? commande.commandeDate|date('d/m/Y à H:i')
+								: 'Non renseignée'
+							}}
+						</td>
+					</tr>
 
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Produit</th>
-                            <th>Quantité</th>
-                            <th>Prix unitaire</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for detail in commande.details %}
-                            <tr>
+					<tr>
+						<th>
+							Utilisateur
+						</th>
 
-                                {# Affiche le produit commandé. #}
-                                <td>
-                                    {% if detail.produit %}
-                                        <strong>
-                                            {{ detail.produit.produitNom }}
-                                        </strong>
-                                    {% else %}
-                                        <span class="text-muted">
-                                            Produit supprimé
-                                        </span>
-                                    {% endif %}
-                                </td>
+						<td>
+							{% if commande.utilisateur %}
 
-                                {# Affiche la quantité commandée. #}
-                                <td>
-                                    {{ detail.detailQuantite }}
-                                </td>
+								{{ commande.utilisateur.utilisateurPrenom }}
+								{{ commande.utilisateur.utilisateurNom }}
 
-                                {# Affiche le prix unitaire. #}
-                                <td>
-                                    {{ detail.detailUnitaire|number_format(2, ',', ' ') }}
-                                    €
-                                </td>
+								<br>
 
-                                {# Affiche le total de la ligne. #}
-                                <td>
-                                    <strong>
-                                        {{ detail.detailTotal|number_format(2, ',', ' ') }}
-                                        €
-                                    </strong>
-                                </td>
-                            </tr>
-                        {% else %}
-                            <tr>
-                                <td
-                                    colspan="4"
-                                    class="text-center text-muted"
-                                >
-                                    Aucun article dans cette commande.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+								<span class="text-muted">
+									{{ commande.utilisateur.utilisateurEmail }}
+								</span>
 
-    {# Retourne vers la liste. #}
-    <div class="mt-3">
-        <a
-            href="{{ path('app_admin_commande_index') }}"
-            class="btn btn-secondary"
-        >
-            Retour à la liste
-        </a>
-    </div>
+							{% else %}
+
+								<span class="text-muted">
+									Utilisateur supprimé
+								</span>
+
+							{% endif %}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Statut
+						</th>
+
+						<td>
+
+							{% if commande.commandeStatut == 'en attente' %}
+
+								<span class="badge bg-warning">
+									En attente
+								</span>
+
+							{% elseif commande.commandeStatut == 'préparée' %}
+
+								<span class="badge bg-info">
+									Préparée
+								</span>
+
+							{% elseif commande.commandeStatut == 'livrée' %}
+
+								<span class="badge bg-success">
+									Livrée
+								</span>
+
+							{% else %}
+
+								<span class="badge bg-secondary">
+									{{ commande.commandeStatut }}
+								</span>
+
+							{% endif %}
+
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Total
+						</th>
+
+						<td>
+							<strong>
+								{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+								€
+							</strong>
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	{{ include('admin_commande/_details.html.twig') }}
+
+	<div class="mt-3">
+		<a
+			href="{{ path('app_admin_commande_index') }}"
+			class="btn btn-secondary"
+		>
+			Retour à la liste
+		</a>
+	</div>
+
 {% endblock %}

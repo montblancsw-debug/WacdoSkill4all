@@ -1,0 +1,91 @@
+{# Articles présents dans la commande. #}
+
+<div class="card mt-4">
+	<div class="card-header">
+		<h5 class="card-title mb-0">
+			Détail des articles
+		</h5>
+	</div>
+
+	<div class="card-body">
+		<div class="table-responsive">
+
+			<table class="table table-hover align-middle">
+				<thead>
+					<tr>
+						<th>Image</th>
+						<th>Produit</th>
+						<th>Quantité</th>
+						<th>Prix unitaire</th>
+						<th>Total</th>
+					</tr>
+				</thead>
+
+				<tbody>
+
+					{% for detail in commande.details %}
+						<tr>
+
+							<td>
+								{% if detail.produit and detail.produit.produitImage %}
+									<img
+										src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}"
+										alt="{{ detail.produit.produitNom }}"
+										class="wacdo-order-product-image"
+									>
+								{% else %}
+									<div class="wacdo-order-product-placeholder">
+										—
+									</div>
+								{% endif %}
+							</td>
+
+							<td>
+								{% if detail.produit %}
+									<strong>
+										{{ detail.produit.produitNom }}
+									</strong>
+								{% else %}
+									<span class="text-muted">
+										Produit supprimé
+									</span>
+								{% endif %}
+							</td>
+
+							<td>
+								{{ detail.detailQuantite }}
+							</td>
+
+							<td>
+								{{ detail.detailUnitaire|number_format(2, ',', ' ') }}
+								€
+							</td>
+
+							<td>
+								<strong>
+									{{ detail.detailTotal|number_format(2, ',', ' ') }}
+									€
+								</strong>
+							</td>
+
+						</tr>
+
+					{% else %}
+
+						<tr>
+							<td
+								colspan="5"
+								class="text-center text-muted"
+							>
+								Aucun article dans cette commande.
+							</td>
+						</tr>
+
+					{% endfor %}
+
+				</tbody>
+			</table>
+
+		</div>
+	</div>
+</div>

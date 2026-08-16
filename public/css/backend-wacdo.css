@@ -100,3 +100,39 @@ body {
 .table-hover tbody tr:hover {
     background-color: rgba(242, 92, 5, 0.04);
 }
+
+/* ====================================================== */
+/* ================= Images du back-office. ============= */
+/* ====================================================== */
+
+.wacdo-order-product-image {
+    width: 72px;
+    height: 72px;
+    object-fit: contain;
+    padding: 0.35rem;
+    background-color: #FFFFFF;
+    border: 1px solid #D8D9DD;
+    border-radius: 0.5rem;
+}
+
+.wacdo-order-product-placeholder {
+    width: 72px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6C757D;
+    background-color: #F5F6F8;
+    border: 1px solid #D8D9DD;
+    border-radius: 0.5rem;
+}
+
+.wacdo-edit-image-preview {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    padding: 0.5rem;
+    background-color: #FFFFFF;
+    border: 1px solid #D8D9DD;
+    border-radius: 0.5rem;
+}

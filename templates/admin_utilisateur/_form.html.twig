@@ -1,64 +1,76 @@
 {# Formulaire du CRUD Utilisateur. #}
 
-{{ form_start(form, {
-    'attr': {
-        'data-live-validation': 'true'
-    }
-}) }}
 <div class="card">
-    <div class="card-header">
-        <h5 class="card-title mb-0">
-            Informations de l'utilisateur
-        </h5>
-    </div>
-    <div class="card-body">
 
-        {# Affiche le nom. #}
-        <div class="mb-3">
-            {{ form_label(form.utilisateur_nom) }}
-            {{ form_widget(form.utilisateur_nom) }}
-            {{ form_errors(form.utilisateur_nom) }}
-        </div>
+	<div class="card-header">
+		<h5 class="card-title mb-0">
+			Informations de l'utilisateur
+		</h5>
+	</div>
 
-        {# Affiche le prénom. #}
-        <div class="mb-3">
-            {{ form_label(form.utilisateur_prenom) }}
-            {{ form_widget(form.utilisateur_prenom) }}
-            {{ form_errors(form.utilisateur_prenom) }}
-        </div>
+	{{ form_start(form, {
+		'attr': {
+			'id': 'admin-utilisateur-form',
+			'data-live-validation': 'true'
+		}
+	}) }}
 
-        {# Affiche l'adresse email. #}
-        <div class="mb-3">
-            {{ form_label(form.utilisateur_email) }}
-            {{ form_widget(form.utilisateur_email) }}
-            {{ form_errors(form.utilisateur_email) }}
-        </div>
+	<div class="card-body">
 
-        {# Affiche le mot de passe. #}
-        <div class="mb-3">
-            {{ form_label(form.plain_password) }}
-            {{ form_widget(form.plain_password) }}
-            {{ form_errors(form.plain_password) }}
-            {% if utilisateur.id %}
-                <div class="form-text">
-                    Laissez ce champ vide pour conserver le mot de passe actuel.
-                </div>
-            {% endif %}
-        </div>
+		<div class="mb-3">
+			{{ form_label(form.utilisateur_nom) }}
+			{{ form_widget(form.utilisateur_nom) }}
+			{{ form_errors(form.utilisateur_nom) }}
+		</div>
 
-        {# Affiche le rôle. #}
-        <div class="mb-3">
-            {{ form_label(form.utilisateur_role) }}
-            {{ form_widget(form.utilisateur_role) }}
-            {{ form_errors(form.utilisateur_role) }}
-        </div>
-    </div>
-    <div class="card-footer">
+		<div class="mb-3">
+			{{ form_label(form.utilisateur_prenom) }}
+			{{ form_widget(form.utilisateur_prenom) }}
+			{{ form_errors(form.utilisateur_prenom) }}
+		</div>
 
-        {# Enregistre le formulaire. #}
-        <button class="btn btn-primary">
-            {{ button_label|default('Enregistrer') }}
-        </button>
-    </div>
+		<div class="mb-3">
+			{{ form_label(form.utilisateur_email) }}
+			{{ form_widget(form.utilisateur_email) }}
+			{{ form_errors(form.utilisateur_email) }}
+		</div>
+
+		<div class="mb-3">
+			{{ form_label(form.plain_password) }}
+			{{ form_widget(form.plain_password) }}
+			{{ form_errors(form.plain_password) }}
+
+			{% if utilisateur.id %}
+				<div class="form-text">
+					Laissez ce champ vide pour conserver le mot de passe actuel.
+				</div>
+			{% endif %}
+		</div>
+
+		<div class="mb-3">
+			{{ form_label(form.utilisateur_role) }}
+			{{ form_widget(form.utilisateur_role) }}
+			{{ form_errors(form.utilisateur_role) }}
+		</div>
+
+	</div>
+
+	{{ form_end(form) }}
+
+	<div class="card-footer d-flex align-items-center gap-2">
+
+		<button
+			type="submit"
+			form="admin-utilisateur-form"
+			class="btn btn-primary"
+		>
+			{{ button_label|default('Enregistrer') }}
+		</button>
+
+		{% if utilisateur.id %}
+			{{ include('admin_utilisateur/_delete_form.html.twig') }}
+		{% endif %}
+
+	</div>
+
 </div>
-{{ form_end(form) }}

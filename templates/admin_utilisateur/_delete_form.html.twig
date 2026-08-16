@@ -1,20 +1,19 @@
 {# Formulaire sécurisé de suppression. #}
+
 <form
-    method="post"
-    action="{{ path('app_admin_utilisateur_delete', {'id': utilisateur.id}) }}"
-    class="d-inline"
-    onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');"
+	method="post"
+	action="{{ path('app_admin_utilisateur_delete', {'id': utilisateur.id}) }}"
+	class="d-inline"
+	onsubmit="return confirm('Voulez-vous vraiment supprimer cet utilisateur ?');"
 >
+	<input
+		type="hidden"
+		name="_token"
+		value="{{ csrf_token('delete' ~ utilisateur.id) }}"
+	>
 
-    {# Protège la suppression avec un jeton CSRF. #}
-    <input
-        type="hidden"
-        name="_token"
-        value="{{ csrf_token('delete' ~ utilisateur.id) }}"
-    >
-
-    {# Supprime uniquement l'utilisateur sélectionné. #}
-    <button class="btn btn-danger btn-sm">
-        Supprimer
-    </button>
+	<button type="submit" class="btn btn-danger">
+		<i class="align-middle me-1" data-feather="trash-2"></i>
+		Supprimer
+	</button>
 </form>

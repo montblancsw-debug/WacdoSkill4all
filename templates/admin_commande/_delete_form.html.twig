@@ -1,20 +1,19 @@
 {# Formulaire sécurisé de suppression. #}
+
 <form
-    method="post"
-    action="{{ path('app_admin_commande_delete', {'id': commande.id}) }}"
-    class="d-inline"
-    onsubmit="return confirm('Voulez-vous vraiment supprimer cette commande ?');"
+	method="post"
+	action="{{ path('app_admin_commande_delete', {'id': commande.id}) }}"
+	class="d-inline"
+	onsubmit="return confirm('Voulez-vous vraiment supprimer cette commande ?');"
 >
-    {# Protège la suppression avec un jeton CSRF. #}
-    <input
-        type="hidden"
-        name="_token"
-        value="{{ csrf_token('delete' ~ commande.id) }}"
-    >
+	<input
+		type="hidden"
+		name="_token"
+		value="{{ csrf_token('delete' ~ commande.id) }}"
+	>
 
-    {# Supprime uniquement la commande sélectionnée. #}
-    <button class="btn btn-danger btn-sm">
-        Supprimer
-    </button>
-
+	<button type="submit" class="btn btn-danger">
+		<i class="align-middle me-1" data-feather="trash-2"></i>
+		Supprimer
+	</button>
 </form>

@@ -1,19 +1,19 @@
 {# Formulaire sécurisé de suppression du produit. #}
-<form
-    method="post"
-    action="{{ path('app_admin_produit_delete', {'id': produit.id}) }}"
-    class="d-inline"
-    onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
->
-    {# Protège la suppression avec un jeton CSRF. #}
-    <input
-        type="hidden"
-        name="_token"
-        value="{{ csrf_token('delete' ~ produit.id) }}"
-    >
 
-    {# Supprime uniquement le produit sélectionné. #}
-    <button class="btn btn-danger btn-sm">
-        Supprimer
-    </button>
+<form
+	method="post"
+	action="{{ path('app_admin_produit_delete', {'id': produit.id}) }}"
+	class="d-inline"
+	onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit ?');"
+>
+	<input
+		type="hidden"
+		name="_token"
+		value="{{ csrf_token('delete' ~ produit.id) }}"
+	>
+
+	<button type="submit" class="btn btn-danger">
+		<i class="align-middle me-1" data-feather="trash-2"></i>
+		Supprimer
+	</button>
 </form>
