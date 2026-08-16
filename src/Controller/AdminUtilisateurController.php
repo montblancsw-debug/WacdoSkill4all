@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/utilisateur')]
 final class AdminUtilisateurController extends AbstractController
 {
-    // Affiche et recherche les utilisateurs.
+    // Affiche, recherche et filtre les utilisateurs.
     #[Route(
         name: 'app_admin_utilisateur_index',
         methods: ['GET', 'POST']
@@ -26,12 +26,28 @@ final class AdminUtilisateurController extends AbstractController
         $search = trim(
             (string) $request
                 ->request
-                ->get('search', '')
+                ->get(
+                    'search',
+                    ''
+                )
         );
 
-        if ($search !== '') {
+        $role = trim(
+            (string) $request
+                ->request
+                ->get(
+                    'role',
+                    ''
+                )
+        );
+
+        if (
+            $search !== ''
+            || $role !== ''
+        ) {
             $utilisateurs = $utilisateurRepository->search(
-                $search
+                $search,
+                $role
             );
         } else {
             $utilisateurs = $utilisateurRepository->findBy(
@@ -47,6 +63,7 @@ final class AdminUtilisateurController extends AbstractController
             [
                 'utilisateurs' => $utilisateurs,
                 'search' => $search,
+                'role' => $role,
             ]
         );
     }
@@ -75,7 +92,10 @@ final class AdminUtilisateurController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+        ) {
             $plainPassword = $form
                 ->get('plain_password')
                 ->getData();
@@ -156,7 +176,10 @@ final class AdminUtilisateurController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+        ) {
             $plainPassword = $form
                 ->get('plain_password')
                 ->getData();
@@ -209,7 +232,9 @@ final class AdminUtilisateurController extends AbstractController
         if (
             $this->isCsrfTokenValid(
                 'delete' . $utilisateur->getId(),
-                $request->getPayload()->getString('_token')
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             $entityManager->remove(

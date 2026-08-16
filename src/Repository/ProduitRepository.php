@@ -7,6 +7,9 @@ use App\Entity\Produit;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Produit>
+ */
 class ProduitRepository extends ServiceEntityRepository
 {
     public function __construct(
@@ -18,17 +21,42 @@ class ProduitRepository extends ServiceEntityRepository
         );
     }
 
-    // Recherche les produits par leur nom.
+    // Recherche un produit par son nom ou son ID.
     public function search(
         string $value
     ): array {
-        return $this
+        $value = trim(
+            $value
+        );
+
+        $queryBuilder = $this
             ->createQueryBuilder('p')
-            ->andWhere('p.produit_nom LIKE :val')
+            ->andWhere(
+                'p.produit_nom LIKE :val'
+            )
             ->setParameter(
                 'val',
                 '%' . $value . '%'
-            )
+            );
+
+        // Accepte par exemple 20 ou #20.
+        $idValue = ltrim(
+            $value,
+            '#'
+        );
+
+        if (ctype_digit($idValue)) {
+            $queryBuilder
+                ->orWhere(
+                    'p.id = :id'
+                )
+                ->setParameter(
+                    'id',
+                    (int) $idValue
+                );
+        }
+
+        return $queryBuilder
             ->orderBy(
                 'p.produit_nom',
                 'ASC'
@@ -44,15 +72,19 @@ class ProduitRepository extends ServiceEntityRepository
     ): array {
         return $this
             ->createQueryBuilder('p')
-            ->andWhere('p.categorie = :categorie')
-            ->andWhere('p.produit_nom LIKE :val')
+            ->andWhere(
+                'p.categorie = :categorie'
+            )
+            ->andWhere(
+                'p.produit_nom LIKE :val'
+            )
             ->setParameter(
                 'categorie',
                 $categorie
             )
             ->setParameter(
                 'val',
-                '%' . $value . '%'
+                '%' . trim($value) . '%'
             )
             ->orderBy(
                 'p.produit_nom',

@@ -20,22 +20,65 @@ class UtilisateurRepository extends ServiceEntityRepository
         );
     }
 
-    // Recherche un utilisateur.
+    // Recherche et filtre les utilisateurs.
     public function search(
-        string $value
+        string $value = '',
+        string $role = ''
     ): array {
-        return $this
-            ->createQueryBuilder('u')
-            ->andWhere(
-                'u.utilisateur_nom LIKE :val
-                OR u.utilisateur_prenom LIKE :val
-                OR u.utilisateur_email LIKE :val
-                OR u.utilisateur_role LIKE :val'
-            )
-            ->setParameter(
-                'val',
-                '%' . $value . '%'
-            )
+        $value = trim(
+            $value
+        );
+
+        $role = trim(
+            $role
+        );
+
+        $queryBuilder = $this
+            ->createQueryBuilder('u');
+
+        if ($value !== '') {
+            $queryBuilder
+                ->andWhere(
+                    'u.utilisateur_nom LIKE :val
+                    OR u.utilisateur_prenom LIKE :val
+                    OR u.utilisateur_email LIKE :val
+                    OR u.utilisateur_role LIKE :val'
+                )
+                ->setParameter(
+                    'val',
+                    '%' . $value . '%'
+                );
+
+            // Accepte par exemple 16 ou #16.
+            $idValue = ltrim(
+                $value,
+                '#'
+            );
+
+            if (ctype_digit($idValue)) {
+                $queryBuilder
+                    ->orWhere(
+                        'u.id = :id'
+                    )
+                    ->setParameter(
+                        'id',
+                        (int) $idValue
+                    );
+            }
+        }
+
+        if ($role !== '') {
+            $queryBuilder
+                ->andWhere(
+                    'u.utilisateur_role = :role'
+                )
+                ->setParameter(
+                    'role',
+                    $role
+                );
+        }
+
+        return $queryBuilder
             ->orderBy(
                 'u.utilisateur_nom',
                 'ASC'

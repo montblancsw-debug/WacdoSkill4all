@@ -24,6 +24,10 @@ class CommandeRepository extends ServiceEntityRepository
     public function search(
         string $value
     ): array {
+        $value = trim(
+            $value
+        );
+
         $queryBuilder = $this
             ->createQueryBuilder('c')
             ->leftJoin(
@@ -41,13 +45,20 @@ class CommandeRepository extends ServiceEntityRepository
                 '%' . $value . '%'
             );
 
-        // Permet également la recherche par numéro.
-        if (ctype_digit($value)) {
+        // Accepte par exemple 9 ou #9.
+        $idValue = ltrim(
+            $value,
+            '#'
+        );
+
+        if (ctype_digit($idValue)) {
             $queryBuilder
-                ->orWhere('c.id = :id')
+                ->orWhere(
+                    'c.id = :id'
+                )
                 ->setParameter(
                     'id',
-                    (int) $value
+                    (int) $idValue
                 );
         }
 
