@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Utilisateur;
+use App\Form\ProfilType;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+class ProfilController extends AbstractController
+{
+    // Affiche le profil de l'utilisateur connecté.
+    #[Route('/profil', name: 'app_profil', methods: ['GET'])]
+    public function index(): Response{
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
+        $utilisateur = $this->getUser();
+
+        if (!$utilisateur instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+        return $this->render('profil/index.html.twig', [
+            'utilisateur' => $utilisateur,
+        ]);
+    }
+
+    // Permet de modifier son email et son mot de passe.
+    #[Route('/profil/modifier', name: 'app_profil_edit', methods: ['GET', 'POST'])]
+    public function edit(
+        Request $request,
+        EntityManagerInterface $entityManager): Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+        $utilisateur = $this->getUser();
+
+        if (!$utilisateur instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+        $form = $this->createForm(
+            ProfilType::class,
+            $utilisateur
+        );
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form
+                ->get('plain_password')
+                ->getData();
+            if (!empty($plainPassword)) {
+                $hashedPassword = password_hash(
+                    $plainPassword,
+                    PASSWORD_BCRYPT
+                );
+
+                $utilisateur->setUtilisateurPassword(
+                    $hashedPassword
+                );
+            }
+            $entityManager->flush();
+            $this->addFlash(
+                'success',
+                'Votre profil a été modifié avec succès.'
+            );
+
+            return $this->redirectToRoute(
+                'app_profil',
+                [],
+                Response::HTTP_SEE_OTHER
+            );
+        }
+        return $this->render('profil/edit.html.twig', [
+            'utilisateur' => $utilisateur,
+            'form' => $form,
+        ]);
+    }
+}

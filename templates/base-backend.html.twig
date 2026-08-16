@@ -12,6 +12,7 @@
 		</title>
 
 		<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/backend-wacdo.css') }}">
 
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
@@ -129,72 +130,16 @@
 
 							<div class="col-6 text-start">
 								<p class="mb-0">
-									<a
-										class="text-muted"
-										href="https://adminkit.io/"
-										target="_blank"
-									>
-										<strong>AdminKit</strong>
-									</a>
-
-									-
-
-									<a
-										class="text-muted"
-										href="https://adminkit.io/"
-										target="_blank"
-									>
-										<strong>Bootstrap Admin Template</strong>
-									</a>
-
+									<strong>Wacdo</strong>
 									&copy;
+									{{ "now"|date("Y") }}
 								</p>
 							</div>
 
 							<div class="col-6 text-end">
-								<ul class="list-inline">
-
-									<li class="list-inline-item">
-										<a
-											class="text-muted"
-											href="https://adminkit.io/"
-											target="_blank"
-										>
-											Support
-										</a>
-									</li>
-
-									<li class="list-inline-item">
-										<a
-											class="text-muted"
-											href="https://adminkit.io/"
-											target="_blank"
-										>
-											Help Center
-										</a>
-									</li>
-
-									<li class="list-inline-item">
-										<a
-											class="text-muted"
-											href="https://adminkit.io/"
-											target="_blank"
-										>
-											Privacy
-										</a>
-									</li>
-
-									<li class="list-inline-item">
-										<a
-											class="text-muted"
-											href="https://adminkit.io/"
-											target="_blank"
-										>
-											Terms
-										</a>
-									</li>
-
-								</ul>
+								<span>
+									Administration Wacdo
+								</span>
 							</div>
 
 						</div>
@@ -321,6 +266,7 @@
 			window.addEventListener('pageshow', function (event) {
 				if (event.persisted) {
 					window.location.reload();
+
 					return;
 				}
 

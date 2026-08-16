@@ -1,0 +1,104 @@
+{# Menu du compte utilisateur. #}
+
+{% set menuContext = context|default('front') %}
+
+{% if app.user %}
+
+	{% set roleLabel = 'Utilisateur' %}
+
+	{% if app.user.utilisateurRole == 'ROLE_ADMIN' %}
+		{% set roleLabel = 'Administrateur' %}
+	{% elseif app.user.utilisateurRole == 'ROLE_PREPARATEUR' %}
+		{% set roleLabel = 'Préparateur' %}
+	{% elseif app.user.utilisateurRole == 'ROLE_ACCUEIL' %}
+		{% set roleLabel = 'Accueil' %}
+	{% endif %}
+
+	<li class="nav-item dropdown">
+
+		<a
+			class="nav-link dropdown-toggle wacdo-account-trigger"
+			href="#"
+			role="button"
+			data-bs-toggle="dropdown"
+			aria-expanded="false"
+		>
+			{% if app.user.utilisateurPrenom %}
+				{{ app.user.utilisateurPrenom }}
+			{% endif %}
+
+			{{ app.user.utilisateurNom }}
+		</a>
+
+		<div class="dropdown-menu dropdown-menu-end wacdo-account-menu">
+
+			<div class="px-3 py-2">
+				<strong class="d-block">
+					{{ app.user.utilisateurEmail }}
+				</strong>
+
+				<span class="text-muted small">
+					{{ roleLabel }}
+				</span>
+			</div>
+
+			<div class="dropdown-divider"></div>
+
+			<a
+				class="dropdown-item"
+				href="{{ path('app_profil') }}"
+			>
+				Voir le profil
+			</a>
+
+			{% if
+				is_granted('ROLE_ADMIN')
+				or is_granted('ROLE_PREPARATEUR')
+				or is_granted('ROLE_ACCUEIL')
+			%}
+				<a
+					class="dropdown-item"
+					href="{{ path('app_admin_dashboard') }}"
+				>
+					Dashboard
+				</a>
+			{% endif %}
+
+			<div class="dropdown-divider"></div>
+
+			<a
+				class="dropdown-item"
+				href="{{ path('app_logout') }}"
+			>
+				Déconnexion
+			</a>
+
+		</div>
+	</li>
+
+{% else %}
+
+	<li class="nav-item dropdown">
+
+		<a
+			class="nav-link dropdown-toggle wacdo-account-trigger"
+			href="#"
+			role="button"
+			data-bs-toggle="dropdown"
+			aria-expanded="false"
+		>
+			Compte
+		</a>
+
+		<div class="dropdown-menu dropdown-menu-end wacdo-account-menu">
+			<a
+				class="dropdown-item"
+				href="{{ path('app_login') }}"
+			>
+				Connexion
+			</a>
+		</div>
+
+	</li>
+
+{% endif %}

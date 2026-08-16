@@ -1,0 +1,78 @@
+{# Modification du profil connecté. #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Modifier mon profil | Wacdo
+{% endblock %}
+
+{% block body %}
+
+	<section class="front-section">
+
+		<div class="mb-4">
+			<h1 class="h2 mb-1">
+				Modifier mon profil
+			</h1>
+
+			<p class="text-muted mb-0">
+				Modifiez votre adresse email ou votre mot de passe.
+			</p>
+		</div>
+
+		{{ form_start(form, {
+			'attr': {
+				'data-live-validation': 'true'
+			}
+		}) }}
+
+		<div class="card front-card">
+			<div class="card-body">
+
+				<div class="mb-3">
+					{{ form_label(form.utilisateur_email) }}
+					{{ form_widget(form.utilisateur_email) }}
+					{{ form_errors(form.utilisateur_email) }}
+				</div>
+
+				<hr>
+
+				<p class="text-muted">
+					Laissez les champs de mot de passe vides pour conserver le mot de passe actuel.
+				</p>
+
+				<div class="mb-3">
+					{{ form_label(form.plain_password.first) }}
+					{{ form_widget(form.plain_password.first) }}
+					{{ form_errors(form.plain_password.first) }}
+				</div>
+
+				<div class="mb-3">
+					{{ form_label(form.plain_password.second) }}
+					{{ form_widget(form.plain_password.second) }}
+					{{ form_errors(form.plain_password.second) }}
+				</div>
+
+				{{ form_errors(form.plain_password) }}
+
+			</div>
+
+			<div class="card-footer bg-white d-flex gap-2">
+				<button class="btn btn-primary">
+					Mettre à jour
+				</button>
+
+				<a
+					href="{{ path('app_profil') }}"
+					class="btn btn-secondary"
+				>
+					Annuler
+				</a>
+			</div>
+		</div>
+
+		{{ form_end(form) }}
+
+	</section>
+
+{% endblock %}

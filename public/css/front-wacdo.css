@@ -1,4 +1,17 @@
 /* ====================================================== */
+/* ==================== Palette Wacdo. ================== */
+/* ====================================================== */
+
+:root {
+    --wacdo-orange: #F25C05;
+    --wacdo-brown: #361F14;
+    --wacdo-white: #FFFFFF;
+    --wacdo-gray: #D8D9DD;
+    --wacdo-gold: #E59B27;
+    --wacdo-secondary: #6C757D;
+}
+
+/* ====================================================== */
 /* ========= Structure générale du front Wacdo. ========= */
 /* ====================================================== */
 
@@ -7,7 +20,8 @@ html {
 }
 
 body {
-    background-color: #f5f7fb;
+    background-color: #f5f6f8;
+    color: var(--wacdo-brown);
 }
 
 .front-main {
@@ -18,12 +32,82 @@ body {
 /* =============== Navigation principale. =============== */
 /* ====================================================== */
 
+.navbar {
+    box-shadow: 0 2px 10px rgba(54, 31, 20, 0.05);
+}
+
 .navbar-brand {
+    color: var(--wacdo-brown);
     font-size: 1.5rem;
 }
 
+.navbar-brand:hover {
+    color: var(--wacdo-orange);
+}
+
 .navbar .nav-link.active {
+    color: var(--wacdo-orange);
     font-weight: 600;
+}
+
+.wacdo-account-trigger {
+    border: 1px solid var(--wacdo-gray);
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.8rem !important;
+    color: var(--wacdo-brown);
+}
+
+.wacdo-account-trigger:hover,
+.wacdo-account-trigger:focus {
+    border-color: var(--wacdo-orange);
+    color: var(--wacdo-orange);
+}
+
+.wacdo-account-menu {
+    min-width: 230px;
+    border: 1px solid var(--wacdo-gray);
+    box-shadow: 0 0.5rem 1rem rgba(54, 31, 20, 0.12);
+}
+
+.wacdo-account-menu .dropdown-item:active {
+    background-color: var(--wacdo-orange);
+}
+
+/* ====================================================== */
+/* ====================== Boutons. ====================== */
+/* ====================================================== */
+
+.btn-primary {
+    background-color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #d94f00;
+    border-color: #d94f00;
+}
+
+.btn-outline-primary {
+    color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
+}
+
+.btn-outline-primary:hover {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
+}
+
+.btn-secondary {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-secondary);
+    border-color: var(--wacdo-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+    border-color: #565e64;
 }
 
 /* ====================================================== */
@@ -31,12 +115,15 @@ body {
 /* ====================================================== */
 
 .front-hero {
-    background-color: #ffffff;
-    border-radius: 0.5rem;
+    background-color: var(--wacdo-white);
+    border-radius: 0.75rem;
     padding: 4rem 2rem;
+    border-top: 4px solid var(--wacdo-orange);
+    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.06);
 }
 
 .front-hero-title {
+    color: var(--wacdo-brown);
     font-size: clamp(2rem, 5vw, 4rem);
     font-weight: 700;
 }
@@ -52,8 +139,14 @@ body {
 
 .front-card {
     height: 100%;
-    border: 0;
-    box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(216, 217, 221, 0.7);
+    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.front-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(54, 31, 20, 0.1);
 }
 
 .front-card .card-body {
@@ -76,8 +169,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background-color: #ffffff;
-    border-bottom: 1px solid #eeeeee;
+    background-color: var(--wacdo-white);
+    border-bottom: 1px solid var(--wacdo-gray);
 }
 
 .front-product-image .card-img-top {
@@ -88,12 +181,22 @@ body {
 }
 
 .front-product-image-empty {
-    color: #6c757d;
+    color: var(--wacdo-secondary);
     background-color: #f8f9fa;
 }
 
 .front-product-price {
+    color: var(--wacdo-brown);
     font-size: 1.25rem;
+}
+
+.badge.text-bg-secondary {
+    background-color: var(--wacdo-brown) !important;
+}
+
+.badge.text-bg-warning {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gold) !important;
 }
 
 /* ====================================================== */
@@ -106,8 +209,8 @@ body {
     align-items: center;
     justify-content: center;
     padding: 2rem;
-    background-color: #ffffff;
-    border: 1px solid #eeeeee;
+    background-color: var(--wacdo-white);
+    border: 1px solid var(--wacdo-gray);
     border-radius: 0.5rem;
 }
 
@@ -118,9 +221,18 @@ body {
 }
 
 .front-product-detail-price {
+    color: var(--wacdo-orange);
     font-size: 1.75rem;
 }
 
 .front-product-description {
     line-height: 1.7;
+}
+
+/* ====================================================== */
+/* ====================== Footer. ======================= */
+/* ====================================================== */
+
+footer {
+    border-top-color: var(--wacdo-gold) !important;
 }

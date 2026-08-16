@@ -10,11 +10,10 @@
 
 	<section class="front-section">
 
-		{# Permet de revenir au catalogue. #}
 		<div class="mb-4">
 			<a
 				href="{{ path('app_front_produit') }}"
-				class="btn btn-outline-secondary"
+				class="btn btn-secondary"
 			>
 				Retour au catalogue
 			</a>
@@ -25,7 +24,6 @@
 
 				<div class="row g-5 align-items-start">
 
-					{# Affiche l'image du produit. #}
 					<div class="col-12 col-lg-5">
 
 						{% if produit.produitImage %}
@@ -44,7 +42,6 @@
 
 					</div>
 
-					{# Affiche les informations du produit. #}
 					<div class="col-12 col-lg-7">
 
 						{% if produit.categorie %}

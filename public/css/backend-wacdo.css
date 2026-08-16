@@ -1,0 +1,102 @@
+/* ====================================================== */
+/* ==================== Palette Wacdo. ================== */
+/* ====================================================== */
+
+:root {
+    --wacdo-orange: #F25C05;
+    --wacdo-brown: #361F14;
+    --wacdo-white: #FFFFFF;
+    --wacdo-gray: #D8D9DD;
+    --wacdo-gold: #E59B27;
+    --wacdo-secondary: #6C757D;
+}
+
+/* ====================================================== */
+/* ==================== Back-office. ==================== */
+/* ====================================================== */
+
+body {
+    background-color: #f5f6f8;
+}
+
+.sidebar,
+.sidebar-content {
+    background-color: var(--wacdo-brown);
+}
+
+.sidebar-link:hover,
+.sidebar-link.active {
+    color: var(--wacdo-white);
+    background-color: rgba(242, 92, 5, 0.18);
+}
+
+.sidebar-link.active {
+    border-left-color: var(--wacdo-orange);
+}
+
+.navbar-bg {
+    background-color: var(--wacdo-white);
+}
+
+.card {
+    border: 1px solid rgba(216, 217, 221, 0.8);
+    box-shadow: 0 0.125rem 0.5rem rgba(54, 31, 20, 0.06);
+}
+
+.card-header {
+    background-color: var(--wacdo-white);
+}
+
+.btn-primary {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+    border-color: var(--wacdo-orange);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    color: var(--wacdo-white);
+    background-color: #d94f00;
+    border-color: #d94f00;
+}
+
+.btn-warning {
+    color: var(--wacdo-brown);
+    background-color: var(--wacdo-gold);
+    border-color: var(--wacdo-gold);
+}
+
+.btn-warning:hover {
+    color: var(--wacdo-brown);
+    background-color: #d58b1d;
+    border-color: #d58b1d;
+}
+
+.btn-secondary {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-secondary);
+    border-color: var(--wacdo-secondary);
+}
+
+.wacdo-account-trigger {
+    border: 1px solid var(--wacdo-gray);
+    border-radius: 0.5rem;
+    padding: 0.45rem 0.8rem !important;
+}
+
+.wacdo-account-trigger:hover,
+.wacdo-account-trigger:focus {
+    border-color: var(--wacdo-orange);
+}
+
+.wacdo-account-menu {
+    min-width: 230px;
+}
+
+.wacdo-account-menu .dropdown-item:active {
+    background-color: var(--wacdo-orange);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(242, 92, 5, 0.04);
+}

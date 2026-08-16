@@ -26,7 +26,6 @@
 		<div class="collapse navbar-collapse" id="frontNavbar">
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-				{# Lien vers l'accueil. #}
 				<li class="nav-item">
 					<a
 						class="nav-link
@@ -39,11 +38,10 @@
 					</a>
 				</li>
 
-				{# Lien vers le catalogue public. #}
 				<li class="nav-item">
 					<a
 						class="nav-link
-						{% if currentRoute == 'app_front_produit' %}
+						{% if currentRoute starts with 'app_front_produit' %}
 							active
 						{% endif %}"
 						href="{{ path('app_front_produit') }}"
@@ -55,63 +53,9 @@
 			</ul>
 
 			<ul class="navbar-nav ms-auto">
-
-				{% if app.user %}
-
-					{# Affiche l'utilisateur actuellement connecté. #}
-					<li class="nav-item">
-						<span class="nav-link text-muted">
-							{% if app.user.utilisateurPrenom %}
-								{{ app.user.utilisateurPrenom }}
-							{% endif %}
-
-							{{ app.user.utilisateurNom }}
-						</span>
-					</li>
-
-					{# Affiche l'administration aux rôles autorisés. #}
-					{% if
-						is_granted('ROLE_ADMIN')
-						or is_granted('ROLE_PREPARATEUR')
-						or is_granted('ROLE_ACCUEIL')
-					%}
-						<li class="nav-item">
-							<a
-								class="nav-link"
-								href="{{ path('app_admin_dashboard') }}"
-							>
-								Administration
-							</a>
-						</li>
-					{% endif %}
-
-					{# Déconnecte l'utilisateur. #}
-					<li class="nav-item">
-						<a
-							class="nav-link"
-							href="{{ path('app_logout') }}"
-						>
-							Déconnexion
-						</a>
-					</li>
-
-				{% else %}
-
-					{# Permet d'accéder à la connexion. #}
-					<li class="nav-item">
-						<a
-							class="nav-link
-							{% if currentRoute == 'app_login' %}
-								active
-							{% endif %}"
-							href="{{ path('app_login') }}"
-						>
-							Connexion
-						</a>
-					</li>
-
-				{% endif %}
-
+				{{ include('inc/_account-menu.html.twig', {
+					'context': 'front'
+				}) }}
 			</ul>
 		</div>
 	</div>
