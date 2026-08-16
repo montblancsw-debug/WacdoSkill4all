@@ -44,6 +44,16 @@
 
 			<div class="dropdown-divider"></div>
 
+			{# Retourne vers le site depuis le dashboard. #}
+			{% if menuContext == 'backend' %}
+				<a
+					class="dropdown-item"
+					href="{{ path('app_front_home') }}"
+				>
+					Accueil du site
+				</a>
+			{% endif %}
+
 			<a
 				class="dropdown-item"
 				href="{{ path('app_profil') }}"
@@ -56,12 +66,16 @@
 				or is_granted('ROLE_PREPARATEUR')
 				or is_granted('ROLE_ACCUEIL')
 			%}
-				<a
-					class="dropdown-item"
-					href="{{ path('app_admin_dashboard') }}"
-				>
-					Dashboard
-				</a>
+
+				{% if menuContext != 'backend' %}
+					<a
+						class="dropdown-item"
+						href="{{ path('app_admin_dashboard') }}"
+					>
+						Dashboard
+					</a>
+				{% endif %}
+
 			{% endif %}
 
 			<div class="dropdown-divider"></div>
@@ -91,12 +105,14 @@
 		</a>
 
 		<div class="dropdown-menu dropdown-menu-end wacdo-account-menu">
+
 			<a
 				class="dropdown-item"
 				href="{{ path('app_login') }}"
 			>
 				Connexion
 			</a>
+
 		</div>
 
 	</li>
