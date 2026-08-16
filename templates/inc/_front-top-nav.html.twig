@@ -43,6 +43,7 @@
 			<ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
 				<li class="nav-item">
+
 					<a
 						class="nav-link
 						{% if currentRoute == 'app_front_home' or currentRoute == 'app_home' %}
@@ -52,21 +53,11 @@
 					>
 						Accueil
 					</a>
+
 				</li>
 
 				<li class="nav-item">
-					<a
-						class="nav-link
-						{% if currentRoute starts with 'app_front_produit' %}
-							active
-						{% endif %}"
-						href="{{ path('app_front_produit') }}"
-					>
-						Catalogue
-					</a>
-				</li>
 
-				<li class="nav-item">
 					<a
 						class="nav-link
 						{% if currentRoute starts with 'app_front_categorie' %}
@@ -76,18 +67,30 @@
 					>
 						Catégories
 					</a>
+
+				</li>
+
+				<li class="nav-item">
+
+					<a
+						class="nav-link
+						{% if currentRoute starts with 'app_front_produit' %}
+							active
+						{% endif %}"
+						href="{{ path('app_front_produit') }}"
+					>
+						Catalogue
+					</a>
+
 				</li>
 
 			</ul>
 
-			{# Compte et panier à droite. #}
+			{# Panier et compte utilisateur à droite. #}
 			<ul class="navbar-nav ms-auto align-items-lg-center front-navbar-actions">
 
-				{{ include('inc/_account-menu.html.twig', {
-					'context': 'front'
-				}) }}
-
 				<li class="nav-item">
+
 					<a
 						class="nav-link front-cart-link
 						{% if currentRoute starts with 'app_front_panier' %}
@@ -104,7 +107,12 @@
 							{{ panierQuantite }}
 						</span>
 					</a>
+
 				</li>
+
+				{{ include('inc/_account-menu.html.twig', {
+					'context': 'front'
+				}) }}
 
 			</ul>
 

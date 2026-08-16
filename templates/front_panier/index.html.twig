@@ -13,6 +13,7 @@
 		<div class="d-flex justify-content-between align-items-center mb-4">
 
 			<div>
+
 				<h1 class="h2 mb-1">
 					Mon panier
 				</h1>
@@ -20,10 +21,11 @@
 				<p class="text-muted mb-0">
 					Gérez les produits avant de valider votre commande.
 				</p>
+
 			</div>
 
 			<a
-				href="{{ path('app_front_produit') }}"
+				href="{{ path('app_front_categorie') }}"
 				class="btn btn-secondary"
 			>
 				Continuer mes achats
@@ -44,16 +46,19 @@
 							<table class="table align-middle">
 
 								<thead>
+
 									<tr>
 										<th>Image</th>
 										<th>Produit</th>
 										<th>Prix</th>
 										<th>Quantité</th>
 										<th>Total</th>
+
 										<th class="text-end">
 											Action
 										</th>
 									</tr>
+
 								</thead>
 
 								<tbody>
@@ -101,9 +106,11 @@
 												{% if not produit.produitStock %}
 
 													<div class="mt-1">
+
 														<span class="badge text-bg-danger">
 															Indisponible
 														</span>
+
 													</div>
 
 												{% endif %}
@@ -306,11 +313,11 @@
 					</h2>
 
 					<p class="text-muted">
-						Ajoutez des produits depuis le catalogue.
+						Ajoutez des produits depuis nos catégories.
 					</p>
 
 					<a
-						href="{{ path('app_front_produit') }}"
+						href="{{ path('app_front_categorie') }}"
 						class="btn btn-primary"
 					>
 						Découvrir le catalogue
