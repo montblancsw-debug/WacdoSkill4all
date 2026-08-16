@@ -64,6 +64,17 @@
 				Voir le profil
 			</a>
 
+			{% if is_granted('ROLE_USER') %}
+
+				<a
+					class="dropdown-item"
+					href="{{ path('app_front_commande') }}"
+				>
+					Mes commandes
+				</a>
+
+			{% endif %}
+
 			{% if
 				is_granted('ROLE_ADMIN')
 				or is_granted('ROLE_PREPARATEUR')
@@ -93,6 +104,7 @@
 			</a>
 
 		</div>
+
 	</li>
 
 {% else %}

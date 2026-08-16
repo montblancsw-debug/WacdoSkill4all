@@ -314,3 +314,99 @@ body {
 footer {
     border-top-color: var(--wacdo-gold) !important;
 }
+
+/* ====================================================== */
+/* ======================== Panier. ===================== */
+/* ====================================================== */
+
+.front-cart-badge {
+    color: var(--wacdo-white);
+    background-color: var(--wacdo-orange);
+}
+
+.front-cart-image {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    padding: 0.4rem;
+    background-color: var(--wacdo-white);
+    border: 1px solid var(--wacdo-gray);
+    border-radius: 0.5rem;
+}
+
+.front-cart-image-empty {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--wacdo-secondary);
+    background-color: #f8f9fa;
+    border: 1px solid var(--wacdo-gray);
+    border-radius: 0.5rem;
+}
+
+.front-cart-quantity {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.front-cart-quantity form {
+    display: inline-flex;
+    margin: 0;
+}
+
+.front-cart-quantity-button {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+.front-cart-quantity-value {
+    min-width: 32px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.front-cart-summary {
+    border-top: 4px solid var(--wacdo-orange);
+    box-shadow: 0 0.25rem 1rem rgba(54, 31, 20, 0.08);
+}
+
+.front-cart-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: var(--wacdo-brown);
+    font-size: 1.3rem;
+}
+
+.front-cart-total strong {
+    color: var(--wacdo-orange);
+    font-size: 1.6rem;
+}
+
+.front-empty-cart {
+    padding: 4rem 2rem;
+    background-color: var(--wacdo-white);
+    border: 1px solid var(--wacdo-gray);
+    border-top: 4px solid var(--wacdo-gold);
+    border-radius: 0.75rem;
+}
+
+.front-add-cart-form {
+    display: flex;
+    align-items: end;
+    gap: 1rem;
+    max-width: 420px;
+}
+
+.front-add-cart-form .form-control {
+    width: 100px;
+}

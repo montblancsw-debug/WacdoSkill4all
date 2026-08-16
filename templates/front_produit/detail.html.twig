@@ -92,7 +92,7 @@
 
 						</div>
 
-						<div class="front-product-description">
+						<div class="front-product-description mb-4">
 
 							<h2 class="h5">
 								Description
@@ -111,6 +111,53 @@
 							{% endif %}
 
 						</div>
+
+						{% if produit.produitStock %}
+
+							<form
+								method="post"
+								action="{{ path('app_front_panier_add', {'id': produit.id}) }}"
+								class="front-add-cart-form"
+							>
+
+								<input
+									type="hidden"
+									name="_token"
+									value="{{ csrf_token('panier_add' ~ produit.id) }}"
+								>
+
+								<div>
+
+									<label
+										for="produit-quantite"
+										class="form-label"
+									>
+										Quantité
+									</label>
+
+									<input
+										id="produit-quantite"
+										type="number"
+										name="quantite"
+										class="form-control"
+										value="1"
+										min="1"
+										max="99"
+										required
+									>
+
+								</div>
+
+								<button
+									type="submit"
+									class="btn btn-primary"
+								>
+									Ajouter au panier
+								</button>
+
+							</form>
+
+						{% endif %}
 
 					</div>
 

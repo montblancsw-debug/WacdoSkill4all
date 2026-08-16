@@ -1,0 +1,168 @@
+{# Historique des commandes du client. #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	Mes commandes | Wacdo
+{% endblock %}
+
+{% block body %}
+
+	<section class="front-section">
+
+		<div class="mb-4">
+
+			<h1 class="h2 mb-1">
+				Mes commandes
+			</h1>
+
+			<p class="text-muted">
+				Consultez l'historique de vos commandes Wacdo.
+			</p>
+
+		</div>
+
+		{% if commandes is not empty %}
+
+			<div class="card front-card">
+
+				<div class="card-body">
+
+					<div class="table-responsive">
+
+						<table class="table align-middle">
+
+							<thead>
+								<tr>
+									<th>Commande</th>
+									<th>Date</th>
+									<th>Articles</th>
+									<th>Statut</th>
+									<th>Total</th>
+									<th class="text-end">
+										Action
+									</th>
+								</tr>
+							</thead>
+
+							<tbody>
+
+								{% for commande in commandes %}
+
+									{% set nombreArticles = 0 %}
+
+									{% for detail in commande.details %}
+										{% if detail.produit %}
+											{% set nombreArticles = nombreArticles + detail.detailQuantite %}
+										{% endif %}
+									{% endfor %}
+
+									<tr>
+
+										<td>
+											<strong>
+												#{{ commande.id }}
+											</strong>
+										</td>
+
+										<td>
+											{{ commande.commandeDate
+												? commande.commandeDate|date('d/m/Y à H:i')
+												: 'Non renseignée'
+											}}
+										</td>
+
+										<td>
+											{{ nombreArticles }}
+										</td>
+
+										<td>
+
+											{% if commande.commandeStatut == 'en attente' %}
+
+												<span class="badge text-bg-warning">
+													En attente
+												</span>
+
+											{% elseif commande.commandeStatut == 'préparée' %}
+
+												<span class="badge text-bg-info">
+													Préparée
+												</span>
+
+											{% elseif commande.commandeStatut == 'livrée' %}
+
+												<span class="badge text-bg-success">
+													Livrée
+												</span>
+
+											{% else %}
+
+												<span class="badge text-bg-secondary">
+													{{ commande.commandeStatut }}
+												</span>
+
+											{% endif %}
+
+										</td>
+
+										<td>
+
+											<strong>
+												{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+												€
+											</strong>
+
+										</td>
+
+										<td class="text-end">
+
+											<a
+												href="{{ path('app_front_commande_show', {'id': commande.id}) }}"
+												class="btn btn-outline-primary btn-sm"
+											>
+												Voir le détail
+											</a>
+
+										</td>
+
+									</tr>
+
+								{% endfor %}
+
+							</tbody>
+
+						</table>
+
+					</div>
+
+				</div>
+
+			</div>
+
+		{% else %}
+
+			<div class="front-empty-cart text-center">
+
+				<h2 class="h4">
+					Aucune commande
+				</h2>
+
+				<p class="text-muted">
+					Vous n'avez pas encore passé de commande.
+				</p>
+
+				<a
+					href="{{ path('app_front_produit') }}"
+					class="btn btn-primary"
+				>
+					Découvrir le catalogue
+				</a>
+
+			</div>
+
+		{% endif %}
+
+	</section>
+
+{% endblock %}

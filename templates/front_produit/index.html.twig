@@ -113,12 +113,56 @@
 
 								</div>
 
-								<a
-									href="{{ path('app_front_produit_detail', {'id': produit.id}) }}"
-									class="btn btn-primary w-100"
-								>
-									Voir le produit
-								</a>
+								<div class="d-grid gap-2">
+
+									<a
+										href="{{ path('app_front_produit_detail', {'id': produit.id}) }}"
+										class="btn btn-outline-primary"
+									>
+										Voir le produit
+									</a>
+
+									{% if produit.produitStock %}
+
+										<form
+											method="post"
+											action="{{ path('app_front_panier_add', {'id': produit.id}) }}"
+										>
+
+											<input
+												type="hidden"
+												name="_token"
+												value="{{ csrf_token('panier_add' ~ produit.id) }}"
+											>
+
+											<input
+												type="hidden"
+												name="quantite"
+												value="1"
+											>
+
+											<button
+												type="submit"
+												class="btn btn-primary w-100"
+											>
+												Ajouter au panier
+											</button>
+
+										</form>
+
+									{% else %}
+
+										<button
+											type="button"
+											class="btn btn-secondary"
+											disabled
+										>
+											Produit indisponible
+										</button>
+
+									{% endif %}
+
+								</div>
 
 							</div>
 
