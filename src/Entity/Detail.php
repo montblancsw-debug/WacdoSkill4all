@@ -58,6 +58,9 @@ class Detail
     )]
     private ?string $detail_total = null;
 
+    #[ORM\ManyToOne(inversedBy: 'details')]
+    private ?Menu $menu = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -115,6 +118,18 @@ class Detail
     public function setDetailTotal(?string $detail_total): static
     {
         $this->detail_total = $detail_total;
+        return $this;
+    }
+
+    public function getMenu(): ?Menu
+    {
+        return $this->menu;
+    }
+
+    public function setMenu(?Menu $menu): static
+    {
+        $this->menu = $menu;
+
         return $this;
     }
 }
