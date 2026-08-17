@@ -11,9 +11,9 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class FrontProduitController extends AbstractController
 {
-    // Affiche le catalogue public.
+    // Affiche les Produits public.
     #[Route(
-        '/catalogue',
+        '/Produits',
         name: 'app_front_produit',
         methods: ['GET', 'POST']
     )]
