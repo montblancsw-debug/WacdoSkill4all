@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ menu.menuNom }} | Wacdo{% endblock %}
+{% block body %}
+<section class="front-section">
+    <div class="mb-4"><a href="{{ path('app_front_menu') }}" class="btn btn-secondary">Retour aux menus</a></div>
+    <div class="card front-card"><div class="card-body p-4"><div class="row g-5">
+        <div class="col-12 col-lg-5">
+            {% if menu.menuImage %}<div class="front-product-detail-image"><img src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}" alt="{{ menu.menuNom }}" class="img-fluid"></div>
+            {% else %}<div class="front-product-detail-image front-product-image-empty">Aucune image</div>{% endif %}
+        </div>
+        <div class="col-12 col-lg-7">
+            <h1 class="display-6 fw-bold mb-3">{{ menu.menuNom }}</h1>
+            <strong class="front-product-detail-price">{{ menu.menuPrix|number_format(2, ',', ' ') }} €</strong>
+            <div class="my-4">{{ menu.menuDescription ? menu.menuDescription|raw : '<p class="text-muted">Aucune description.</p>'|raw }}</div>
+            <h2 class="h5">Composition</h2>
+            <ul class="list-group list-group-flush">
+                {% for produit in menu.produits %}
+                    <li class="list-group-item px-0 d-flex justify-content-between">
+                        <span>{{ produit.produitNom }}</span>
+                        {% if produit.produitStock %}<span class="badge text-bg-success">Disponible</span>{% else %}<span class="badge text-bg-danger">Indisponible</span>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div></div></div>
+</section>
+{% endblock %}

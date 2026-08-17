@@ -3,8 +3,8 @@
 {# Récupère la route. #}
 {% set currentRoute = app.request.attributes.get('_route') %}
 
-	<nav id="sidebar" class="sidebar js-sidebar"> <div
-		class="sidebar-content js-simplebar">
+<nav id="sidebar" class="sidebar js-sidebar">
+	<div class="sidebar-content js-simplebar">
 
 		{# Retourne vers le Dashboard. #}
 		<a class="sidebar-brand" href="{{ path('app_admin_dashboard') }}">
@@ -12,18 +12,21 @@
 				Wacdo
 			</span>
 		</a>
+
 		<ul class="sidebar-nav">
 
 			{# ================================ #}
 			{# TABLEAU DE BORD                  #}
 			{# ================================ #}
 
-				<li class="sidebar-header"> Administration
+			<li class="sidebar-header">
+				Administration
 			</li>
+
 			<li class="sidebar-item
-					{% if currentRoute == 'app_admin' or currentRoute == 'app_admin_dashboard' %}
+				{% if currentRoute == 'app_admin' or currentRoute == 'app_admin_dashboard' %}
 					active
-					{% endif %}">
+				{% endif %}">
 				<a class="sidebar-link" href="{{ path('app_admin_dashboard') }}">
 					<i class="align-middle" data-feather="sliders"></i>
 					<span class="align-middle">
@@ -32,18 +35,20 @@
 				</a>
 			</li>
 
-
 			{# ================================ #}
 			{# GESTION DU CATALOGUE             #}
 			{# ================================ #}
 
-				{% if is_granted('ROLE_ADMIN') %}
-					<li class="sidebar-header"> Catalogue
+			{% if is_granted('ROLE_ADMIN') %}
+
+				<li class="sidebar-header">
+					Catalogue
 				</li>
+
 				<li class="sidebar-item
-						{% if currentRoute starts with 'app_admin_categorie_' %}
+					{% if currentRoute starts with 'app_admin_categorie_' %}
 						active
-						{% endif %}">
+					{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_categorie_index') }}">
 						<i class="align-middle" data-feather="grid"></i>
 						<span class="align-middle">
@@ -51,10 +56,11 @@
 						</span>
 					</a>
 				</li>
+
 				<li class="sidebar-item
-						{% if currentRoute starts with 'app_admin_produit_' %}
+					{% if currentRoute starts with 'app_admin_produit_' %}
 						active
-						{% endif %}">
+					{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_produit_index') }}">
 						<i class="align-middle" data-feather="package"></i>
 						<span class="align-middle">
@@ -62,24 +68,39 @@
 						</span>
 					</a>
 				</li>
-			{% endif %}
 
+				<li class="sidebar-item
+					{% if currentRoute starts with 'app_admin_menu_' %}
+						active
+					{% endif %}">
+					<a class="sidebar-link" href="{{ path('app_admin_menu_index') }}">
+						<i class="align-middle" data-feather="book-open"></i>
+						<span class="align-middle">
+							Menus
+						</span>
+					</a>
+				</li>
+
+			{% endif %}
 
 			{# ================================ #}
 			{# GESTION DES COMMANDES            #}
 			{# ================================ #}
 
-				{% if
-                is_granted('ROLE_ADMIN')
-                or is_granted('ROLE_PREPARATEUR')
-                or is_granted('ROLE_ACCUEIL')
-            %}
-					<li class="sidebar-header"> Commandes
+			{% if
+				is_granted('ROLE_ADMIN')
+				or is_granted('ROLE_PREPARATEUR')
+				or is_granted('ROLE_ACCUEIL')
+			%}
+
+				<li class="sidebar-header">
+					Commandes
 				</li>
+
 				<li class="sidebar-item
-						{% if currentRoute starts with 'app_admin_commande_' %}
+					{% if currentRoute starts with 'app_admin_commande_' %}
 						active
-						{% endif %}">
+					{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_commande_index') }}">
 						<i class="align-middle" data-feather="shopping-cart"></i>
 						<span class="align-middle">
@@ -87,19 +108,23 @@
 						</span>
 					</a>
 				</li>
+
 			{% endif %}
 
 			{# ================================ #}
 			{# GESTION DES UTILISATEURS         #}
 			{# ================================ #}
 
-				{% if is_granted('ROLE_ADMIN') %}
-					<li class="sidebar-header"> Utilisateurs
+			{% if is_granted('ROLE_ADMIN') %}
+
+				<li class="sidebar-header">
+					Utilisateurs
 				</li>
+
 				<li class="sidebar-item
-						{% if currentRoute starts with 'app_admin_utilisateur_' %}
+					{% if currentRoute starts with 'app_admin_utilisateur_' %}
 						active
-						{% endif %}">
+					{% endif %}">
 					<a class="sidebar-link" href="{{ path('app_admin_utilisateur_index') }}">
 						<i class="align-middle" data-feather="users"></i>
 						<span class="align-middle">
@@ -107,8 +132,10 @@
 						</span>
 					</a>
 				</li>
+
 			{% endif %}
 
 		</ul>
+
 	</div>
 </nav>

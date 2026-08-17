@@ -741,3 +741,73 @@ a {
         width: 100%;
     }
 }
+
+/* ====================================================== */
+/* ===== Harmonisation avec les couleurs du Dashboard. === */
+/* ====================================================== */
+
+/*
+ * On conserve la navigation actuelle.
+ * Seules ses couleurs sont modifiées.
+ */
+.navbar {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-gray) !important;
+    border-bottom: 3px solid var(--wacdo-orange) !important;
+    box-shadow: 0 3px 12px rgba(54, 31, 20, 0.10);
+}
+
+.navbar-brand {
+    color: var(--wacdo-brown) !important;
+}
+
+.navbar-brand:hover,
+.navbar-brand:focus {
+    color: var(--wacdo-orange) !important;
+}
+
+.navbar .nav-link {
+    color: var(--wacdo-brown) !important;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link:focus,
+.navbar .nav-link.active {
+    color: var(--wacdo-orange) !important;
+}
+
+.navbar-toggler {
+    border-color: var(--wacdo-orange) !important;
+}
+
+.navbar-toggler-icon {
+    filter: brightness(0) saturate(100%);
+}
+
+/* Bouton du compte utilisateur. */
+.navbar .wacdo-account-trigger {
+    color: var(--wacdo-brown) !important;
+    background-color: var(--wacdo-white) !important;
+}
+
+.navbar .wacdo-account-trigger:hover,
+.navbar .wacdo-account-trigger:focus {
+    color: var(--wacdo-white) !important;
+    background-color: var(--wacdo-orange) !important;
+}
+
+/* Footer moins épais. */
+.front-footer-shell {
+    min-height: 44px;
+    padding-top: 0.35rem;
+    padding-bottom: 0.35rem;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 767.98px) {
+    .front-footer-shell {
+        gap: 0.2rem;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+}

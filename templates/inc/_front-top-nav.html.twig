@@ -84,6 +84,20 @@
 
 				</li>
 
+				<li class="nav-item">
+
+					<a
+						class="nav-link
+						{% if currentRoute starts with 'app_front_menu' %}
+							active
+						{% endif %}"
+						href="{{ path('app_front_menu') }}"
+					>
+						Menus
+					</a>
+
+				</li>
+
 			</ul>
 
 			{# Panier et compte utilisateur à droite. #}

@@ -14,11 +14,16 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/menu')]
 final class AdminMenuController extends AbstractController
 {
-    #[Route(name: 'app_admin_menu_index', methods: ['GET'])]
-    public function index(MenuRepository $menuRepository): Response
+    #[Route(name: 'app_admin_menu_index', methods: ['GET', 'POST'])]
+    public function index(MenuRepository $menuRepository, Request $request): Response
     {
+        $search = trim((string) $request->request->get('search', ''));
+        $status = trim((string) $request->request->get('status', ''));
+
         return $this->render('admin_menu/index.html.twig', [
-            'menus' => $menuRepository->findAll(),
+            'menus' => $menuRepository->search($search, $status),
+            'search' => $search,
+            'status' => $status,
         ]);
     }
 
@@ -32,8 +37,9 @@ final class AdminMenuController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->persist($menu);
             $entityManager->flush();
+            $this->addFlash('success', 'Le menu a été ajouté avec succès.');
 
-            return $this->redirectToRoute('app_admin_menu_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_menu_index');
         }
 
         return $this->render('admin_menu/new.html.twig', [
@@ -45,9 +51,7 @@ final class AdminMenuController extends AbstractController
     #[Route('/{id}', name: 'app_admin_menu_show', methods: ['GET'])]
     public function show(Menu $menu): Response
     {
-        return $this->render('admin_menu/show.html.twig', [
-            'menu' => $menu,
-        ]);
+        return $this->render('admin_menu/show.html.twig', ['menu' => $menu]);
     }
 
     #[Route('/{id}/edit', name: 'app_admin_menu_edit', methods: ['GET', 'POST'])]
@@ -58,8 +62,9 @@ final class AdminMenuController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
+            $this->addFlash('success', 'Le menu a été modifié avec succès.');
 
-            return $this->redirectToRoute('app_admin_menu_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_admin_menu_index');
         }
 
         return $this->render('admin_menu/edit.html.twig', [
@@ -71,11 +76,20 @@ final class AdminMenuController extends AbstractController
     #[Route('/{id}', name: 'app_admin_menu_delete', methods: ['POST'])]
     public function delete(Request $request, Menu $menu, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$menu->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($menu);
-            $entityManager->flush();
+        if (!$this->isCsrfTokenValid('delete' . $menu->getId(), $request->getPayload()->getString('_token'))) {
+            $this->addFlash('danger', 'La suppression du menu a échoué.');
+            return $this->redirectToRoute('app_admin_menu_index');
         }
 
-        return $this->redirectToRoute('app_admin_menu_index', [], Response::HTTP_SEE_OTHER);
+        if (!$menu->getDetails()->isEmpty()) {
+            $this->addFlash('danger', 'Ce menu est lié à une commande. Désactivez-le au lieu de le supprimer.');
+            return $this->redirectToRoute('app_admin_menu_index');
+        }
+
+        $entityManager->remove($menu);
+        $entityManager->flush();
+        $this->addFlash('success', 'Le menu a été supprimé avec succès.');
+
+        return $this->redirectToRoute('app_admin_menu_index');
     }
 }

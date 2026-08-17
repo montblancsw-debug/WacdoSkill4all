@@ -7,8 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
+use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: MenuRepository::class)]
+#[Vich\Uploadable]
 class Menu
 {
     #[ORM\Id]
@@ -17,29 +21,42 @@ class Menu
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom du menu est obligatoire.', normalizer: 'trim')]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $menu_nom = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $menu_description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Le prix du menu est obligatoire.')]
+    #[Assert\Positive(message: 'Le prix du menu doit être supérieur à 0 €.')]
     private ?string $menu_prix = null;
 
     #[ORM\Column]
-    private ?bool $menu_status = null;
+    #[Assert\NotNull(message: 'Le statut du menu doit être renseigné.')]
+    private ?bool $menu_status = true;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $menu_image = null;
 
-    /**
-     * @var Collection<int, Produit>
-     */
+    #[Vich\UploadableField(mapping: 'menus', fileNameProperty: 'menuImage')]
+    #[Assert\Image(
+        maxSize: '2M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/webp'],
+        mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.'
+    )]
+    private ?File $imageFile = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
+    /** @var Collection<int, Produit> */
     #[ORM\ManyToMany(targetEntity: Produit::class, inversedBy: 'menus')]
+    #[Assert\Count(min: 1, minMessage: 'Un menu doit contenir au moins un produit.')]
     private Collection $produits;
 
-    /**
-     * @var Collection<int, Detail>
-     */
+    /** @var Collection<int, Detail> */
     #[ORM\OneToMany(targetEntity: Detail::class, mappedBy: 'menu')]
     private Collection $details;
 
@@ -62,7 +79,6 @@ class Menu
     public function setMenuNom(string $menu_nom): static
     {
         $this->menu_nom = $menu_nom;
-
         return $this;
     }
 
@@ -74,7 +90,6 @@ class Menu
     public function setMenuDescription(?string $menu_description): static
     {
         $this->menu_description = $menu_description;
-
         return $this;
     }
 
@@ -83,10 +98,9 @@ class Menu
         return $this->menu_prix;
     }
 
-    public function setMenuPrix(string $menu_prix): static
+    public function setMenuPrix(?string $menu_prix): static
     {
         $this->menu_prix = $menu_prix;
-
         return $this;
     }
 
@@ -98,7 +112,6 @@ class Menu
     public function setMenuStatus(bool $menu_status): static
     {
         $this->menu_status = $menu_status;
-
         return $this;
     }
 
@@ -107,16 +120,38 @@ class Menu
         return $this->menu_image;
     }
 
-    public function setMenuImage(string $menu_image): static
+    public function setMenuImage(?string $menu_image): static
     {
         $this->menu_image = $menu_image;
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Produit>
-     */
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if ($imageFile !== null) {
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
+        return $this;
+    }
+
+    /** @return Collection<int, Produit> */
     public function getProduits(): Collection
     {
         return $this->produits;
@@ -134,13 +169,10 @@ class Menu
     public function removeProduit(Produit $produit): static
     {
         $this->produits->removeElement($produit);
-
         return $this;
     }
 
-    /**
-     * @return Collection<int, Detail>
-     */
+    /** @return Collection<int, Detail> */
     public function getDetails(): Collection
     {
         return $this->details;
@@ -158,11 +190,8 @@ class Menu
 
     public function removeDetail(Detail $detail): static
     {
-        if ($this->details->removeElement($detail)) {
-            // set the owning side to null (unless already changed)
-            if ($detail->getMenu() === $this) {
-                $detail->setMenu(null);
-            }
+        if ($this->details->removeElement($detail) && $detail->getMenu() === $this) {
+            $detail->setMenu(null);
         }
 
         return $this;
