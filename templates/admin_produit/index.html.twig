@@ -1,283 +1,303 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-	Gestion des produits | Wacdo
+    Gestion des produits | Wacdo
 {% endblock %}
 
 {% block body %}
 
-	<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-		<div>
+        <div>
 
-			<h1 class="h3 mb-1">
-				Gestion des produits
-			</h1>
+            <h1 class="h3 mb-1">
+                Gestion des produits
+            </h1>
 
-			<p class="text-muted mb-0">
-				Consultez et gérez les produits disponibles chez Wacdo.
-			</p>
+            <p class="text-muted mb-0">
+                Consultez et gérez les produits disponibles chez Wacdo.
+            </p>
 
-		</div>
+        </div>
 
-		<a
-			href="{{ path('app_admin_produit_new') }}"
-			class="btn btn-primary"
-		>
-			Ajouter un produit
-		</a>
+        <a
+            href="{{ path('app_admin_produit_new') }}"
+            class="btn btn-primary"
+        >
+            Ajouter un produit
+        </a>
 
-	</div>
+    </div>
 
-	<div class="card">
+    <div class="card">
 
-		<div class="card-header">
+        <div class="card-header">
 
-			<h5 class="card-title mb-0">
-				Liste des produits
-			</h5>
+            <h5 class="card-title mb-0">
+                Liste des produits
+            </h5>
 
-		</div>
+        </div>
 
-		<div class="card-body">
+        <div class="card-body">
 
-			{# Recherche et filtre les produits. #}
-			<form
-				method="post"
-				action="{{ path('app_admin_produit_index') }}"
-				class="row g-2 mb-4"
-			>
+            {# Barre de recherche et de filtres. #}
+            <form
+                method="get"
+                action="{{ path('app_admin_produit_index') }}"
+                class="row g-2 mb-4"
+            >
 
-				<div class="col-12 col-xl">
+                <div class="col-12 col-xl">
 
-					<input
-						type="text"
-						name="search"
-						class="form-control"
-						placeholder="Rechercher par ID ou nom..."
-						value="{{ search|default('') }}"
-					>
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="ID, nom, description ou catégorie..."
+                        value="{{ search|default('') }}"
+                    >
 
-				</div>
+                </div>
 
-				<div class="col-12 col-md-6 col-xl-3">
+                <div class="col-12 col-md-6 col-xl-3">
 
-					<select
-						name="categorie"
-						class="form-select"
-					>
+                    <select
+                        name="categorie"
+                        class="form-select"
+                    >
 
-						<option value="">
-							Toutes les catégories
-						</option>
+                        <option value="">
+                            Toutes les catégories
+                        </option>
 
-						{% for categorie in categories %}
+                        {% for categorie in categories %}
 
-							<option
-								value="{{ categorie.id }}"
-								{% if categorieSelectionnee|default('') == categorie.id ~ '' %}
-									selected
-								{% endif %}
-							>
-								{{ categorie.categorieNom }}
-							</option>
+                            <option
+                                value="{{ categorie.id }}"
+                                {% if categorieSelectionnee|default('') == categorie.id ~ '' %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ categorie.categorieNom }}
+                            </option>
 
-						{% endfor %}
+                        {% endfor %}
 
-					</select>
+                    </select>
 
-				</div>
+                </div>
 
-				<div class="col-12 col-md-6 col-xl-2">
+                <div class="col-12 col-md-6 col-xl-2">
 
-					<select
-						name="stock"
-						class="form-select"
-					>
+                    <select
+                        name="stock"
+                        class="form-select"
+                    >
 
-						<option value="">
-							Tous les stocks
-						</option>
+                        <option value="">
+                            Toutes les disponibilités
+                        </option>
 
-						<option
-							value="1"
-							{% if stock|default('') == '1' %}
-								selected
-							{% endif %}
-						>
-							Disponible
-						</option>
+                        <option
+                            value="1"
+                            {% if stock|default('') == '1' %}
+                                selected
+                            {% endif %}
+                        >
+                            Disponible
+                        </option>
 
-						<option
-							value="0"
-							{% if stock|default('') == '0' %}
-								selected
-							{% endif %}
-						>
-							Indisponible
-						</option>
+                        <option
+                            value="0"
+                            {% if stock|default('') == '0' %}
+                                selected
+                            {% endif %}
+                        >
+                            Indisponible
+                        </option>
 
-					</select>
+                    </select>
 
-				</div>
+                </div>
 
-				<div class="col-12 col-xl-auto">
+                <div class="col-6 col-xl-auto">
 
-					<button
-						type="submit"
-						class="btn btn-primary w-100"
-					>
-						Rechercher
-					</button>
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                    >
+                        Filtrer
+                    </button>
 
-				</div>
+                </div>
 
-			</form>
+                <div class="col-6 col-xl-auto">
 
-			<div class="table-responsive">
+                    <a
+                        href="{{ path('app_admin_produit_index') }}"
+                        class="btn btn-secondary w-100"
+                    >
+                        Réinitialiser
+                    </a>
 
-				<table class="table table-hover align-middle">
+                </div>
 
-					<thead>
+            </form>
 
-						<tr>
-							<th>ID</th>
-							<th>Nom</th>
-							<th>Catégorie</th>
-							<th>Prix</th>
-							<th>Stock</th>
-							<th>Image</th>
+            <div class="table-responsive">
 
-							<th class="text-end">
-								Actions
-							</th>
-						</tr>
+                <table class="table table-hover align-middle">
 
-					</thead>
+                    <thead>
 
-					<tbody>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nom</th>
+                            <th>Description</th>
+                            <th>Catégorie</th>
+                            <th>Prix</th>
+                            <th>Stock</th>
+                            <th>Image</th>
 
-						{% for produit in produits %}
+                            <th class="text-end">
+                                Actions
+                            </th>
+                        </tr>
 
-							<tr>
+                    </thead>
 
-								<td>
-									{{ produit.id }}
-								</td>
+                    <tbody>
 
-								<td>
+                        {% for produit in produits %}
 
-									<strong>
-										{{ produit.produitNom }}
-									</strong>
+                            <tr>
 
-								</td>
+                                <td>
+                                    {{ produit.id }}
+                                </td>
 
-								<td>
+                                <td>
 
-									{% if produit.categorie %}
+                                    <strong>
+                                        {{ produit.produitNom }}
+                                    </strong>
 
-										{{ produit.categorie.categorieNom }}
+                                </td>
 
-									{% else %}
+                                <td>
 
-										<span class="badge bg-secondary">
-											Sans catégorie
-										</span>
+                                    {% if produit.produitDescription %}
 
-									{% endif %}
+                                        {{ produit.produitDescription|striptags }}
 
-								</td>
+                                    {% else %}
 
-								<td>
-									{{ produit.produitPrix|number_format(2, ',', ' ') }}
-									€
-								</td>
+                                        <span class="text-muted">
+                                            Aucune description
+                                        </span>
 
-								<td>
+                                    {% endif %}
 
-									{% if produit.produitStock %}
+                                </td>
 
-										<span class="badge bg-success">
-											Disponible
-										</span>
+                                <td>
 
-									{% else %}
+                                    {% if produit.categorie %}
 
-										<span class="badge bg-danger">
-											Indisponible
-										</span>
+                                        {{ produit.categorie.categorieNom }}
 
-									{% endif %}
+                                    {% else %}
 
-								</td>
+                                        <span class="badge bg-secondary">
+                                            Sans catégorie
+                                        </span>
 
-								<td>
+                                    {% endif %}
 
-									{% if produit.produitImage %}
+                                </td>
 
-										<img
-											src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
-											alt="{{ produit.produitNom }}"
-											class="img-fluid rounded"
-											style="max-width: 80px; max-height: 80px;"
-										>
+                                <td>
+                                    {{ produit.produitPrix|number_format(2, ',', ' ') }}
+                                    €
+                                </td>
 
-									{% else %}
+                                <td>
 
-										<span class="text-muted">
-											Aucune image
-										</span>
+                                    {% if produit.produitStock %}
 
-									{% endif %}
+                                        <span class="badge bg-success">
+                                            Disponible
+                                        </span>
 
-								</td>
+                                    {% else %}
 
-								<td class="text-end">
+                                        <span class="badge bg-danger">
+                                            Indisponible
+                                        </span>
 
-									<a
-										href="{{ path('app_admin_produit_show', {'id': produit.id}) }}"
-										class="btn btn-info btn-sm"
-									>
-										Voir
-									</a>
+                                    {% endif %}
 
-									<a
-										href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}"
-										class="btn btn-warning btn-sm"
-									>
-										Modifier
-									</a>
+                                </td>
 
-									{{ include('admin_produit/_delete_form.html.twig') }}
+                                <td>
 
-								</td>
+                                    {% if produit.produitImage %}
 
-							</tr>
+                                        <img
+                                            src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
+                                            alt="{{ produit.produitNom }}"
+                                            class="img-fluid rounded"
+                                            style="max-width: 80px; max-height: 80px;"
+                                        >
 
-						{% else %}
+                                    {% else %}
 
-							<tr>
+                                        <span class="text-muted">
+                                            Aucune image
+                                        </span>
 
-								<td
-									colspan="7"
-									class="text-center text-muted"
-								>
-									Aucun produit ne correspond aux critères sélectionnés.
-								</td>
+                                    {% endif %}
 
-							</tr>
+                                </td>
 
-						{% endfor %}
+                                <td class="text-end">
 
-					</tbody>
+                                    <a
+                                        href="{{ path('app_admin_produit_show', {'id': produit.id}) }}"
+                                        class="btn btn-info btn-sm"
+                                    >
+                                        Voir
+                                    </a>
 
-				</table>
+                                    <a
+                                        href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}"
+                                        class="btn btn-warning btn-sm"
+                                    >
+                                        Modifier
+                                    </a>
 
-			</div>
+                                    {{ include('admin_produit/_delete_form.html.twig') }}
 
-		</div>
+                                </td>
 
-	</div>
+                            </tr>
+
+                        {% else %}
+
+                            <tr>
+                                <td
+                                    colspan="8"
+                                    class="text-center text-muted"
+                                >
+                                    Aucun produit ne correspond aux critères sélectionnés.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

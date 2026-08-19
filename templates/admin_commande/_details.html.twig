@@ -1,356 +1,430 @@
 {# Articles présents dans la commande. #}
 
 {% set editable = editable|default(false) %}
-{% set produitsDisponibles = produitsDisponibles|default([]) %}
-{% set detailsActifs = commande.details|filter(detail => detail.produit) %}
+
+{% set produitsDisponibles =
+    produitsDisponibles|default([])
+%}
+
+{% set detailsActifs =
+    commande.details|filter(
+        detail =>
+            detail.produit
+            or detail.menu
+    )
+%}
 
 <div
-	id="commande-details-card"
-	class="card mt-4"
+    id="commande-details-card"
+    class="card mt-4"
 >
 
-	<div class="card-header">
-		<h5 class="card-title mb-0">
-			Détail des articles
-		</h5>
-	</div>
-
-	{% if editable %}
-
-		{# Permet d'ajouter un produit à la commande. #}
-		<div class="card-body border-bottom">
-
-			<h6 class="mb-3">
-				Ajouter un produit
-			</h6>
-
-			<form
-				method="post"
-				action="{{ path('app_admin_commande_add_product', {'id': commande.id}) }}"
-				class="row g-3 align-items-end js-commande-async-form"
-			>
+    <div class="card-header">
+
+        <h5 class="card-title mb-0">
+            Détail des articles
+        </h5>
+
+    </div>
+
+    {% if editable %}
+
+        <div class="card-body border-bottom">
+
+            <h6 class="mb-3">
+                Ajouter un produit
+            </h6>
+
+            <form
+                method="post"
+                action="{{ path(
+                    'app_admin_commande_add_product',
+                    {
+                        'id': commande.id
+                    }
+                ) }}"
+                class="row g-3 align-items-end js-commande-async-form"
+            >
 
-				<div class="col-12 col-lg-7">
+                <div class="col-12 col-lg-7">
 
-					<label
-						for="commande-produit"
-						class="form-label"
-					>
-						Produit
-					</label>
-
-					<select
-						id="commande-produit"
-						name="produit_id"
-						class="form-select"
-						required
-					>
-
-						<option value="">
-							Choisir un produit
-						</option>
+                    <label
+                        for="commande-produit"
+                        class="form-label"
+                    >
+                        Produit
+                    </label>
 
-						{% for produit in produitsDisponibles %}
+                    <select
+                        id="commande-produit"
+                        name="produit_id"
+                        class="form-select"
+                        required
+                    >
 
-							<option value="{{ produit.id }}">
-								{{ produit.produitNom }}
-								-
-								{{ produit.produitPrix|number_format(2, ',', ' ') }}
-								€
-							</option>
+                        <option value="">
+                            Choisir un produit
+                        </option>
 
-						{% endfor %}
+                        {% for produit in produitsDisponibles %}
 
-					</select>
+                            <option value="{{ produit.id }}">
 
-				</div>
+                                {{ produit.produitNom }}
+                                -
+                                {{ produit.produitPrix|number_format(2, ',', ' ') }}
+                                €
 
-				<div class="col-12 col-sm-6 col-lg-2">
+                            </option>
 
-					<label
-						for="commande-quantite"
-						class="form-label"
-					>
-						Quantité
-					</label>
+                        {% endfor %}
 
-					<input
-						id="commande-quantite"
-						type="number"
-						name="quantite"
-						class="form-control"
-						value="1"
-						min="1"
-						max="99"
-						required
-					>
+                    </select>
 
-				</div>
+                </div>
 
-				<div class="col-12 col-sm-6 col-lg-3">
+                <div class="col-12 col-sm-6 col-lg-2">
 
-					<input
-						type="hidden"
-						name="_token"
-						value="{{ csrf_token(
-							'commande_add_product' ~ commande.id
-						) }}"
-					>
+                    <label
+                        for="commande-quantite"
+                        class="form-label"
+                    >
+                        Quantité
+                    </label>
 
-					<button
-						type="submit"
-						class="btn btn-primary w-100"
-						{% if produitsDisponibles is empty %}
-							disabled
-						{% endif %}
-					>
-						Ajouter le produit
-					</button>
+                    <input
+                        id="commande-quantite"
+                        type="number"
+                        name="quantite"
+                        class="form-control"
+                        value="1"
+                        min="1"
+                        max="99"
+                        required
+                    >
 
-				</div>
+                </div>
 
-			</form>
+                <div class="col-12 col-sm-6 col-lg-3">
 
-			{% if produitsDisponibles is empty %}
+                    <input
+                        type="hidden"
+                        name="_token"
+                        value="{{ csrf_token(
+                            'commande_add_product'
+                            ~ commande.id
+                        ) }}"
+                    >
 
-				<p class="text-muted mb-0 mt-3">
-					Aucun produit disponible ne peut être ajouté.
-				</p>
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-100"
+                        {% if produitsDisponibles is empty %}
+                            disabled
+                        {% endif %}
+                    >
+                        Ajouter le produit
+                    </button>
 
-			{% endif %}
+                </div>
 
-		</div>
+            </form>
 
-	{% endif %}
+            {% if produitsDisponibles is empty %}
 
-	<div class="card-body">
+                <p class="text-muted mb-0 mt-3">
+                    Aucun produit disponible ne peut être ajouté.
+                </p>
 
-		<div class="table-responsive">
+            {% endif %}
 
-			<table class="table table-hover align-middle">
+        </div>
 
-				<thead>
-					<tr>
-						<th>Image</th>
-						<th>Produit</th>
-						<th>Quantité</th>
-						<th>Prix unitaire</th>
-						<th>Total</th>
+    {% endif %}
 
-						{% if editable %}
-							<th class="text-end">
-								Action
-							</th>
-						{% endif %}
-					</tr>
-				</thead>
-
-				<tbody>
-
-					{% for detail in detailsActifs %}
-
-						<tr>
-
-							{# Affiche l'image du produit. #}
-							<td>
-
-								{% if detail.produit.produitImage %}
-
-								<img
-									src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
-									alt="{{ detail.produit.produitNom }}"
-									class="wacdo-order-product-image"
-								>
+    <div class="card-body">
 
-								{% else %}
+        <div class="table-responsive">
 
-									<div class="wacdo-order-product-placeholder">
-										—
-									</div>
+            <table class="table table-hover align-middle">
 
-								{% endif %}
+                <thead>
 
-							</td>
+                    <tr>
+                        <th>Image</th>
+                        <th>Article</th>
+                        <th>Quantité</th>
+                        <th>Prix unitaire</th>
+                        <th>Total</th>
 
-							{# Affiche le produit. #}
-							<td>
+                        {% if editable %}
 
-								<strong>
-									{{ detail.produit.produitNom }}
-								</strong>
+                            <th class="text-end">
+                                Action
+                            </th>
 
-							</td>
+                        {% endif %}
 
-							{# Permet de modifier la quantité. #}
-							<td>
+                    </tr>
 
-								{% if editable %}
+                </thead>
 
-									<div class="wacdo-quantity-control">
+                <tbody>
 
-										<form
-											method="post"
-											action="{{ path(
-												'app_admin_commande_detail_minus',
-												{
-													'id': commande.id,
-													'detailId': detail.id
-												}
-											) }}"
-											class="js-commande-async-form"
-										>
-
-											<input
-												type="hidden"
-												name="_token"
-												value="{{ csrf_token(
-													'commande_detail_minus'
-													~ detail.id
-												) }}"
-											>
-
-											<button
-												type="submit"
-												class="btn btn-outline-secondary btn-sm wacdo-quantity-button"
-												{% if detail.detailQuantite <= 1 %}
-													disabled
-												{% endif %}
-												title="Diminuer la quantité"
-											>
-												−
-											</button>
-
-										</form>
-
-										<span class="wacdo-quantity-value">
-											{{ detail.detailQuantite }}
-										</span>
-
-										<form
-											method="post"
-											action="{{ path(
-												'app_admin_commande_detail_plus',
-												{
-													'id': commande.id,
-													'detailId': detail.id
-												}
-											) }}"
-											class="js-commande-async-form"
-										>
+                    {% for detail in detailsActifs %}
 
-											<input
-												type="hidden"
-												name="_token"
-												value="{{ csrf_token(
-													'commande_detail_plus'
-													~ detail.id
-												) }}"
-											>
+                        <tr>
 
-											<button
-												type="submit"
-												class="btn btn-outline-primary btn-sm wacdo-quantity-button"
-												title="Augmenter la quantité"
-											>
-												+
-											</button>
+                            <td>
 
-										</form>
+                                {% if
+                                    detail.produit
+                                    and detail.produit.produitImage
+                                %}
 
-									</div>
+                                    <img
+                                        src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
+                                        alt="{{ detail.produit.produitNom }}"
+                                        class="wacdo-order-product-image"
+                                    >
 
-								{% else %}
+                                {% elseif
+                                    detail.menu
+                                    and detail.menu.menuImage
+                                %}
 
-									{{ detail.detailQuantite }}
+                                    <img
+                                        src="{{ asset('images/menus/' ~ detail.menu.menuImage) }}?v={{ detail.menu.updatedAt ? detail.menu.updatedAt|date('U') : '1' }}"
+                                        alt="{{ detail.menu.menuNom }}"
+                                        class="wacdo-order-product-image"
+                                    >
 
-								{% endif %}
+                                {% else %}
 
-							</td>
+                                    <div class="wacdo-order-product-placeholder">
+                                        —
+                                    </div>
 
-							<td>
-								{{ detail.detailUnitaire
-									|number_format(2, ',', ' ')
-								}}
-								€
-							</td>
+                                {% endif %}
 
-							<td>
+                            </td>
 
-								<strong>
-									{{ detail.detailTotal
-										|number_format(2, ',', ' ')
-									}}
-									€
-								</strong>
+                            <td>
 
-							</td>
+                                {% if detail.produit %}
 
-							{% if editable %}
+                                    <strong>
+                                        {{ detail.produit.produitNom }}
+                                    </strong>
 
-								<td class="text-end">
+                                    <div class="small text-muted">
+                                        Produit
+                                    </div>
 
-									<form
-										method="post"
-										action="{{ path(
-											'app_admin_commande_detail_delete',
-											{
-												'id': commande.id,
-												'detailId': detail.id
-											}
-										) }}"
-										class="d-inline js-commande-async-form"
-										data-confirm="Voulez-vous retirer ce produit de la commande ?"
-									>
+                                {% elseif detail.menu %}
 
-										<input
-											type="hidden"
-											name="_token"
-											value="{{ csrf_token(
-												'commande_detail_delete'
-												~ detail.id
-											) }}"
-										>
+                                    <strong>
+                                        {{ detail.menu.menuNom }}
+                                    </strong>
 
-										<button
-											type="submit"
-											class="btn btn-danger btn-sm wacdo-delete-button"
-										>
-											<i
-												class="align-middle"
-												data-feather="trash-2"
-											></i>
+                                    <div class="small text-muted">
+                                        Menu
+                                    </div>
 
-											Supprimer
-										</button>
+                                    <div class="small text-muted">
 
-									</form>
+                                        {% for produit in detail.menu.produits %}
 
-								</td>
+                                            {{ produit.produitNom }}
 
-							{% endif %}
+                                            {% if not loop.last %}
+                                                •
+                                            {% endif %}
 
-						</tr>
+                                        {% endfor %}
 
-					{% else %}
+                                    </div>
 
-						<tr>
+                                {% endif %}
 
-							<td
-								colspan="{{ editable ? 6 : 5 }}"
-								class="text-center text-muted py-4"
-							>
-								Aucun article dans cette commande.
-							</td>
+                            </td>
 
-						</tr>
+                            <td>
 
-					{% endfor %}
+                                {% if editable %}
 
-				</tbody>
+                                    <div class="wacdo-quantity-control">
 
-			</table>
+                                        <form
+                                            method="post"
+                                            action="{{ path(
+                                                'app_admin_commande_detail_minus',
+                                                {
+                                                    'id': commande.id,
+                                                    'detailId': detail.id
+                                                }
+                                            ) }}"
+                                            class="js-commande-async-form"
+                                        >
 
-		</div>
+                                            <input
+                                                type="hidden"
+                                                name="_token"
+                                                value="{{ csrf_token(
+                                                    'commande_detail_minus'
+                                                    ~ detail.id
+                                                ) }}"
+                                            >
 
-	</div>
+                                            <button
+                                                type="submit"
+                                                class="btn btn-outline-secondary btn-sm wacdo-quantity-button"
+                                                {% if detail.detailQuantite <= 1 %}
+                                                    disabled
+                                                {% endif %}
+                                                title="Diminuer la quantité"
+                                            >
+                                                −
+                                            </button>
+
+                                        </form>
+
+                                        <span class="wacdo-quantity-value">
+                                            {{ detail.detailQuantite }}
+                                        </span>
+
+                                        <form
+                                            method="post"
+                                            action="{{ path(
+                                                'app_admin_commande_detail_plus',
+                                                {
+                                                    'id': commande.id,
+                                                    'detailId': detail.id
+                                                }
+                                            ) }}"
+                                            class="js-commande-async-form"
+                                        >
+
+                                            <input
+                                                type="hidden"
+                                                name="_token"
+                                                value="{{ csrf_token(
+                                                    'commande_detail_plus'
+                                                    ~ detail.id
+                                                ) }}"
+                                            >
+
+                                            <button
+                                                type="submit"
+                                                class="btn btn-outline-primary btn-sm wacdo-quantity-button"
+                                                title="Augmenter la quantité"
+                                            >
+                                                +
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                {% else %}
+
+                                    {{ detail.detailQuantite }}
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {{ detail.detailUnitaire
+                                    |number_format(2, ',', ' ')
+                                }}
+                                €
+
+                            </td>
+
+                            <td>
+
+                                <strong>
+
+                                    {{ detail.detailTotal
+                                        |number_format(2, ',', ' ')
+                                    }}
+                                    €
+
+                                </strong>
+
+                            </td>
+
+                            {% if editable %}
+
+                                <td class="text-end">
+
+                                    <form
+                                        method="post"
+                                        action="{{ path(
+                                            'app_admin_commande_detail_delete',
+                                            {
+                                                'id': commande.id,
+                                                'detailId': detail.id
+                                            }
+                                        ) }}"
+                                        class="d-inline js-commande-async-form"
+                                        data-confirm="Voulez-vous retirer cet article de la commande ?"
+                                    >
+
+                                        <input
+                                            type="hidden"
+                                            name="_token"
+                                            value="{{ csrf_token(
+                                                'commande_detail_delete'
+                                                ~ detail.id
+                                            ) }}"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger btn-sm wacdo-delete-button"
+                                        >
+
+                                            <i
+                                                class="align-middle"
+                                                data-feather="trash-2"
+                                            ></i>
+
+                                            Supprimer
+
+                                        </button>
+
+                                    </form>
+
+                                </td>
+
+                            {% endif %}
+
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+
+                            <td
+                                colspan="{{ editable ? 6 : 5 }}"
+                                class="text-center text-muted py-4"
+                            >
+                                Aucun article dans cette commande.
+                            </td>
+
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
 </div>

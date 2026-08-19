@@ -15,10 +15,9 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin/produit')]
 final class AdminProduitController extends AbstractController
 {
-    // Affiche, recherche et filtre les produits.
     #[Route(
         name: 'app_admin_produit_index',
-        methods: ['GET', 'POST']
+        methods: ['GET']
     )]
     public function index(
         ProduitRepository $produitRepository,
@@ -27,7 +26,7 @@ final class AdminProduitController extends AbstractController
     ): Response {
         $search = trim(
             (string) $request
-                ->request
+                ->query
                 ->get(
                     'search',
                     ''
@@ -36,7 +35,7 @@ final class AdminProduitController extends AbstractController
 
         $stock = trim(
             (string) $request
-                ->request
+                ->query
                 ->get(
                     'stock',
                     ''
@@ -45,42 +44,31 @@ final class AdminProduitController extends AbstractController
 
         $categorieId = trim(
             (string) $request
-                ->request
+                ->query
                 ->get(
                     'categorie',
                     ''
                 )
         );
 
-        if (
-            $search !== ''
-            || $stock !== ''
-            || $categorieId !== ''
-        ) {
-            $produits = $produitRepository->search(
-                $search,
-                $stock,
-                $categorieId
-            );
-        } else {
-            $produits = $produitRepository->findBy(
-                [],
-                [
-                    'produit_nom' => 'ASC',
-                ]
-            );
-        }
+        $produits = $produitRepository->search(
+            $search,
+            $stock,
+            $categorieId
+        );
 
         return $this->render(
             'admin_produit/index.html.twig',
             [
                 'produits' => $produits,
+
                 'categories' => $categorieRepository->findBy(
                     [],
                     [
                         'categorie_nom' => 'ASC',
                     ]
                 ),
+
                 'search' => $search,
                 'stock' => $stock,
                 'categorieSelectionnee' => $categorieId,
@@ -223,6 +211,35 @@ final class AdminProduitController extends AbstractController
                     ->getString('_token')
             )
         ) {
+            // Retire le montant du produit
+            foreach ($produit->getDetails() as $detail) {
+                $commande = $detail->getCommande();
+
+                if ($commande === null) {
+                    continue;
+                }
+
+                $totalActuel = (float) $commande
+                    ->getCommandeTotal();
+
+                $montantLigne = (float) $detail
+                    ->getDetailTotal();
+
+                $nouveauTotal = max(
+                    0,
+                    $totalActuel - $montantLigne
+                );
+
+                $commande->setCommandeTotal(
+                    number_format(
+                        $nouveauTotal,
+                        2,
+                        '.',
+                        ''
+                    )
+                );
+            }
+
             $entityManager->remove(
                 $produit
             );

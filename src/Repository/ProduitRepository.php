@@ -7,9 +7,6 @@ use App\Entity\Produit;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @extends ServiceEntityRepository<Produit>
- */
 class ProduitRepository extends ServiceEntityRepository
 {
     public function __construct(
@@ -36,9 +33,12 @@ class ProduitRepository extends ServiceEntityRepository
             ->leftJoin(
                 'p.categorie',
                 'c'
+            )
+            ->addSelect(
+                'c'
             );
 
-        // Recherche par nom ou ID.
+        // Recherche par ID, nom,
         if ($value !== '') {
             $conditions = $queryBuilder
                 ->expr()
@@ -49,6 +49,24 @@ class ProduitRepository extends ServiceEntityRepository
                     ->expr()
                     ->like(
                         'p.produit_nom',
+                        ':val'
+                    )
+            );
+
+            $conditions->add(
+                $queryBuilder
+                    ->expr()
+                    ->like(
+                        'p.produit_description',
+                        ':val'
+                    )
+            );
+
+            $conditions->add(
+                $queryBuilder
+                    ->expr()
+                    ->like(
+                        'c.categorie_nom',
                         ':val'
                     )
             );
@@ -123,7 +141,7 @@ class ProduitRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    // Recherche un produit dans une catégorie précise.
+    // Recherche un produit
     public function searchByCategorie(
         Categorie $categorie,
         string $value

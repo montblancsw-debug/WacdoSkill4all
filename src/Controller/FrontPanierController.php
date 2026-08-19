@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Commande;
 use App\Entity\Detail;
+use App\Entity\Menu;
 use App\Entity\Produit;
 use App\Entity\Utilisateur;
+use App\Repository\MenuRepository;
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,21 +19,32 @@ use Symfony\Component\Routing\Attribute\Route;
 class FrontPanierController extends AbstractController
 {
     // Affiche le panier.
-    #[Route('', name: 'app_front_panier', methods: ['GET'])]
+    #[Route(
+        '',
+        name: 'app_front_panier',
+        methods: ['GET']
+    )]
     public function index(
         Request $request,
-        ProduitRepository $produitRepository
+        ProduitRepository $produitRepository,
+        MenuRepository $menuRepository
     ): Response {
         $panier = $this->buildPanier(
             $request,
-            $produitRepository
+            $produitRepository,
+            $menuRepository
         );
 
-        return $this->render('front_panier/index.html.twig', [
-            'articles' => $panier['articles'],
-            'total' => $panier['total'],
-            'quantiteTotale' => $panier['quantiteTotale'],
-        ]);
+        return $this->render(
+            'front_panier/index.html.twig',
+            [
+                'articles' => $panier['articles'],
+                'menus' => $panier['menus'],
+                'total' => $panier['total'],
+                'quantiteTotale' =>
+                    $panier['quantiteTotale'],
+            ]
+        );
     }
 
     // Ajoute un produit au panier.
@@ -46,8 +59,11 @@ class FrontPanierController extends AbstractController
     ): Response {
         if (
             !$this->isCsrfTokenValid(
-                'panier_add' . $produit->getId(),
-                $request->getPayload()->getString('_token')
+                'panier_add'
+                . $produit->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -69,10 +85,12 @@ class FrontPanierController extends AbstractController
 
         $quantite = max(
             1,
-            $request->getPayload()->getInt(
-                'quantite',
-                1
-            )
+            $request
+                ->getPayload()
+                ->getInt(
+                    'quantite',
+                    1
+                )
         );
 
         $session = $request->getSession();
@@ -105,7 +123,7 @@ class FrontPanierController extends AbstractController
         );
     }
 
-    // Augmente la quantité.
+    // Augmente la quantité d'un produit.
     #[Route(
         '/plus/{id}',
         name: 'app_front_panier_plus',
@@ -117,11 +135,25 @@ class FrontPanierController extends AbstractController
     ): Response {
         if (
             !$this->isCsrfTokenValid(
-                'panier_plus' . $produit->getId(),
-                $request->getPayload()->getString('_token')
+                'panier_plus'
+                . $produit->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
+        }
+
+        if (!$produit->isProduitStock()) {
+            $this->addFlash(
+                'warning',
+                'Ce produit n\'est plus disponible.'
+            );
+
+            return $this->redirectToRoute(
+                'app_front_panier'
+            );
         }
 
         $session = $request->getSession();
@@ -147,7 +179,7 @@ class FrontPanierController extends AbstractController
         );
     }
 
-    // Diminue la quantité.
+    // Diminue la quantité d'un produit.
     #[Route(
         '/moins/{id}',
         name: 'app_front_panier_minus',
@@ -159,8 +191,11 @@ class FrontPanierController extends AbstractController
     ): Response {
         if (
             !$this->isCsrfTokenValid(
-                'panier_minus' . $produit->getId(),
-                $request->getPayload()->getString('_token')
+                'panier_minus'
+                . $produit->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -207,8 +242,11 @@ class FrontPanierController extends AbstractController
     ): Response {
         if (
             !$this->isCsrfTokenValid(
-                'panier_delete' . $produit->getId(),
-                $request->getPayload()->getString('_token')
+                'panier_delete'
+                . $produit->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -235,6 +273,232 @@ class FrontPanierController extends AbstractController
         );
     }
 
+    // Ajoute un menu au panier.
+    #[Route(
+        '/menu/ajouter/{id}',
+        name: 'app_front_panier_menu_add',
+        methods: ['POST']
+    )]
+    public function addMenu(
+        Request $request,
+        Menu $menu
+    ): Response {
+        if (
+            !$this->isCsrfTokenValid(
+                'panier_menu_add'
+                . $menu->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isMenuDisponible($menu)) {
+            $this->addFlash(
+                'warning',
+                'Ce menu n\'est actuellement pas disponible.'
+            );
+
+            return $this->redirectToRoute(
+                'app_front_menu_detail',
+                [
+                    'id' => $menu->getId(),
+                ]
+            );
+        }
+
+        $quantite = max(
+            1,
+            $request
+                ->getPayload()
+                ->getInt(
+                    'quantite',
+                    1
+                )
+        );
+
+        $session = $request->getSession();
+
+        $panierMenus = $session->get(
+            'panier_menus',
+            []
+        );
+
+        $menuId = $menu->getId();
+
+        if (isset($panierMenus[$menuId])) {
+            $panierMenus[$menuId] += $quantite;
+        } else {
+            $panierMenus[$menuId] = $quantite;
+        }
+
+        $session->set(
+            'panier_menus',
+            $panierMenus
+        );
+
+        $this->addFlash(
+            'success',
+            'Le menu a été ajouté au panier.'
+        );
+
+        return $this->redirectToRoute(
+            'app_front_panier'
+        );
+    }
+
+    // Augmente la quantité d'un menu.
+    #[Route(
+        '/menu/plus/{id}',
+        name: 'app_front_panier_menu_plus',
+        methods: ['POST']
+    )]
+    public function plusMenu(
+        Request $request,
+        Menu $menu
+    ): Response {
+        if (
+            !$this->isCsrfTokenValid(
+                'panier_menu_plus'
+                . $menu->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isMenuDisponible($menu)) {
+            $this->addFlash(
+                'warning',
+                'Ce menu n\'est plus disponible.'
+            );
+
+            return $this->redirectToRoute(
+                'app_front_panier'
+            );
+        }
+
+        $session = $request->getSession();
+
+        $panierMenus = $session->get(
+            'panier_menus',
+            []
+        );
+
+        $menuId = $menu->getId();
+
+        if (isset($panierMenus[$menuId])) {
+            $panierMenus[$menuId]++;
+        }
+
+        $session->set(
+            'panier_menus',
+            $panierMenus
+        );
+
+        return $this->redirectToRoute(
+            'app_front_panier'
+        );
+    }
+
+    // Diminue la quantité d'un menu.
+    #[Route(
+        '/menu/moins/{id}',
+        name: 'app_front_panier_menu_minus',
+        methods: ['POST']
+    )]
+    public function minusMenu(
+        Request $request,
+        Menu $menu
+    ): Response {
+        if (
+            !$this->isCsrfTokenValid(
+                'panier_menu_minus'
+                . $menu->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $session = $request->getSession();
+
+        $panierMenus = $session->get(
+            'panier_menus',
+            []
+        );
+
+        $menuId = $menu->getId();
+
+        if (isset($panierMenus[$menuId])) {
+            if ($panierMenus[$menuId] > 1) {
+                $panierMenus[$menuId]--;
+            } else {
+                unset(
+                    $panierMenus[$menuId]
+                );
+            }
+        }
+
+        $session->set(
+            'panier_menus',
+            $panierMenus
+        );
+
+        return $this->redirectToRoute(
+            'app_front_panier'
+        );
+    }
+
+    // Supprime un menu du panier.
+    #[Route(
+        '/menu/supprimer/{id}',
+        name: 'app_front_panier_menu_delete',
+        methods: ['POST']
+    )]
+    public function deleteMenu(
+        Request $request,
+        Menu $menu
+    ): Response {
+        if (
+            !$this->isCsrfTokenValid(
+                'panier_menu_delete'
+                . $menu->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
+            )
+        ) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $session = $request->getSession();
+
+        $panierMenus = $session->get(
+            'panier_menus',
+            []
+        );
+
+        unset(
+            $panierMenus[$menu->getId()]
+        );
+
+        $session->set(
+            'panier_menus',
+            $panierMenus
+        );
+
+        return $this->redirectToRoute(
+            'app_front_panier'
+        );
+    }
+
     // Transforme le panier en commande.
     #[Route(
         '/valider',
@@ -244,11 +508,11 @@ class FrontPanierController extends AbstractController
     public function validatePanier(
         Request $request,
         ProduitRepository $produitRepository,
+        MenuRepository $menuRepository,
         EntityManagerInterface $entityManager
     ): Response {
         $utilisateur = $this->getUser();
 
-        // Demande une connexion avant de commander.
         if (!$utilisateur instanceof Utilisateur) {
             $this->addFlash(
                 'warning',
@@ -263,7 +527,9 @@ class FrontPanierController extends AbstractController
         if (
             !$this->isCsrfTokenValid(
                 'panier_validate',
-                $request->getPayload()->getString('_token')
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -271,11 +537,14 @@ class FrontPanierController extends AbstractController
 
         $panier = $this->buildPanier(
             $request,
-            $produitRepository
+            $produitRepository,
+            $menuRepository
         );
 
-        // Empêche la création d'une commande vide.
-        if ($panier['articles'] === []) {
+        if (
+            $panier['articles'] === []
+            && $panier['menus'] === []
+        ) {
             $this->addFlash(
                 'warning',
                 'Votre panier est vide.'
@@ -286,7 +555,7 @@ class FrontPanierController extends AbstractController
             );
         }
 
-        // Vérifie une dernière fois la disponibilité.
+        // Vérifie les produits.
         foreach ($panier['articles'] as $article) {
             if (!$article['produit']->isProduitStock()) {
                 $this->addFlash(
@@ -300,7 +569,20 @@ class FrontPanierController extends AbstractController
             }
         }
 
-        // Crée la commande.
+        // Vérifie les menus.
+        foreach ($panier['menus'] as $articleMenu) {
+            if (!$articleMenu['disponible']) {
+                $this->addFlash(
+                    'warning',
+                    'Un menu du panier n\'est plus disponible.'
+                );
+
+                return $this->redirectToRoute(
+                    'app_front_panier'
+                );
+            }
+        }
+
         $commande = new Commande();
 
         $commande->setCommandeDate(
@@ -328,17 +610,75 @@ class FrontPanierController extends AbstractController
             $commande
         );
 
-        // Crée une ligne Detail pour chaque produit.
+        // Crée les lignes produits.
         foreach ($panier['articles'] as $article) {
             $produit = $article['produit'];
             $quantite = $article['quantite'];
 
-            $prixUnitaire = (float) $produit->getProduitPrix();
+            $prixUnitaire =
+                (float) $produit->getProduitPrix();
 
             $detail = new Detail();
 
             $detail->setProduit(
                 $produit
+            );
+
+            $detail->setMenu(
+                null
+            );
+
+            $detail->setCommande(
+                $commande
+            );
+
+            $detail->setDetailQuantite(
+                $quantite
+            );
+
+            $detail->setDetailUnitaire(
+                number_format(
+                    $prixUnitaire,
+                    2,
+                    '.',
+                    ''
+                )
+            );
+
+            $detail->setDetailTotal(
+                number_format(
+                    $prixUnitaire * $quantite,
+                    2,
+                    '.',
+                    ''
+                )
+            );
+
+            $commande->addDetail(
+                $detail
+            );
+
+            $entityManager->persist(
+                $detail
+            );
+        }
+
+        // Crée les lignes menus.
+        foreach ($panier['menus'] as $articleMenu) {
+            $menu = $articleMenu['menu'];
+            $quantite = $articleMenu['quantite'];
+
+            $prixUnitaire =
+                (float) $menu->getMenuPrix();
+
+            $detail = new Detail();
+
+            $detail->setProduit(
+                null
+            );
+
+            $detail->setMenu(
+                $menu
             );
 
             $detail->setCommande(
@@ -378,10 +718,18 @@ class FrontPanierController extends AbstractController
 
         $entityManager->flush();
 
-        // Vide le panier après validation.
-        $request->getSession()->remove(
-            'panier'
-        );
+        // Vide entièrement le panier.
+        $request
+            ->getSession()
+            ->remove(
+                'panier'
+            );
+
+        $request
+            ->getSession()
+            ->remove(
+                'panier_menus'
+            );
 
         $this->addFlash(
             'success',
@@ -397,30 +745,36 @@ class FrontPanierController extends AbstractController
         );
     }
 
-    // Construit les données affichées dans le panier.
+    // Construit le panier complet.
     private function buildPanier(
         Request $request,
-        ProduitRepository $produitRepository
+        ProduitRepository $produitRepository,
+        MenuRepository $menuRepository
     ): array {
         $session = $request->getSession();
 
+        $articles = [];
+        $menus = [];
+
+        $total = 0.0;
+        $quantiteTotale = 0;
+
+        // Produits.
         $panierSession = $session->get(
             'panier',
             []
         );
 
-        $articles = [];
-        $total = 0.0;
-        $quantiteTotale = 0;
-
         $panierNettoye = $panierSession;
 
-        foreach ($panierSession as $produitId => $quantite) {
+        foreach (
+            $panierSession
+            as $produitId => $quantite
+        ) {
             $produit = $produitRepository->find(
                 $produitId
             );
 
-            // Retire automatiquement les produits inexistants.
             if ($produit === null) {
                 unset(
                     $panierNettoye[$produitId]
@@ -455,10 +809,92 @@ class FrontPanierController extends AbstractController
             );
         }
 
+        // Menus.
+        $panierMenusSession = $session->get(
+            'panier_menus',
+            []
+        );
+
+        $panierMenusNettoye =
+            $panierMenusSession;
+
+        foreach (
+            $panierMenusSession
+            as $menuId => $quantite
+        ) {
+            $menu = $menuRepository->find(
+                $menuId
+            );
+
+            if ($menu === null) {
+                unset(
+                    $panierMenusNettoye[$menuId]
+                );
+
+                continue;
+            }
+
+            $quantite = max(
+                1,
+                (int) $quantite
+            );
+
+            $sousTotal =
+                (float) $menu->getMenuPrix()
+                * $quantite;
+
+            $menus[] = [
+                'menu' => $menu,
+                'quantite' => $quantite,
+                'sousTotal' => $sousTotal,
+
+                'disponible' =>
+                    $this->isMenuDisponible(
+                        $menu
+                    ),
+            ];
+
+            $total += $sousTotal;
+            $quantiteTotale += $quantite;
+        }
+
+        if (
+            $panierMenusNettoye
+            !== $panierMenusSession
+        ) {
+            $session->set(
+                'panier_menus',
+                $panierMenusNettoye
+            );
+        }
+
         return [
             'articles' => $articles,
+            'menus' => $menus,
             'total' => $total,
-            'quantiteTotale' => $quantiteTotale,
+            'quantiteTotale' =>
+                $quantiteTotale,
         ];
+    }
+
+    // Vérifie si un menu peut être commandé.
+    private function isMenuDisponible(
+        Menu $menu
+    ): bool {
+        if (!$menu->isMenuStatus()) {
+            return false;
+        }
+
+        if ($menu->getProduits()->isEmpty()) {
+            return false;
+        }
+
+        foreach ($menu->getProduits() as $produit) {
+            if (!$produit->isProduitStock()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

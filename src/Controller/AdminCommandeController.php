@@ -28,7 +28,10 @@ final class AdminCommandeController extends AbstractController
         $search = trim(
             (string) $request
                 ->request
-                ->get('search', '')
+                ->get(
+                    'search',
+                    ''
+                )
         );
 
         if ($search !== '') {
@@ -69,6 +72,10 @@ final class AdminCommandeController extends AbstractController
             new \DateTime()
         );
 
+        $commande->setCommandeTotal(
+            '0.00'
+        );
+
         $form = $this->createForm(
             CommandeType::class,
             $commande
@@ -78,7 +85,15 @@ final class AdminCommandeController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+        ) {
+            // Une nouvelle commande ne contient encore aucun article.
+            $commande->setCommandeTotal(
+                '0.00'
+            );
+
             $entityManager->persist(
                 $commande
             );
@@ -152,7 +167,10 @@ final class AdminCommandeController extends AbstractController
             $request
         );
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if (
+            $form->isSubmitted()
+            && $form->isValid()
+        ) {
             $this->recalculateCommandeTotal(
                 $commande
             );
@@ -176,14 +194,16 @@ final class AdminCommandeController extends AbstractController
             [
                 'commande' => $commande,
                 'form' => $form,
-                'produitsDisponibles' => $produitRepository->findBy(
-                    [
-                        'produit_stock' => true,
-                    ],
-                    [
-                        'produit_nom' => 'ASC',
-                    ]
-                ),
+
+                'produitsDisponibles' =>
+                    $produitRepository->findBy(
+                        [
+                            'produit_stock' => true,
+                        ],
+                        [
+                            'produit_nom' => 'ASC',
+                        ]
+                    ),
             ]
         );
     }
@@ -202,8 +222,11 @@ final class AdminCommandeController extends AbstractController
     ): Response {
         if (
             !$this->isCsrfTokenValid(
-                'commande_add_product' . $commande->getId(),
-                $request->getPayload()->getString('_token')
+                'commande_add_product'
+                . $commande->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             $this->addFlash(
@@ -221,13 +244,18 @@ final class AdminCommandeController extends AbstractController
 
         $produitId = $request
             ->getPayload()
-            ->getInt('produit_id');
+            ->getInt(
+                'produit_id'
+            );
 
         $quantite = max(
             1,
             $request
                 ->getPayload()
-                ->getInt('quantite', 1)
+                ->getInt(
+                    'quantite',
+                    1
+                )
         );
 
         $produit = $produitRepository->find(
@@ -256,16 +284,21 @@ final class AdminCommandeController extends AbstractController
         foreach ($commande->getDetails() as $detail) {
             if (
                 $detail->getProduit()
-                && $detail->getProduit()->getId() === $produit->getId()
+                && $detail
+                    ->getProduit()
+                    ->getId()
+                    === $produit->getId()
             ) {
                 $detailExistant = $detail;
+
                 break;
             }
         }
 
         if ($detailExistant !== null) {
             $detailExistant->setDetailQuantite(
-                $detailExistant->getDetailQuantite()
+                $detailExistant
+                    ->getDetailQuantite()
                 + $quantite
             );
 
@@ -281,6 +314,10 @@ final class AdminCommandeController extends AbstractController
 
             $detail->setProduit(
                 $produit
+            );
+
+            $detail->setMenu(
+                null
             );
 
             $detail->setDetailQuantite(
@@ -343,8 +380,11 @@ final class AdminCommandeController extends AbstractController
 
         if (
             !$this->isCsrfTokenValid(
-                'commande_detail_plus' . $detail->getId(),
-                $request->getPayload()->getString('_token')
+                'commande_detail_plus'
+                . $detail->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -392,8 +432,11 @@ final class AdminCommandeController extends AbstractController
 
         if (
             !$this->isCsrfTokenValid(
-                'commande_detail_minus' . $detail->getId(),
-                $request->getPayload()->getString('_token')
+                'commande_detail_minus'
+                . $detail->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -443,8 +486,11 @@ final class AdminCommandeController extends AbstractController
 
         if (
             !$this->isCsrfTokenValid(
-                'commande_detail_delete' . $detail->getId(),
-                $request->getPayload()->getString('_token')
+                'commande_detail_delete'
+                . $detail->getId(),
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
             throw $this->createAccessDeniedException();
@@ -466,7 +512,7 @@ final class AdminCommandeController extends AbstractController
 
         $this->addFlash(
             'success',
-            'Le produit a été retiré de la commande.'
+            'L\'article a été retiré de la commande.'
         );
 
         return $this->redirectToRoute(
@@ -491,10 +537,15 @@ final class AdminCommandeController extends AbstractController
         if (
             $this->isCsrfTokenValid(
                 'delete' . $commande->getId(),
-                $request->getPayload()->getString('_token')
+                $request
+                    ->getPayload()
+                    ->getString('_token')
             )
         ) {
-            foreach ($commande->getDetails() as $detail) {
+            foreach (
+                $commande->getDetails()
+                as $detail
+            ) {
                 $entityManager->remove(
                     $detail
                 );
@@ -531,14 +582,19 @@ final class AdminCommandeController extends AbstractController
         EntityManagerInterface $entityManager
     ): Detail {
         $detail = $entityManager
-            ->getRepository(Detail::class)
+            ->getRepository(
+                Detail::class
+            )
             ->find(
                 $detailId
             );
 
         if (
             $detail === null
-            || $detail->getCommande()?->getId() !== $commande->getId()
+            || $detail
+                ->getCommande()
+                ?->getId()
+                !== $commande->getId()
         ) {
             throw $this->createNotFoundException(
                 'Cette ligne de commande n\'existe pas.'
@@ -552,9 +608,12 @@ final class AdminCommandeController extends AbstractController
     private function updateDetailTotal(
         Detail $detail
     ): void {
-        $prixUnitaire = (float) $detail->getDetailUnitaire();
+        $prixUnitaire =
+            (float) $detail->getDetailUnitaire();
 
-        $quantite = $detail->getDetailQuantite() ?? 0;
+        $quantite =
+            $detail->getDetailQuantite()
+            ?? 0;
 
         $detail->setDetailTotal(
             number_format(
@@ -573,7 +632,11 @@ final class AdminCommandeController extends AbstractController
         $total = 0.0;
 
         foreach ($commande->getDetails() as $detail) {
-            if ($detail->getProduit() === null) {
+            // Ignore seulement une ligne dont le produit ET le menu n'existent plus.
+            if (
+                $detail->getProduit() === null
+                && $detail->getMenu() === null
+            ) {
                 continue;
             }
 
@@ -581,7 +644,8 @@ final class AdminCommandeController extends AbstractController
                 $detail
             );
 
-            $total += (float) $detail->getDetailTotal();
+            $total +=
+                (float) $detail->getDetailTotal();
         }
 
         $commande->setCommandeTotal(

@@ -20,69 +20,156 @@
     <div class="card-body">
 
         <div class="mb-3">
+
             {{ form_label(form.menu_nom) }}
             {{ form_widget(form.menu_nom) }}
             {{ form_errors(form.menu_nom) }}
+
         </div>
 
         <div class="mb-3">
+
             {{ form_label(form.menu_description) }}
             {{ form_widget(form.menu_description) }}
             {{ form_errors(form.menu_description) }}
+
         </div>
 
         <div class="mb-3">
+
             {{ form_label(form.menu_prix) }}
             {{ form_widget(form.menu_prix) }}
             {{ form_errors(form.menu_prix) }}
+
         </div>
 
         <div class="mb-3">
 
             {{ form_label(form.produits) }}
 
-            <details class="wacdo-multi-select">
+            <div class="row g-2 mb-3">
 
-                <summary class="form-select">
-                    Sélectionner un ou plusieurs produits
-                </summary>
+                <div class="col-12 col-md">
 
-                <div class="wacdo-multi-select-options">
-
-                    {% for produitField in form.produits %}
-
-                        <div class="form-check">
-
-                            {{ form_widget(produitField, {
-                                'attr': {
-                                    'class': 'form-check-input'
-                                }
-                            }) }}
-
-                            {{ form_label(produitField, null, {
-                                'label_attr': {
-                                    'class': 'form-check-label'
-                                }
-                            }) }}
-
-                        </div>
-
-                    {% else %}
-
-                        <p class="text-muted mb-0">
-                            Aucun produit disponible.
-                        </p>
-
-                    {% endfor %}
+                    <input
+                        type="text"
+                        id="menu-product-search"
+                        class="form-control"
+                        placeholder="Rechercher un produit..."
+                    >
 
                 </div>
 
-            </details>
+                <div class="col-12 col-md-4">
+
+                    <select
+                        id="menu-product-category"
+                        class="form-select"
+                    >
+
+                        <option value="">
+                            Toutes les catégories
+                        </option>
+
+                        {% for categorie in categories %}
+
+                            <option value="{{ categorie.id }}">
+                                {{ categorie.categorieNom }}
+                            </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="mb-2">
+
+                <strong>
+                    Produits sélectionnés :
+                    <span id="menu-product-count">
+                        0
+                    </span>
+                </strong>
+
+            </div>
+
+            <div
+                id="menu-product-list"
+                class="border rounded p-3"
+                style="max-height: 350px; overflow-y: auto;"
+            >
+
+                {% for produitField in form.produits %}
+
+                    {% set produit = produitField.vars.choice.data %}
+
+                    <div
+                        class="form-check mb-2 menu-product-option"
+                        data-name="{{ produit.produitNom|lower|e('html_attr') }}"
+                        data-category="{{ produit.categorie ? produit.categorie.id : '' }}"
+                    >
+
+                        {{ form_widget(
+                            produitField,
+                            {
+                                'attr': {
+                                    'class': 'form-check-input menu-product-checkbox'
+                                }
+                            }
+                        ) }}
+
+                        {{ form_label(
+                            produitField,
+                            null,
+                            {
+                                'label_attr': {
+                                    'class': 'form-check-label'
+                                }
+                            }
+                        ) }}
+
+                        {% if produit.categorie %}
+
+                            <span class="text-muted small ms-2">
+                                {{ produit.categorie.categorieNom }}
+                            </span>
+
+                        {% else %}
+
+                            <span class="text-muted small ms-2">
+                                Sans catégorie
+                            </span>
+
+                        {% endif %}
+
+                        {% if not produit.produitStock %}
+
+                            <span class="badge bg-danger ms-2">
+                                Indisponible
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+                {% else %}
+
+                    <p class="text-muted mb-0">
+                        Aucun produit disponible.
+                    </p>
+
+                {% endfor %}
+
+            </div>
 
             {{ form_errors(form.produits) }}
 
             <div class="form-text">
-                Vous pouvez sélectionner plusieurs produits.
+                Cochez les produits un par un pour composer le menu.
+                Les produits déjà cochés restent sélectionnés lorsque vous utilisez les filtres.
             </div>
 
         </div>
@@ -94,7 +181,8 @@
             {{ form_errors(form.imageFile) }}
 
             <div class="form-text">
-                Formats acceptés : JPG, PNG ou WEBP. Taille maximale : 2 Mo.
+                Formats acceptés : JPG, PNG ou WEBP.
+                Taille maximale : 2 Mo.
             </div>
 
             {% if menu.menuImage %}
@@ -157,3 +245,113 @@
 
 </div>
 
+<script>
+document.addEventListener(
+    'DOMContentLoaded',
+    function () {
+
+        const searchInput = document.getElementById(
+            'menu-product-search'
+        );
+
+        const categorySelect = document.getElementById(
+            'menu-product-category'
+        );
+
+        const options = document.querySelectorAll(
+            '.menu-product-option'
+        );
+
+        const checkboxes = document.querySelectorAll(
+            '.menu-product-checkbox'
+        );
+
+        const count = document.getElementById(
+            'menu-product-count'
+        );
+
+        function updateCount() {
+
+            let total = 0;
+
+            checkboxes.forEach(
+                function (checkbox) {
+
+                    if (checkbox.checked) {
+                        total++;
+                    }
+
+                }
+            );
+
+            if (count) {
+                count.textContent = total;
+            }
+        }
+
+        function filterProducts() {
+
+            const search = searchInput
+                ? searchInput.value
+                    .trim()
+                    .toLowerCase()
+                : '';
+
+            const category = categorySelect
+                ? categorySelect.value
+                : '';
+
+            options.forEach(
+                function (option) {
+
+                    const name =
+                        option.dataset.name || '';
+
+                    const productCategory =
+                        option.dataset.category || '';
+
+                    const matchSearch =
+                        search === ''
+                        || name.includes(search);
+
+                    const matchCategory =
+                        category === ''
+                        || productCategory === category;
+
+                    option.style.display =
+                        matchSearch && matchCategory
+                            ? ''
+                            : 'none';
+                }
+            );
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener(
+                'input',
+                filterProducts
+            );
+        }
+
+        if (categorySelect) {
+            categorySelect.addEventListener(
+                'change',
+                filterProducts
+            );
+        }
+
+        checkboxes.forEach(
+            function (checkbox) {
+
+                checkbox.addEventListener(
+                    'change',
+                    updateCount
+                );
+
+            }
+        );
+
+        updateCount();
+    }
+);
+</script>

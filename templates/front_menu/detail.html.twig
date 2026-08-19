@@ -1,27 +1,202 @@
 {% extends 'base.html.twig' %}
-{% block title %}{{ menu.menuNom }} | Wacdo{% endblock %}
+
+{% block title %}
+    {{ menu.menuNom }} | Wacdo
+{% endblock %}
+
 {% block body %}
+
 <section class="front-section">
-    <div class="mb-4"><a href="{{ path('app_front_menu') }}" class="btn btn-secondary">Retour aux menus</a></div>
-    <div class="card front-card"><div class="card-body p-4"><div class="row g-5">
-        <div class="col-12 col-lg-5">
-            {% if menu.menuImage %}<div class="front-product-detail-image"><img src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}" alt="{{ menu.menuNom }}" class="img-fluid"></div>
-            {% else %}<div class="front-product-detail-image front-product-image-empty">Aucune image</div>{% endif %}
+
+    <div class="mb-4">
+
+        <a
+            href="{{ path('app_front_menu') }}"
+            class="btn btn-secondary"
+        >
+            Retour aux menus
+        </a>
+
+    </div>
+
+    <div class="card front-card">
+
+        <div class="card-body p-4">
+
+            <div class="row g-5">
+
+                <div class="col-12 col-lg-5">
+
+                    {% if menu.menuImage %}
+
+                        <div class="front-product-detail-image">
+
+                            <img
+                                src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
+                                alt="{{ menu.menuNom }}"
+                                class="img-fluid"
+                            >
+
+                        </div>
+
+                    {% else %}
+
+                        <div class="front-product-detail-image front-product-image-empty">
+                            Aucune image
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+                <div class="col-12 col-lg-7">
+
+                    <h1 class="display-6 fw-bold mb-3">
+                        {{ menu.menuNom }}
+                    </h1>
+
+                    <strong class="front-product-detail-price">
+                        {{ menu.menuPrix|number_format(2, ',', ' ') }}
+                        €
+                    </strong>
+
+                    <div class="my-4">
+
+                        {% if menu.menuDescription %}
+
+                            {{ menu.menuDescription|raw }}
+
+                        {% else %}
+
+                            <p class="text-muted">
+                                Aucune description.
+                            </p>
+
+                        {% endif %}
+
+                    </div>
+
+                    <h2 class="h5">
+                        Composition
+                    </h2>
+
+                    <ul class="list-group list-group-flush">
+
+                        {% set menuDisponible = menu.menuStatus %}
+
+                        {% for produit in menu.produits %}
+
+                            {% if not produit.produitStock %}
+                                {% set menuDisponible = false %}
+                            {% endif %}
+
+                            <li class="list-group-item px-0 d-flex justify-content-between">
+
+                                <span>
+                                    {{ produit.produitNom }}
+                                </span>
+
+                                {% if produit.produitStock %}
+
+                                    <span class="badge text-bg-success">
+                                        Disponible
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="badge text-bg-danger">
+                                        Indisponible
+                                    </span>
+
+                                {% endif %}
+
+                            </li>
+
+                        {% else %}
+
+                            {% set menuDisponible = false %}
+
+                            <li class="list-group-item px-0 text-muted">
+                                Aucun produit dans ce menu.
+                            </li>
+
+                        {% endfor %}
+
+                    </ul>
+
+                    <div class="mt-4">
+
+                        {% if menuDisponible %}
+
+                            <form
+                                method="post"
+                                action="{{ path(
+                                    'app_front_panier_menu_add',
+                                    {
+                                        'id': menu.id
+                                    }
+                                ) }}"
+                                class="front-add-cart-form"
+                            >
+
+                                <input
+                                    type="hidden"
+                                    name="_token"
+                                    value="{{ csrf_token(
+                                        'panier_menu_add'
+                                        ~ menu.id
+                                    ) }}"
+                                >
+
+                                <div>
+
+                                    <label
+                                        for="menu-quantite"
+                                        class="form-label"
+                                    >
+                                        Quantité
+                                    </label>
+
+                                    <input
+                                        id="menu-quantite"
+                                        type="number"
+                                        name="quantite"
+                                        class="form-control"
+                                        value="1"
+                                        min="1"
+                                        max="99"
+                                        required
+                                    >
+
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary"
+                                >
+                                    Ajouter le menu au panier
+                                </button>
+
+                            </form>
+
+                        {% else %}
+
+                            <div class="alert alert-warning mb-0">
+                                Ce menu n'est actuellement pas disponible.
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-        <div class="col-12 col-lg-7">
-            <h1 class="display-6 fw-bold mb-3">{{ menu.menuNom }}</h1>
-            <strong class="front-product-detail-price">{{ menu.menuPrix|number_format(2, ',', ' ') }} €</strong>
-            <div class="my-4">{{ menu.menuDescription ? menu.menuDescription|raw : '<p class="text-muted">Aucune description.</p>'|raw }}</div>
-            <h2 class="h5">Composition</h2>
-            <ul class="list-group list-group-flush">
-                {% for produit in menu.produits %}
-                    <li class="list-group-item px-0 d-flex justify-content-between">
-                        <span>{{ produit.produitNom }}</span>
-                        {% if produit.produitStock %}<span class="badge text-bg-success">Disponible</span>{% else %}<span class="badge text-bg-danger">Indisponible</span>{% endif %}
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-    </div></div></div>
+
+    </div>
+
 </section>
+
 {% endblock %}
