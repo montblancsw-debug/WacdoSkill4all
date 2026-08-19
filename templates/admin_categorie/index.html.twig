@@ -45,7 +45,6 @@
 
 		<div class="card-body">
 
-			{# Recherche une catégorie. #}
 			<form
 				method="post"
 				action="{{ path('app_admin_categorie_index') }}"
@@ -72,6 +71,17 @@
 					>
 						Rechercher
 					</button>
+
+				</div>
+
+				<div class="col-auto">
+
+					<a
+						href="{{ path('app_admin_categorie_index') }}"
+						class="btn btn-secondary"
+					>
+						Réinitialiser
+					</a>
 
 				</div>
 

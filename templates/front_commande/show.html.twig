@@ -1,262 +1,476 @@
-{# Page d'accueil du back-office Wacdo. #}
+{# Détail d'une commande client. #}
 
-{% extends 'base-backend.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}
-	Tableau de bord | Wacdo
+    Commande #{{ commande.id }} | Wacdo
 {% endblock %}
 
 {% block body %}
 
-	<div class="mb-4">
+<section class="front-section">
 
-		<h1 class="h3 mb-1">
-			Tableau de bord
-		</h1>
+    <div class="d-flex justify-content-between align-items-center mb-4">
 
-		<p class="text-muted mb-0">
-			Vue générale de l'administration Wacdo.
-		</p>
+        <div>
 
-	</div>
+            <h1 class="h2 mb-1">
+                Commande #{{ commande.id }}
+            </h1>
 
-	<div class="row">
+            <p class="text-muted mb-0">
 
-		{# Les informations des Produits sont réservées à l'administrateur. #}
-		{% if is_granted('ROLE_ADMIN') %}
+                {% if commande.commandeDate %}
 
-			{# Carte des catégories. #}
-			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+                    {{ commande.commandeDate
+                        |date('d/m/Y à H:i')
+                    }}
 
-				<div class="card flex-fill wacdo-dashboard-card">
+                {% endif %}
 
-					<div class="card-body">
+            </p>
 
-						<div class="row">
+        </div>
 
-							<div class="col mt-0">
+        <a
+            href="{{ path('app_front_commande') }}"
+            class="btn btn-secondary"
+        >
+            Retour à mes commandes
+        </a>
 
-								<h5 class="card-title">
+    </div>
 
-									<a href="{{ path('app_admin_categorie_index') }}">
-										Catégories
-									</a>
+    <div class="card front-card mb-4">
 
-								</h5>
+        <div class="card-body">
 
-							</div>
+            <div class="row g-4 align-items-center">
 
-							<div class="col-auto">
+                <div class="col-12 col-md">
 
-								<div class="stat wacdo-dashboard-stat">
+                    <div class="text-muted small">
+                        Statut
+                    </div>
 
-									<i
-										class="align-middle"
-										data-feather="grid"
-									></i>
+                    <div class="mt-1">
 
-								</div>
+                        {% if commande.commandeStatut == 'en attente' %}
 
-							</div>
+                            <span class="badge text-bg-secondary">
+                                En attente
+                            </span>
 
-						</div>
+                        {% elseif commande.commandeStatut == 'en préparation' %}
 
-						<h1 class="mt-1 mb-3">
-							{{ numCategorie }}
-						</h1>
+                            <span class="badge text-bg-warning">
+                                En préparation
+                            </span>
 
-						<div class="mb-0">
+                        {% elseif commande.commandeStatut == 'prête' %}
 
-							<span class="text-muted">
-								Catégories enregistrées
-							</span>
+                            <span class="badge text-bg-info">
+                                Prête
+                            </span>
 
-						</div>
+                        {% elseif commande.commandeStatut == 'en livraison' %}
 
-					</div>
+                            <span class="badge text-bg-primary">
+                                En livraison
+                            </span>
 
-				</div>
+                        {% elseif commande.commandeStatut == 'livrée' %}
 
-			</div>
+                            <span class="badge text-bg-success">
+                                Livrée
+                            </span>
 
-			{# Carte des produits. #}
-			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+                        {% elseif commande.commandeStatut == 'annulée' %}
 
-				<div class="card flex-fill wacdo-dashboard-card">
+                            <span class="badge text-bg-danger">
+                                Annulée
+                            </span>
 
-					<div class="card-body">
+                        {% else %}
 
-						<div class="row">
+                            <span class="badge text-bg-secondary">
+                                {{ commande.commandeStatut }}
+                            </span>
 
-							<div class="col mt-0">
+                        {% endif %}
 
-								<h5 class="card-title">
+                    </div>
 
-									<a href="{{ path('app_admin_produit_index') }}">
-										Produits
-									</a>
+                </div>
 
-								</h5>
+                <div class="col-12 col-md-auto">
 
-							</div>
+                    <div class="text-muted small">
+                        Total
+                    </div>
 
-							<div class="col-auto">
+                    <strong class="fs-4">
+                        {{ commande.commandeTotal
+                            |number_format(
+                                2,
+                                ',',
+                                ' '
+                            )
+                        }}
+                        €
+                    </strong>
 
-								<div class="stat wacdo-dashboard-stat">
+                </div>
 
-									<i
-										class="align-middle"
-										data-feather="package"
-									></i>
+            </div>
 
-								</div>
+        </div>
 
-							</div>
+    </div>
 
-						</div>
+    <div class="card front-card mb-4">
 
-						<h1 class="mt-1 mb-3">
-							{{ numProduit }}
-						</h1>
+        <div class="card-header">
 
-						<div class="mb-0">
+            <h2 class="h5 mb-0">
+                Articles
+            </h2>
 
-							<span class="text-muted">
-								Produits enregistrés
-							</span>
+        </div>
 
-						</div>
+        <div class="card-body">
 
-					</div>
+            <div class="table-responsive">
 
-				</div>
+                <table class="table align-middle">
 
-			</div>
+                    <thead>
 
-		{% endif %}
+                        <tr>
+                            <th>Image</th>
+                            <th>Article</th>
+                            <th>Prix unitaire</th>
+                            <th>Quantité</th>
+                            <th>Total</th>
+                        </tr>
 
-		{# Les trois rôles peuvent consulter les commandes. #}
-		{% if
-			is_granted('ROLE_ADMIN')
-			or is_granted('ROLE_PREPARATEUR')
-			or is_granted('ROLE_ACCUEIL')
-		%}
+                    </thead>
 
-			{# Carte des commandes. #}
-			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+                    <tbody>
 
-				<div class="card flex-fill wacdo-dashboard-card">
+                        {% set articleVisible = false %}
 
-					<div class="card-body">
+                        {% for detail in commande.details %}
 
-						<div class="row">
+                            {% if
+                                detail.produit
+                                or detail.menu
+                            %}
 
-							<div class="col mt-0">
+                                {% set articleVisible = true %}
 
-								<h5 class="card-title">
+                                <tr>
 
-									<a href="{{ path('app_admin_commande_index') }}">
-										Commandes
-									</a>
+                                    <td>
 
-								</h5>
+                                        {% if
+                                            detail.produit
+                                            and detail.produit.produitImage
+                                        %}
 
-							</div>
+                                            <img
+                                                src="{{ asset(
+                                                    'images/produits/'
+                                                    ~ detail.produit.produitImage
+                                                ) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
+                                                alt="{{ detail.produit.produitNom }}"
+                                                class="front-cart-image"
+                                            >
 
-							<div class="col-auto">
+                                        {% elseif
+                                            detail.menu
+                                            and detail.menu.menuImage
+                                        %}
 
-								<div class="stat wacdo-dashboard-stat">
+                                            <img
+                                                src="{{ asset(
+                                                    'images/menus/'
+                                                    ~ detail.menu.menuImage
+                                                ) }}?v={{ detail.menu.updatedAt ? detail.menu.updatedAt|date('U') : '1' }}"
+                                                alt="{{ detail.menu.menuNom }}"
+                                                class="front-cart-image"
+                                            >
 
-									<i
-										class="align-middle"
-										data-feather="shopping-cart"
-									></i>
+                                        {% else %}
 
-								</div>
+                                            <div class="front-cart-image-empty">
+                                                —
+                                            </div>
 
-							</div>
+                                        {% endif %}
 
-						</div>
+                                    </td>
 
-						<h1 class="mt-1 mb-3">
-							{{ numCommande }}
-						</h1>
+                                    <td>
 
-						<div class="mb-0">
+                                        {% if detail.produit %}
 
-							<span class="text-muted">
-								Commandes enregistrées
-							</span>
+                                            <strong>
+                                                {{ detail.produit.produitNom }}
+                                            </strong>
 
-						</div>
+                                            <div class="small text-muted">
+                                                Produit
+                                            </div>
 
-					</div>
+                                            {% if detail.produit.categorie %}
 
-				</div>
+                                                <div class="small text-muted">
+                                                    {{ detail.produit.categorie.categorieNom }}
+                                                </div>
 
-			</div>
+                                            {% endif %}
 
-		{% endif %}
+                                        {% elseif detail.menu %}
 
-		{# La gestion des utilisateurs est réservée à l'administrateur. #}
-		{% if is_granted('ROLE_ADMIN') %}
+                                            <strong>
+                                                {{ detail.menu.menuNom }}
+                                            </strong>
 
-			{# Carte des utilisateurs. #}
-			<div class="col-12 col-sm-6 col-xl-3 d-flex">
+                                            <div class="small text-muted">
+                                                Menu
+                                            </div>
 
-				<div class="card flex-fill wacdo-dashboard-card">
+                                            <div class="small text-muted">
 
-					<div class="card-body">
+                                                {% for produit in detail.menu.produits %}
 
-						<div class="row">
+                                                    {{ produit.produitNom }}
 
-							<div class="col mt-0">
+                                                    {% if not loop.last %}
+                                                        •
+                                                    {% endif %}
 
-								<h5 class="card-title">
+                                                {% endfor %}
 
-									<a href="{{ path('app_admin_utilisateur_index') }}">
-										Utilisateurs
-									</a>
+                                            </div>
 
-								</h5>
+                                        {% endif %}
 
-							</div>
+                                    </td>
 
-							<div class="col-auto">
+                                    <td>
 
-								<div class="stat wacdo-dashboard-stat">
+                                        {{ detail.detailUnitaire
+                                            |number_format(
+                                                2,
+                                                ',',
+                                                ' '
+                                            )
+                                        }}
+                                        €
 
-									<i
-										class="align-middle"
-										data-feather="users"
-									></i>
+                                    </td>
 
-								</div>
+                                    <td>
+                                        {{ detail.detailQuantite }}
+                                    </td>
 
-							</div>
+                                    <td>
 
-						</div>
+                                        <strong>
+                                            {{ detail.detailTotal
+                                                |number_format(
+                                                    2,
+                                                    ',',
+                                                    ' '
+                                                )
+                                            }}
+                                            €
+                                        </strong>
 
-						<h1 class="mt-1 mb-3">
-							{{ numUtilisateur }}
-						</h1>
+                                    </td>
 
-						<div class="mb-0">
+                                </tr>
 
-							<span class="text-muted">
-								Utilisateurs enregistrés
-							</span>
+                            {% endif %}
 
-						</div>
+                        {% endfor %}
 
-					</div>
+                        {% if not articleVisible %}
 
-				</div>
+                            <tr>
 
-			</div>
+                                <td
+                                    colspan="5"
+                                    class="text-center text-muted py-4"
+                                >
+                                    Cette commande ne contient aucun article.
+                                </td>
 
-		{% endif %}
+                            </tr>
 
-	</div>
+                        {% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+
+                <div class="front-cart-total">
+
+                    <span class="me-3">
+                        Total
+                    </span>
+
+                    <strong>
+                        {{ commande.commandeTotal
+                            |number_format(
+                                2,
+                                ',',
+                                ' '
+                            )
+                        }}
+                        €
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="d-flex flex-wrap gap-2">
+
+        {% if
+            commande.commandeStatut == 'en attente'
+            or commande.commandeStatut == 'en préparation'
+        %}
+
+            <a
+                href="{{ path(
+                    'app_front_commande_edit',
+                    {
+                        'id': commande.id
+                    }
+                ) }}"
+                class="btn btn-primary"
+            >
+                Modifier la commande
+            </a>
+
+        {% endif %}
+
+        {% if
+            commande.commandeStatut == 'en attente'
+            or commande.commandeStatut == 'en préparation'
+            or commande.commandeStatut == 'prête'
+        %}
+
+            <form
+                method="post"
+                action="{{ path(
+                    'app_front_commande_cancel',
+                    {
+                        'id': commande.id
+                    }
+                ) }}"
+                onsubmit="return confirm('Voulez-vous annuler cette commande ?');"
+            >
+
+                <input
+                    type="hidden"
+                    name="_token"
+                    value="{{ csrf_token(
+                        'front_commande_cancel'
+                        ~ commande.id
+                    ) }}"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                >
+                    Annuler la commande
+                </button>
+
+            </form>
+
+        {% endif %}
+
+        {% if commande.commandeStatut == 'annulée' %}
+
+            {% if commande.details is not empty %}
+
+                <form
+                    method="post"
+                    action="{{ path(
+                        'app_front_commande_relaunch',
+                        {
+                            'id': commande.id
+                        }
+                    ) }}"
+                    onsubmit="return confirm('Voulez-vous relancer cette commande ?');"
+                >
+
+                    <input
+                        type="hidden"
+                        name="_token"
+                        value="{{ csrf_token(
+                            'front_commande_relaunch'
+                            ~ commande.id
+                        ) }}"
+                    >
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Relancer la commande
+                    </button>
+
+                </form>
+
+            {% endif %}
+
+            <form
+                method="post"
+                action="{{ path(
+                    'app_front_commande_delete',
+                    {
+                        'id': commande.id
+                    }
+                ) }}"
+                onsubmit="return confirm('Voulez-vous supprimer définitivement cette commande ?');"
+            >
+
+                <input
+                    type="hidden"
+                    name="_token"
+                    value="{{ csrf_token(
+                        'front_commande_delete'
+                        ~ commande.id
+                    ) }}"
+                >
+
+                <button
+                    type="submit"
+                    class="btn btn-danger"
+                >
+                    Supprimer définitivement
+                </button>
+
+            </form>
+
+        {% endif %}
+
+    </div>
+
+</section>
 
 {% endblock %}

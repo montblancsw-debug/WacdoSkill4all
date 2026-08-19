@@ -19,6 +19,7 @@
 
     <div class="card-body">
 
+        {# Nom. #}
         <div class="mb-3">
 
             {{ form_label(form.menu_nom) }}
@@ -27,6 +28,7 @@
 
         </div>
 
+        {# Description. #}
         <div class="mb-3">
 
             {{ form_label(form.menu_description) }}
@@ -35,6 +37,7 @@
 
         </div>
 
+        {# Prix. #}
         <div class="mb-3">
 
             {{ form_label(form.menu_prix) }}
@@ -43,137 +46,153 @@
 
         </div>
 
-        <div class="mb-3">
+        {# Composition du menu. #}
+        <div class="mb-4">
 
-            {{ form_label(form.produits) }}
+            <label class="form-label">
+                Produits du menu
+            </label>
 
-            <div class="row g-2 mb-3">
+            <div class="card">
 
-                <div class="col-12 col-md">
+                <div class="card-body">
 
-                    <input
-                        type="text"
-                        id="menu-product-search"
-                        class="form-control"
-                        placeholder="Rechercher un produit..."
-                    >
+                    {# Filtre catégorie. #}
+                    <div class="row g-3 align-items-end">
 
-                </div>
+                        <div class="col-12 col-lg-4">
 
-                <div class="col-12 col-md-4">
+                            <label
+                                for="menu-product-category"
+                                class="form-label"
+                            >
+                                Catégorie
+                            </label>
 
-                    <select
-                        id="menu-product-category"
-                        class="form-select"
-                    >
+                            <select
+                                id="menu-product-category"
+                                class="form-select"
+                            >
 
-                        <option value="">
-                            Toutes les catégories
-                        </option>
+                                <option value="">
+                                    Toutes les catégories
+                                </option>
 
-                        {% for categorie in categories %}
+                                {% for categorie in categories %}
 
-                            <option value="{{ categorie.id }}">
-                                {{ categorie.categorieNom }}
-                            </option>
+                                    <option
+                                        value="{{ categorie.id }}"
+                                    >
+                                        {{ categorie.categorieNom }}
+                                    </option>
 
-                        {% endfor %}
+                                {% endfor %}
 
-                    </select>
+                            </select>
 
-                </div>
+                        </div>
 
-            </div>
+                        {# Choix du produit. #}
+                        <div class="col-12 col-lg-5">
 
-            <div class="mb-2">
+                            <label
+                                for="menu-product-select"
+                                class="form-label"
+                            >
+                                Produit
+                            </label>
 
-                <strong>
-                    Produits sélectionnés :
-                    <span id="menu-product-count">
-                        0
-                    </span>
-                </strong>
+                            <select
+                                id="menu-product-select"
+                                class="form-select"
+                            >
 
-            </div>
+                                <option value="">
+                                    Choisir un produit
+                                </option>
 
-            <div
-                id="menu-product-list"
-                class="border rounded p-3"
-                style="max-height: 350px; overflow-y: auto;"
-            >
+                            </select>
 
-                {% for produitField in form.produits %}
+                        </div>
 
-                    {% set produit = produitField.vars.choice.data %}
+                        {# Bouton Ajouter. #}
+                        <div class="col-12 col-lg-3">
 
-                    <div
-                        class="form-check mb-2 menu-product-option"
-                        data-name="{{ produit.produitNom|lower|e('html_attr') }}"
-                        data-category="{{ produit.categorie ? produit.categorie.id : '' }}"
-                    >
+                            <button
+                                type="button"
+                                id="menu-product-add"
+                                class="btn btn-primary w-100"
+                            >
+                                Ajouter le produit
+                            </button>
 
-                        {{ form_widget(
-                            produitField,
-                            {
-                                'attr': {
-                                    'class': 'form-check-input menu-product-checkbox'
-                                }
-                            }
-                        ) }}
-
-                        {{ form_label(
-                            produitField,
-                            null,
-                            {
-                                'label_attr': {
-                                    'class': 'form-check-label'
-                                }
-                            }
-                        ) }}
-
-                        {% if produit.categorie %}
-
-                            <span class="text-muted small ms-2">
-                                {{ produit.categorie.categorieNom }}
-                            </span>
-
-                        {% else %}
-
-                            <span class="text-muted small ms-2">
-                                Sans catégorie
-                            </span>
-
-                        {% endif %}
-
-                        {% if not produit.produitStock %}
-
-                            <span class="badge bg-danger ms-2">
-                                Indisponible
-                            </span>
-
-                        {% endif %}
+                        </div>
 
                     </div>
 
-                {% else %}
+                    <hr>
 
-                    <p class="text-muted mb-0">
-                        Aucun produit disponible.
-                    </p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
 
-                {% endfor %}
+                        <h6 class="mb-0">
+                            Produits sélectionnés
+                        </h6>
+
+                        <span class="badge bg-secondary">
+
+                            <span id="menu-product-count">
+                                0
+                            </span>
+
+                            produit(s)
+
+                        </span>
+
+                    </div>
+
+                    {# Liste visible des produits sélectionnés. #}
+                    <div
+                        id="menu-selected-products"
+                        class="list-group"
+                    >
+                    </div>
+
+                    {# Message panier vide. #}
+                    <div
+                        id="menu-selected-empty"
+                        class="text-muted"
+                    >
+                        Aucun produit sélectionné.
+                    </div>
+
+                    <div
+                        id="menu-products-symfony"
+                        class="d-none"
+                    >
+
+                        {{ form_widget(
+                            form.produits
+                        ) }}
+
+                    </div>
+
+                    {{ form_errors(
+                        form.produits
+                    ) }}
+
+                </div>
 
             </div>
 
-            {{ form_errors(form.produits) }}
-
-            <div class="form-text">
-                Cochez les produits un par un pour composer le menu.
-                Les produits déjà cochés restent sélectionnés lorsque vous utilisez les filtres.
+            <div class="form-text mt-2">
+                Sélectionnez une catégorie si nécessaire,
+                choisissez un produit puis cliquez sur
+                « Ajouter le produit ».
             </div>
 
         </div>
 
+        {# Image. #}
         <div class="mb-3">
 
             {{ form_label(form.imageFile) }}
@@ -181,7 +200,8 @@
             {{ form_errors(form.imageFile) }}
 
             <div class="form-text">
-                Formats acceptés : JPG, PNG ou WEBP.
+                Formats acceptés :
+                JPG, PNG ou WEBP.
                 Taille maximale : 2 Mo.
             </div>
 
@@ -190,17 +210,22 @@
                 <div class="mt-3">
 
                     <img
-                        src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
+                        src="{{ asset(
+                            'images/menus/'
+                            ~ menu.menuImage
+                        ) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
                         alt="{{ menu.menuNom }}"
                         class="wacdo-edit-image-preview"
                     >
 
                     <div class="form-text">
-                        Image actuelle : {{ menu.menuImage }}
+                        Image actuelle :
+                        {{ menu.menuImage }}
                     </div>
 
                     <div class="form-text">
-                        Laissez le champ vide pour conserver cette image.
+                        Laissez le champ vide
+                        pour conserver cette image.
                     </div>
 
                 </div>
@@ -209,13 +234,22 @@
 
         </div>
 
+        {# Statut. #}
         <div class="mb-3">
 
             <div class="form-check">
 
-                {{ form_widget(form.menu_status) }}
-                {{ form_label(form.menu_status) }}
-                {{ form_errors(form.menu_status) }}
+                {{ form_widget(
+                    form.menu_status
+                ) }}
+
+                {{ form_label(
+                    form.menu_status
+                ) }}
+
+                {{ form_errors(
+                    form.menu_status
+                ) }}
 
             </div>
 
@@ -232,12 +266,16 @@
             form="admin-menu-form"
             class="btn btn-primary"
         >
-            {{ button_label|default('Enregistrer') }}
+            {{ button_label|default(
+                'Enregistrer'
+            ) }}
         </button>
 
         {% if menu.id %}
 
-            {{ include('admin_menu/_delete_form.html.twig') }}
+            {{ include(
+                'admin_menu/_delete_form.html.twig'
+            ) }}
 
         {% endif %}
 
@@ -250,108 +288,318 @@ document.addEventListener(
     'DOMContentLoaded',
     function () {
 
-        const searchInput = document.getElementById(
-            'menu-product-search'
-        );
+        const categorySelect =
+            document.getElementById(
+                'menu-product-category'
+            );
 
-        const categorySelect = document.getElementById(
-            'menu-product-category'
-        );
+        const productSelect =
+            document.getElementById(
+                'menu-product-select'
+            );
 
-        const options = document.querySelectorAll(
-            '.menu-product-option'
-        );
+        const addButton =
+            document.getElementById(
+                'menu-product-add'
+            );
 
-        const checkboxes = document.querySelectorAll(
-            '.menu-product-checkbox'
-        );
+        const selectedContainer =
+            document.getElementById(
+                'menu-selected-products'
+            );
 
-        const count = document.getElementById(
-            'menu-product-count'
-        );
+        const emptyMessage =
+            document.getElementById(
+                'menu-selected-empty'
+            );
 
-        function updateCount() {
+        const count =
+            document.getElementById(
+                'menu-product-count'
+            );
+
+        const symfonyContainer =
+            document.getElementById(
+                'menu-products-symfony'
+            );
+
+        if (
+            !categorySelect
+            || !productSelect
+            || !addButton
+            || !selectedContainer
+            || !symfonyContainer
+        ) {
+            return;
+        }
+
+        const checkboxes =
+            symfonyContainer.querySelectorAll(
+                'input[type="checkbox"]'
+            );
+
+        function getCheckboxLabel(
+            checkbox
+        ) {
+            const id =
+                checkbox.id;
+
+            if (!id) {
+                return '';
+            }
+
+            const label =
+                symfonyContainer.querySelector(
+                    'label[for="' + id + '"]'
+                );
+
+            if (!label) {
+                return (
+                    checkbox.dataset.productName
+                    || ''
+                );
+            }
+
+            return label
+                .textContent
+                .trim();
+        }
+
+        function isSelected(
+            checkbox
+        ) {
+            return checkbox.checked;
+        }
+
+
+        function refreshProductSelect() {
+
+            const selectedCategory =
+                categorySelect.value;
+
+            productSelect.innerHTML =
+                '<option value="">'
+                + 'Choisir un produit'
+                + '</option>';
+
+            checkboxes.forEach(
+                function (checkbox) {
+
+                    const category =
+                        checkbox.dataset.category
+                        || '';
+
+
+                    if (
+                        selectedCategory !== ''
+                        && category
+                            !== selectedCategory
+                    ) {
+                        return;
+                    }
+
+
+                    if (
+                        isSelected(
+                            checkbox
+                        )
+                    ) {
+                        return;
+                    }
+
+                    const option =
+                        document.createElement(
+                            'option'
+                        );
+
+                    option.value =
+                        checkbox.id;
+
+                    option.textContent =
+                        getCheckboxLabel(
+                            checkbox
+                        );
+
+
+                    if (
+                        checkbox.dataset.stock
+                        === '0'
+                    ) {
+                        option.disabled = true;
+                    }
+
+                    productSelect.appendChild(
+                        option
+                    );
+                }
+            );
+        }
+
+
+        function refreshSelectedProducts() {
+
+            selectedContainer.innerHTML =
+                '';
 
             let total = 0;
 
             checkboxes.forEach(
                 function (checkbox) {
 
-                    if (checkbox.checked) {
-                        total++;
+                    if (
+                        !checkbox.checked
+                    ) {
+                        return;
                     }
 
+                    total++;
+
+                    const item =
+                        document.createElement(
+                            'div'
+                        );
+
+                    item.className =
+                        'list-group-item '
+                        + 'd-flex '
+                        + 'justify-content-between '
+                        + 'align-items-center';
+
+                    const infos =
+                        document.createElement(
+                            'div'
+                        );
+
+                    const productName =
+                        document.createElement(
+                            'strong'
+                        );
+
+                    productName.textContent =
+                        checkbox.dataset.productName
+                        || getCheckboxLabel(
+                            checkbox
+                        );
+
+                    infos.appendChild(
+                        productName
+                    );
+
+                    const category =
+                        document.createElement(
+                            'div'
+                        );
+
+                    category.className =
+                        'small text-muted';
+
+                    category.textContent =
+                        checkbox.dataset.categoryName
+                        || '';
+
+                    infos.appendChild(
+                        category
+                    );
+
+                    const removeButton =
+                        document.createElement(
+                            'button'
+                        );
+
+                    removeButton.type =
+                        'button';
+
+                    removeButton.className =
+                        'btn btn-danger btn-sm';
+
+                    removeButton.textContent =
+                        'Retirer';
+
+                    removeButton.addEventListener(
+                        'click',
+                        function () {
+
+                            checkbox.checked =
+                                false;
+
+                            refreshSelectedProducts();
+
+                            refreshProductSelect();
+                        }
+                    );
+
+                    item.appendChild(
+                        infos
+                    );
+
+                    item.appendChild(
+                        removeButton
+                    );
+
+                    selectedContainer.appendChild(
+                        item
+                    );
                 }
             );
 
             if (count) {
-                count.textContent = total;
+                count.textContent =
+                    total;
+            }
+
+            if (emptyMessage) {
+
+                emptyMessage.style.display =
+                    total === 0
+                        ? ''
+                        : 'none';
             }
         }
 
-        function filterProducts() {
 
-            const search = searchInput
-                ? searchInput.value
-                    .trim()
-                    .toLowerCase()
-                : '';
+        addButton.addEventListener(
+            'click',
+            function () {
 
-            const category = categorySelect
-                ? categorySelect.value
-                : '';
+                const checkboxId =
+                    productSelect.value;
 
-            options.forEach(
-                function (option) {
-
-                    const name =
-                        option.dataset.name || '';
-
-                    const productCategory =
-                        option.dataset.category || '';
-
-                    const matchSearch =
-                        search === ''
-                        || name.includes(search);
-
-                    const matchCategory =
-                        category === ''
-                        || productCategory === category;
-
-                    option.style.display =
-                        matchSearch && matchCategory
-                            ? ''
-                            : 'none';
+                if (
+                    checkboxId === ''
+                ) {
+                    return;
                 }
-            );
-        }
 
-        if (searchInput) {
-            searchInput.addEventListener(
-                'input',
-                filterProducts
-            );
-        }
+                const checkbox =
+                    document.getElementById(
+                        checkboxId
+                    );
 
-        if (categorySelect) {
-            categorySelect.addEventListener(
-                'change',
-                filterProducts
-            );
-        }
+                if (!checkbox) {
+                    return;
+                }
 
-        checkboxes.forEach(
-            function (checkbox) {
+                checkbox.checked =
+                    true;
 
-                checkbox.addEventListener(
-                    'change',
-                    updateCount
-                );
+                refreshSelectedProducts();
+
+                refreshProductSelect();
+            }
+        );
+
+        categorySelect.addEventListener(
+            'change',
+            function () {
+
+                refreshProductSelect();
 
             }
         );
 
-        updateCount();
+        refreshSelectedProducts();
+
+        refreshProductSelect();
     }
 );
 </script>

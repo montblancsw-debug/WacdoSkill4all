@@ -92,13 +92,25 @@
 
                 </div>
 
-                <div class="col-12 col-md-auto">
+                <div class="col-6 col-md-auto">
 
                     <button
+                        type="submit"
                         class="btn btn-primary w-100"
                     >
                         Rechercher
                     </button>
+
+                </div>
+
+                <div class="col-6 col-md-auto">
+
+                    <a
+                        href="{{ path('app_admin_menu_index') }}"
+                        class="btn btn-secondary w-100"
+                    >
+                        Réinitialiser
+                    </a>
 
                 </div>
 
@@ -118,6 +130,7 @@
                             <th>Produits</th>
                             <th>Statut</th>
                             <th>Image</th>
+
                             <th class="text-end">
                                 Actions
                             </th>

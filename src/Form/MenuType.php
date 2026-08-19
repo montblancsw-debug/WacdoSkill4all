@@ -21,69 +21,177 @@ class MenuType extends AbstractType
         array $options
     ): void {
         $builder
-            ->add('menu_nom', TextType::class, [
-                'label' => 'Nom du menu',
-                'required' => true,
-                'attr' => [
-                    'class' => 'form-control',
-                    'placeholder' => 'Ex : Menu Wacdo',
-                ],
-            ])
+            ->add(
+                'menu_nom',
+                TextType::class,
+                [
+                    'label' => 'Nom du menu',
+                    'required' => true,
 
-            ->add('menu_description', CKEditorType::class, [
-                'label' => 'Description',
-                'required' => false,
-                'config_name' => 'main_config',
-            ])
+                    'attr' => [
+                        'class' => 'form-control',
+                        'placeholder' => 'Ex : Menu Wacdo',
+                    ],
+                ]
+            )
 
-            ->add('menu_prix', NumberType::class, [
-                'label' => 'Prix (€)',
-                'required' => true,
-                'input' => 'string',
-                'scale' => 2,
-                'html5' => true,
-                'attr' => [
-                    'class' => 'form-control',
-                    'step' => '0.01',
-                    'min' => '0.01',
-                    'placeholder' => 'Ex : 12.90',
-                ],
-            ])
+            ->add(
+                'menu_description',
+                CKEditorType::class,
+                [
+                    'label' => 'Description',
+                    'required' => false,
+                    'config_name' => 'main_config',
+                ]
+            )
 
-            ->add('produits', EntityType::class, [
-                'class' => Produit::class,
-                'choice_label' => 'produit_nom',
-                'label' => 'Produits du menu',
-                'multiple' => true,
-                'expanded' => true,
-                'required' => true,
-                'by_reference' => false,
-            ])
+            ->add(
+                'menu_prix',
+                NumberType::class,
+                [
+                    'label' => 'Prix (€)',
+                    'required' => true,
+                    'input' => 'string',
+                    'scale' => 2,
+                    'html5' => true,
 
-            ->add('imageFile', FileType::class, [
-                'label' => 'Image du menu',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-control',
-                    'accept' => 'image/jpeg,image/png,image/webp',
-                ],
-            ])
+                    'attr' => [
+                        'class' => 'form-control',
+                        'step' => '0.01',
+                        'min' => '0.01',
+                        'placeholder' => 'Ex : 12.90',
+                    ],
+                ]
+            )
 
-            ->add('menu_status', CheckboxType::class, [
-                'label' => 'Menu actif',
-                'required' => false,
-                'attr' => [
-                    'class' => 'form-check-input',
-                ],
-            ]);
+            /*
+             * Symfony conserve ici son système
+             * de cases à cocher en arrière-plan.
+             *
+             * Le template les masque ensuite
+             * et propose un menu déroulant
+             * beaucoup plus simple à utiliser.
+             */
+            ->add(
+                'produits',
+                EntityType::class,
+                [
+                    'class' => Produit::class,
+
+                    'choice_label' => function (
+                        Produit $produit
+                    ): string {
+                        $label =
+                            $produit->getProduitNom();
+
+                        if (
+                            $produit->getCategorie()
+                            !== null
+                        ) {
+                            $label .=
+                                ' - '
+                                . $produit
+                                    ->getCategorie()
+                                    ->getCategorieNom();
+                        }
+
+                        if (
+                            !$produit->isProduitStock()
+                        ) {
+                            $label .=
+                                ' - Indisponible';
+                        }
+
+                        return $label;
+                    },
+
+                    /*
+                     * Ces informations seront
+                     * utilisées par JavaScript
+                     * pour construire le select.
+                     */
+                    'choice_attr' => function (
+                        Produit $produit
+                    ): array {
+                        return [
+                            'data-product-id' =>
+                                (string) $produit->getId(),
+
+                            'data-product-name' =>
+                                $produit->getProduitNom(),
+
+                            'data-category' =>
+                                $produit->getCategorie()
+                                !== null
+                                    ? (string) $produit
+                                        ->getCategorie()
+                                        ->getId()
+                                    : '',
+
+                            'data-category-name' =>
+                                $produit->getCategorie()
+                                !== null
+                                    ? $produit
+                                        ->getCategorie()
+                                        ->getCategorieNom()
+                                    : 'Sans catégorie',
+
+                            'data-stock' =>
+                                $produit->isProduitStock()
+                                    ? '1'
+                                    : '0',
+                        ];
+                    },
+
+                    'label' =>
+                        'Produits du menu',
+
+                    'multiple' => true,
+                    'expanded' => true,
+                    'required' => true,
+                    'by_reference' => false,
+                ]
+            )
+
+            ->add(
+                'imageFile',
+                FileType::class,
+                [
+                    'label' => 'Image du menu',
+                    'required' => false,
+
+                    'attr' => [
+                        'class' =>
+                            'form-control',
+
+                        'accept' =>
+                            'image/jpeg,image/png,image/webp',
+                    ],
+                ]
+            )
+
+            ->add(
+                'menu_status',
+                CheckboxType::class,
+                [
+                    'label' => 'Menu actif',
+                    'required' => false,
+
+                    'attr' => [
+                        'class' =>
+                            'form-check-input',
+                    ],
+                ]
+            );
     }
 
     public function configureOptions(
         OptionsResolver $resolver
     ): void {
-        $resolver->setDefaults([
-            'data_class' => Menu::class,
-        ]);
+        $resolver->setDefaults(
+            [
+                'data_class' => Menu::class,
+            ]
+        );
     }
 }
-
