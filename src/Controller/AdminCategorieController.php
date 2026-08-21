@@ -11,39 +11,30 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/admin/categorie')]
-final class AdminCategorieController extends AbstractController
-{
-    // Affiche et recherche les catégories.
-    #[Route(
-        name: 'app_admin_categorie_index',
-        methods: ['GET', 'POST']
-    )]
-    public function index(
-        CategorieRepository $categorieRepository,
-        Request $request
-    ): Response {
-        $search = trim(
-            (string) $request
-                ->request
-                ->get('search', '')
-        );
+    // ====================================================== //
+    // ====================== ROUTES ======================== //
+    // ====================================================== //
+    #[Route('/admin/categorie')]final class AdminCategorieController extends AbstractController{
+    #[Route(name: 'app_admin_categorie_index',methods: ['GET', 'POST'])]
 
+    // ====================================================== //
+    // ====================== METHODES ====================== //
+    // ====================================================== //
+
+    // Affiche et recherche les catégories.
+
+    public function index(CategorieRepository $categorieRepository,Request $request): Response {
+        $search = trim((string) $request->request->get('search', ''));
         if ($search !== '') {
-            $categories = $categorieRepository->search(
-                $search
-            );
+            $categories = $categorieRepository->search($search);
         } else {
-            $categories = $categorieRepository->findBy(
-                [],
+            $categories = $categorieRepository->findBy([],
                 [
                     'categorie_nom' => 'ASC',
                 ]
             );
         }
-
-        return $this->render(
-            'admin_categorie/index.html.twig',
+        return $this->render('admin_categorie/index.html.twig',
             [
                 'categories' => $categories,
                 'search' => $search,
@@ -51,154 +42,74 @@ final class AdminCategorieController extends AbstractController
         );
     }
 
-    // Crée une catégorie.
-    #[Route(
-        '/new',
-        name: 'app_admin_categorie_new',
-        methods: ['GET', 'POST']
-    )]
-    public function new(
-        Request $request,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $categorie = new Categorie();
+    #[Route('/new',name: 'app_admin_categorie_new',methods: ['GET', 'POST'])]
 
-        $form = $this->createForm(
-            CategorieType::class,
-            $categorie
-        );
+    // Ajoute une nouvelle catégorie.
 
-        $form->handleRequest(
-            $request
-        );
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist(
-                $categorie
-            );
-
-            $entityManager->flush();
-
-            $this->addFlash(
-                'success',
-                'La catégorie a été ajoutée avec succès.'
-            );
-
-            return $this->redirectToRoute(
-                'app_admin_categorie_index',
-                [],
-                Response::HTTP_SEE_OTHER
-            );
+    public function new(Request $request,EntityManagerInterface $entityManager): Response {
+    $categorie = new Categorie();
+    $form = $this->createForm(CategorieType::class,$categorie);
+    $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid())
+        {$entityManager->persist($categorie);
+        $entityManager->flush();
+        $this->addFlash('success','La catégorie a été ajoutée avec succès.');
+        return $this->redirectToRoute('app_admin_categorie_index',[],Response::HTTP_SEE_OTHER);
         }
-
-        return $this->render(
-            'admin_categorie/new.html.twig',
-            [
-                'categorie' => $categorie,
-                'form' => $form,
-            ]
+        return $this->render
+        ('admin_categorie/new.html.twig',
+        [
+            'categorie' => $categorie,
+            'form' => $form,
+        ]
         );
     }
 
-    // Affiche une catégorie.
-    #[Route(
-        '/{id}',
-        name: 'app_admin_categorie_show',
-        methods: ['GET']
-    )]
-    public function show(
-        Categorie $categorie
-    ): Response {
-        return $this->render(
-            'admin_categorie/show.html.twig',
-            [
-                'categorie' => $categorie,
-            ]
-        );
+    #[Route('/{id}',name: 'app_admin_categorie_show',methods: ['GET'])]
+    
+    // Affiche le détail d'une catégorie.
+
+    public function show(Categorie $categorie): Response {
+        return $this->render('admin_categorie/show.html.twig',['categorie' => $categorie,]);
     }
 
-    // Modifie une catégorie.
-    #[Route(
-        '/{id}/edit',
-        name: 'app_admin_categorie_edit',
-        methods: ['GET', 'POST']
-    )]
-    public function edit(
-        Request $request,
-        Categorie $categorie,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $form = $this->createForm(
-            CategorieType::class,
-            $categorie
-        );
+    #[Route('/{id}/edit',name: 'app_admin_categorie_edit',methods: ['GET', 'POST'])]
+    
+    // Modifie une catégorie existante.
 
-        $form->handleRequest(
-            $request
-        );
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            $this->addFlash(
-                'success',
-                'La catégorie a été modifiée avec succès.'
-            );
-
-            return $this->redirectToRoute(
-                'app_admin_categorie_index',
-                [],
-                Response::HTTP_SEE_OTHER
-            );
+    public function edit(Request $request,Categorie $categorie,EntityManagerInterface $entityManager): Response {
+        $form = $this->createForm(CategorieType::class,$categorie);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid())
+        {
+        $entityManager->flush();
+        $this->addFlash('success','La catégorie a été modifiée avec succès.');
+        return $this->redirectToRoute('app_admin_categorie_index',[],Response::HTTP_SEE_OTHER);
         }
-
         return $this->render(
-            'admin_categorie/edit.html.twig',
-            [
-                'categorie' => $categorie,
-                'form' => $form,
-            ]
-        );
+        'admin_categorie/edit.html.twig',
+        ['categorie' => $categorie,'form' => $form,]);
     }
+
+    #[Route('/{id}',name: 'app_admin_categorie_delete',methods: ['POST'])]
 
     // Supprime une catégorie.
-    #[Route(
-        '/{id}',
-        name: 'app_admin_categorie_delete',
-        methods: ['POST']
-    )]
-    public function delete(
-        Request $request,
-        Categorie $categorie,
-        EntityManagerInterface $entityManager
-    ): Response {
+
+    public function delete(Request $request,Categorie $categorie,EntityManagerInterface $entityManager): Response {
         if (
-            $this->isCsrfTokenValid(
-                'delete' . $categorie->getId(),
+            $this->isCsrfTokenValid('delete' . $categorie->getId(),
                 $request->getPayload()->getString('_token')
-            )
-        ) {
-            $entityManager->remove(
-                $categorie
-            );
-
+            )) {
+            $entityManager->remove($categorie);
             $entityManager->flush();
-
             $this->addFlash(
-                'success',
-                'La catégorie a été supprimée avec succès. Les produits associés ont été conservés.'
+                'success','La catégorie a été supprimée avec succès. Les produits associés ont été conservés.'
             );
         } else {
             $this->addFlash(
-                'danger',
-                'Impossible de supprimer la catégorie : le jeton de sécurité est invalide.'
+                'danger','Impossible de supprimer la catégorie : le jeton de sécurité est invalide.'
             );
         }
-
-        return $this->redirectToRoute(
-            'app_admin_categorie_index',
-            [],
-            Response::HTTP_SEE_OTHER
-        );
+        return $this->redirectToRoute('app_admin_categorie_index',[],Response::HTTP_SEE_OTHER);
     }
 }

@@ -11,75 +11,49 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
+// ====================================================== //
+// ====================== ROUTES ======================== //
+// ====================================================== //
 class RegistrationController extends AbstractController
 {
-    // Permet à un client de créer son compte.
     #[Route('/inscription', name: 'app_register', methods: ['GET', 'POST'])]
-    public function register(
-        Request $request,
-        UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $entityManager
-    ): Response {
-        // Un utilisateur connecté n'a pas besoin de s'inscrire.
-        if ($this->getUser()) {
-            return $this->redirectToRoute(
-                'app_front_home'
-            );
+
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Permet à un client de créer un nouveau compte.
+
+    public function register(Request $request,UserPasswordHasherInterface $passwordHasher,EntityManagerInterface $entityManager): Response {
+
+// Empêche un utilisateur connecté de créer un nouveau compte.
+
+        if ($this->getUser()) {return $this->redirectToRoute('app_front_home');
         }
 
         $utilisateur = new Utilisateur();
-
-        // Un compte créé depuis le site est toujours un client.
-        $utilisateur->setUtilisateurRole(
-            'ROLE_USER'
-        );
-
-        $form = $this->createForm(
-            RegistrationFormType::class,
-            $utilisateur
-        );
-
-        $form->handleRequest(
-            $request
-        );
+        $utilisateur->setUtilisateurRole('ROLE_USER');
+        
+        $form = $this->createForm(RegistrationFormType::class,$utilisateur);
+        $form->handleRequest($request);
+        
+// Attribue automatiquement le rôle client au nouveau compte.
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form->get('plain_password')->getData();
 
-            $plainPassword = $form
-                ->get('plain_password')
-                ->getData();
+// Chiffre le mot de passe avant son enregistrement.
 
-            // Hash le mot de passe avec le système Symfony.
-            $utilisateur->setUtilisateurPassword(
-                $passwordHasher->hashPassword(
-                    $utilisateur,
-                    $plainPassword
-                )
-            );
+            $utilisateur->setUtilisateurPassword($passwordHasher->hashPassword($utilisateur,$plainPassword));
 
-            $entityManager->persist(
-                $utilisateur
-            );
-
+            $entityManager->persist($utilisateur);
             $entityManager->flush();
 
-            $this->addFlash(
-                'success',
-                'Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.'
-            );
+            $this->addFlash('success','Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.');
 
-            return $this->redirectToRoute(
-                'app_login',
-                [],
-                Response::HTTP_SEE_OTHER
-            );
+        return $this->redirectToRoute('app_login',[],Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render(
-            'registration/register.html.twig',
-            [
-                'registrationForm' => $form,
-            ]
-        );
+        return $this->render('registration/register.html.twig',['registrationForm' => $form,]);
     }
 }

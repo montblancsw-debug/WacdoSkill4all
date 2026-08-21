@@ -15,88 +15,48 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/mes-commandes')]
-class FrontCommandeController extends AbstractController
-{
-    // Affiche les commandes du client connecté.
-    #[Route(
-        '',
-        name: 'app_front_commande',
-        methods: ['GET']
-    )]
-    public function index(
-        CommandeRepository $commandeRepository
-    ): Response {
-        $utilisateur = $this->getCurrentUtilisateur();
+// ====================================================== //
+// ====================== ROUTES ======================== //
+// ====================================================== //
+#[Route('/mes-commandes')]class FrontCommandeController extends AbstractController{
+#[Route('',name: 'app_front_commande',methods: ['GET'])]
 
-        if ($utilisateur === null) {
-            return $this->redirectToRoute(
-                'app_login'
-            );
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Affiche les commandes du client connecté.
+
+    public function index(CommandeRepository $commandeRepository): Response {$utilisateur = $this->getCurrentUtilisateur();
+
+        if ($utilisateur === null) {return $this->redirectToRoute('app_login');
         }
 
-        return $this->render(
-            'front_commande/index.html.twig',
-            [
-                'commandes' => $commandeRepository->findBy(
-                    [
-                        'utilisateur' => $utilisateur,
-                    ],
-                    [
-                        'commande_date' => 'DESC',
-                    ]
-                ),
-            ]
+        return $this->render('front_commande/index.html.twig',
+        ['commandes' => $commandeRepository->findBy(['utilisateur' => $utilisateur,],['commande_date' => 'DESC',]),]
         );
     }
 
-    // Affiche une commande appartenant au client.
-    #[Route(
-        '/{id}',
-        name: 'app_front_commande_show',
-        methods: ['GET']
-    )]
-    public function show(
-        Commande $commande
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}',name: 'app_front_commande_show',methods: ['GET'])]
+    
+// Affiche le détail d'une commande du client.
+    
+    public function show(Commande $commande): Response {
+        $this->assertCommandeOwner($commande);
 
-        return $this->render(
-            'front_commande/show.html.twig',
-            [
-                'commande' => $commande,
-            ]
-        );
+        return $this->render('front_commande/show.html.twig',['commande' => $commande,]);
     }
 
-    // Affiche la modification d'une commande.
-    #[Route(
-        '/{id}/modifier',
-        name: 'app_front_commande_edit',
-        methods: ['GET']
-    )]
-    public function edit(
-        Commande $commande,
-        ProduitRepository $produitRepository,
-        MenuRepository $menuRepository
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/modifier',name: 'app_front_commande_edit',methods: ['GET'])]
+    
+// Affiche la modification d'une commande.
+    
+    public function edit(Commande $commande,ProduitRepository $produitRepository,MenuRepository $menuRepository): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (!$this->canModify($commande)) {
-            $this->addModificationDeniedFlash(
-                $commande
-            );
+        if (!$this->canModify($commande)) {$this->addModificationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
         $menusDisponibles = [];
@@ -107,1025 +67,394 @@ class FrontCommandeController extends AbstractController
             }
         }
 
-        return $this->render(
-            'front_commande/edit.html.twig',
+        return $this->render('front_commande/edit.html.twig',
             [
                 'commande' => $commande,
-
-                'produitsDisponibles' =>
-                    $produitRepository->findBy(
-                        [
-                            'produit_stock' => true,
-                        ],
-                        [
-                            'produit_nom' => 'ASC',
-                        ]
-                    ),
-
-                'menusDisponibles' =>
-                    $menusDisponibles,
+                'produitsDisponibles' =>$produitRepository->findBy(['produit_stock' => true,],['produit_nom' => 'ASC',]),
+                'menusDisponibles' =>$menusDisponibles,
             ]
         );
     }
 
-    // Ajoute un produit à une commande.
-    #[Route(
-        '/{id}/produit/ajouter',
-        name: 'app_front_commande_add_product',
-        methods: ['POST']
-    )]
-    public function addProduct(
-        Request $request,
-        Commande $commande,
-        ProduitRepository $produitRepository,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/produit/ajouter',name: 'app_front_commande_add_product',methods: ['POST'])]
+    
+// Ajoute un produit à une commande existante.
+    
+    public function addProduct(Request $request,Commande $commande,ProduitRepository $produitRepository,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (!$this->canModify($commande)) {
-            $this->addModificationDeniedFlash(
-                $commande
-            );
+        if (!$this->canModify($commande)) {$this->addModificationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_add_product'
-                . $commande->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_add_product'. $commande->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        $produitId = $request
-            ->getPayload()
-            ->getInt(
-                'produit_id'
-            );
+        $produitId = $request->getPayload()->getInt('produit_id');
+        $quantite = max(1,$request->getPayload()->getInt('quantite',1));
+        $produit = $produitRepository->find($produitId);
 
-        $quantite = max(
-            1,
-            $request
-                ->getPayload()
-                ->getInt(
-                    'quantite',
-                    1
-                )
-        );
+        if ($produit === null|| !$produit->isProduitStock()) {$this->addFlash('warning','Le produit sélectionné n\'est plus disponible.');
 
-        $produit = $produitRepository->find(
-            $produitId
-        );
-
-        if (
-            $produit === null
-            || !$produit->isProduitStock()
-        ) {
-            $this->addFlash(
-                'warning',
-                'Le produit sélectionné n\'est plus disponible.'
-            );
-
-            return $this->redirectToRoute(
-                'app_front_commande_edit',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
         }
 
         $detailExistant = null;
 
         foreach ($commande->getDetails() as $detail) {
-            if (
-                $detail->getProduit()?->getId()
-                === $produit->getId()
-            ) {
-                $detailExistant = $detail;
-
+            if ($detail->getProduit()?->getId()=== $produit->getId()
+            ) {$detailExistant = $detail;
                 break;
             }
         }
 
-        if ($detailExistant !== null) {
-            $detailExistant->setDetailQuantite(
-                ($detailExistant->getDetailQuantite() ?? 0)
-                + $quantite
-            );
+        if ($detailExistant !== null) {$detailExistant->setDetailQuantite(($detailExistant->getDetailQuantite() ?? 0)+ $quantite);
 
-            $this->updateDetailTotal(
-                $detailExistant
-            );
+            $this->updateDetailTotal($detailExistant);
         } else {
             $detail = new Detail();
+            $detail->setCommande($commande);
+            $detail->setProduit($produit);
+            $detail->setMenu(null);
+            $detail->setDetailQuantite($quantite);
+            $detail->setDetailUnitaire(number_format((float) $produit->getProduitPrix(),2,'.',''));
 
-            $detail->setCommande(
-                $commande
-            );
+            $this->updateDetailTotal($detail);
 
-            $detail->setProduit(
-                $produit
-            );
-
-            $detail->setMenu(
-                null
-            );
-
-            $detail->setDetailQuantite(
-                $quantite
-            );
-
-            $detail->setDetailUnitaire(
-                number_format(
-                    (float) $produit->getProduitPrix(),
-                    2,
-                    '.',
-                    ''
-                )
-            );
-
-            $this->updateDetailTotal(
-                $detail
-            );
-
-            $commande->addDetail(
-                $detail
-            );
-
-            $entityManager->persist(
-                $detail
-            );
+            $commande->addDetail($detail);
+            $entityManager->persist($detail);
         }
 
-        $this->recalculateCommandeTotal(
-            $commande
-        );
-
+        $this->recalculateCommandeTotal($commande);
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'Le produit a été ajouté à votre commande.'
-        );
+        $this->addFlash('success','Le produit a été ajouté à votre commande.');
 
-        return $this->redirectToRoute(
-            'app_front_commande_edit',
-            [
-                'id' => $commande->getId(),
-            ]
-        );
+        return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
     }
 
-    // Ajoute un menu à une commande.
-    #[Route(
-        '/{id}/menu/ajouter',
-        name: 'app_front_commande_add_menu',
-        methods: ['POST']
-    )]
-    public function addMenu(
-        Request $request,
-        Commande $commande,
-        MenuRepository $menuRepository,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/menu/ajouter',name: 'app_front_commande_add_menu',methods: ['POST'])]
+    
+// Ajoute un menu à une commande existante.
+    
+    public function addMenu(Request $request,Commande $commande,MenuRepository $menuRepository,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (!$this->canModify($commande)) {
-            $this->addModificationDeniedFlash(
-                $commande
-            );
+        if (!$this->canModify($commande)) {$this->addModificationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_add_menu'
-                . $commande->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_add_menu'. $commande->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        $menuId = $request
-            ->getPayload()
-            ->getInt(
-                'menu_id'
-            );
+        $menuId = $request->getPayload()->getInt('menu_id');
+        $quantite = max(1,$request->getPayload()->getInt('quantite',1));
+        $menu = $menuRepository->find($menuId);
 
-        $quantite = max(
-            1,
-            $request
-                ->getPayload()
-                ->getInt(
-                    'quantite',
-                    1
-                )
-        );
+        if ($menu === null|| !$this->isMenuDisponible($menu)) {
+            $this->addFlash('warning','Le menu sélectionné n\'est plus disponible.');
 
-        $menu = $menuRepository->find(
-            $menuId
-        );
-
-        if (
-            $menu === null
-            || !$this->isMenuDisponible($menu)
-        ) {
-            $this->addFlash(
-                'warning',
-                'Le menu sélectionné n\'est plus disponible.'
-            );
-
-            return $this->redirectToRoute(
-                'app_front_commande_edit',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
         }
 
         $detailExistant = null;
 
         foreach ($commande->getDetails() as $detail) {
-            if (
-                $detail->getMenu()?->getId()
-                === $menu->getId()
-            ) {
-                $detailExistant = $detail;
-
+            if ($detail->getMenu()?->getId()=== $menu->getId()) {$detailExistant = $detail;
                 break;
             }
         }
 
         if ($detailExistant !== null) {
-            $detailExistant->setDetailQuantite(
-                ($detailExistant->getDetailQuantite() ?? 0)
-                + $quantite
-            );
+            $detailExistant->setDetailQuantite(($detailExistant->getDetailQuantite() ?? 0)+ $quantite);
 
-            $this->updateDetailTotal(
-                $detailExistant
-            );
+            $this->updateDetailTotal($detailExistant);
         } else {
             $detail = new Detail();
+            $detail->setCommande($commande);
+            $detail->setProduit(null);
+            $detail->setMenu($menu);
+            $detail->setDetailQuantite($quantite);
+            $detail->setDetailUnitaire(number_format((float) $menu->getMenuPrix(),2,'.',''));
 
-            $detail->setCommande(
-                $commande
-            );
+            $this->updateDetailTotal($detail);
 
-            $detail->setProduit(
-                null
-            );
-
-            $detail->setMenu(
-                $menu
-            );
-
-            $detail->setDetailQuantite(
-                $quantite
-            );
-
-            $detail->setDetailUnitaire(
-                number_format(
-                    (float) $menu->getMenuPrix(),
-                    2,
-                    '.',
-                    ''
-                )
-            );
-
-            $this->updateDetailTotal(
-                $detail
-            );
-
-            $commande->addDetail(
-                $detail
-            );
-
-            $entityManager->persist(
-                $detail
-            );
+            $commande->addDetail($detail);
+            $entityManager->persist($detail);
         }
 
-        $this->recalculateCommandeTotal(
-            $commande
-        );
+        $this->recalculateCommandeTotal($commande);
 
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'Le menu a été ajouté à votre commande.'
-        );
+        $this->addFlash('success','Le menu a été ajouté à votre commande.');
 
-        return $this->redirectToRoute(
-            'app_front_commande_edit',
-            [
-                'id' => $commande->getId(),
-            ]
-        );
+        return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
     }
 
-    // Augmente la quantité d'un article.
-    #[Route(
-        '/{id}/detail/{detailId}/plus',
-        name: 'app_front_commande_detail_plus',
-        methods: ['POST']
-    )]
-    public function increaseDetail(
-        Request $request,
-        Commande $commande,
-        int $detailId,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/detail/{detailId}/plus',name: 'app_front_commande_detail_plus',methods: ['POST'])]
+    
+// Augmente la quantité d'un article.
+    
+    public function increaseDetail(Request $request,Commande $commande,int $detailId,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (!$this->canModify($commande)) {
-            $this->addModificationDeniedFlash(
-                $commande
-            );
+        if (!$this->canModify($commande)) {$this->addModificationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        $detail = $this->findDetail(
-            $commande,
-            $detailId,
-            $entityManager
-        );
+        $detail = $this->findDetail($commande,$detailId,$entityManager);
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_detail_plus'
-                . $detail->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_detail_plus'. $detail->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        if (!$this->isDetailDisponible($detail)) {
-            $this->addFlash(
-                'warning',
-                'Cet article n\'est plus disponible.'
-            );
+        if (!$this->isDetailDisponible($detail)) {$this->addFlash('warning','Cet article n\'est plus disponible.');
 
-            return $this->redirectToRoute(
-                'app_front_commande_edit',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
         }
 
-        $detail->setDetailQuantite(
-            ($detail->getDetailQuantite() ?? 0)
-            + 1
+        $detail->setDetailQuantite(($detail->getDetailQuantite() ?? 0)+ 1
         );
 
-        $this->updateDetailTotal(
-            $detail
-        );
-
-        $this->recalculateCommandeTotal(
-            $commande
-        );
+        $this->updateDetailTotal($detail);
+        $this->recalculateCommandeTotal($commande);
 
         $entityManager->flush();
 
-        return $this->redirectToRoute(
-            'app_front_commande_edit',
-            [
-                'id' => $commande->getId(),
-            ]
-        );
+        return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
     }
 
-    // Diminue la quantité d'un article.
-    #[Route(
-        '/{id}/detail/{detailId}/moins',
-        name: 'app_front_commande_detail_minus',
-        methods: ['POST']
-    )]
-    public function decreaseDetail(
-        Request $request,
-        Commande $commande,
-        int $detailId,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/detail/{detailId}/moins',name: 'app_front_commande_detail_minus',methods: ['POST'])]
+    
+// Diminue la quantité d'un article.
+    
+    public function decreaseDetail(Request $request,Commande $commande,int $detailId,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (!$this->canModify($commande)) {
-            $this->addModificationDeniedFlash(
-                $commande
-            );
+        if (!$this->canModify($commande)) {$this->addModificationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        $detail = $this->findDetail(
-            $commande,
-            $detailId,
-            $entityManager
-        );
+        $detail = $this->findDetail($commande,$detailId,$entityManager);
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_detail_minus'
-                . $detail->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_detail_minus'. $detail->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        if (($detail->getDetailQuantite() ?? 0) > 1) {
-            $detail->setDetailQuantite(
-                $detail->getDetailQuantite()
-                - 1
-            );
+        if (($detail->getDetailQuantite() ?? 0) > 1) {$detail->setDetailQuantite($detail->getDetailQuantite()- 1);
 
-            $this->updateDetailTotal(
-                $detail
-            );
-
-            $this->recalculateCommandeTotal(
-                $commande
-            );
+            $this->updateDetailTotal($detail);
+            $this->recalculateCommandeTotal($commande);
 
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute(
-            'app_front_commande_edit',
-            [
-                'id' => $commande->getId(),
-            ]
-        );
+        return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
     }
 
-    // Retire un article de la commande.
-    #[Route(
-        '/{id}/detail/{detailId}/supprimer',
-        name: 'app_front_commande_detail_delete',
-        methods: ['POST']
-    )]
-    public function deleteDetail(
-        Request $request,
-        Commande $commande,
-        int $detailId,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/detail/{detailId}/supprimer',name: 'app_front_commande_detail_delete',methods: ['POST'])]
+    
+// Retire un article de la commande.
+    
+    public function deleteDetail(Request $request,Commande $commande,int $detailId,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (!$this->canModify($commande)) {
-            $this->addModificationDeniedFlash(
-                $commande
-            );
+        if (!$this->canModify($commande)) {$this->addModificationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        $detail = $this->findDetail(
-            $commande,
-            $detailId,
-            $entityManager
-        );
+        $detail = $this->findDetail($commande,$detailId,$entityManager);
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_detail_delete'
-                . $detail->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_detail_delete'. $detail->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        // Lorsque une commande est vide. Son total est alors égal à zéro.
-        $commande->removeDetail(
-            $detail
-        );
+        $commande->removeDetail($detail);
+        $entityManager->remove($detail);
 
-        $entityManager->remove(
-            $detail
-        );
-
-        $this->recalculateCommandeTotal(
-            $commande
-        );
+        $this->recalculateCommandeTotal($commande);
 
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'L\'article a été retiré de votre commande.'
-        );
+        $this->addFlash('success','L\'article a été retiré de votre commande.');
 
-        return $this->redirectToRoute(
-            'app_front_commande_edit',
-            [
-                'id' => $commande->getId(),
-            ]
-        );
+        return $this->redirectToRoute('app_front_commande_edit',['id' => $commande->getId(),]);
     }
 
-    // Annule une commande sans supprimer son historique.
-    #[Route(
-        '/{id}/annuler',
-        name: 'app_front_commande_cancel',
-        methods: ['POST']
-    )]
-    public function cancel(
-        Request $request,
-        Commande $commande,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+// Annule une commande encore annulable.
+    #[Route('/{id}/annuler',name: 'app_front_commande_cancel',methods: ['POST'])]
+    public function cancel(Request $request,Commande $commande,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_cancel'
-                . $commande->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_cancel'. $commande->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        if (!$this->canCancel($commande)) {
-            $this->addCancellationDeniedFlash(
-                $commande
-            );
+        if (!$this->canCancel($commande)) {$this->addCancellationDeniedFlash($commande);
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        $commande->setCommandeStatut(
-            'annulée'
-        );
-
+        $commande->setCommandeStatut('annulée');
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'Votre commande a été annulée.'
-        );
+        $this->addFlash('success','Votre commande a été annulée.');
 
-        return $this->redirectToRoute(
-            'app_front_commande',
-            [],
-            Response::HTTP_SEE_OTHER
-        );
+        return $this->redirectToRoute('app_front_commande',[],Response::HTTP_SEE_OTHER);
     }
 
-    // Relance une ancienne commande annulée.
-    #[Route(
-        '/{id}/relancer',
-        name: 'app_front_commande_relaunch',
-        methods: ['POST']
-    )]
-    public function relaunch(
-        Request $request,
-        Commande $commande,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/relancer',name: 'app_front_commande_relaunch',methods: ['POST'])]
+    
+// Crée une nouvelle commande à partir d'une commande annulée.
+    
+    public function relaunch(Request $request,Commande $commande,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_relaunch'
-                . $commande->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+        if (!$this->isCsrfTokenValid('front_commande_relaunch'. $commande->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        if (
-            $commande->getCommandeStatut()
-            !== 'annulée'
-        ) {
-            $this->addFlash(
-                'warning',
-                'Seule une commande annulée peut être relancée.'
-            );
+        if ($commande->getCommandeStatut()!== 'annulée') {
+            $this->addFlash('warning','Seule une commande annulée peut être relancée.');
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        if ($commande->getDetails()->isEmpty()) {
-            $this->addFlash(
-                'warning',
-                'Cette commande ne contient aucun article et ne peut pas être relancée.'
-            );
+        if ($commande->getDetails()->isEmpty()) {$this->addFlash('warning','Cette commande ne contient aucun article et ne peut pas être relancée.');
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+            return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        // Vérifie chaque article avant de recréer la commande.
         foreach ($commande->getDetails() as $detail) {
-            if (
-                $detail->getProduit() === null
-                && $detail->getMenu() === null
-            ) {
-                $this->addFlash(
-                    'warning',
-                    'Cette commande contient un article qui n\'existe plus et ne peut pas être relancée.'
-                );
+            if ($detail->getProduit() === null&& $detail->getMenu() === null) {$this->addFlash('warning','Cette commande contient un article qui n\'existe plus et ne peut pas être relancée.');
 
-                return $this->redirectToRoute(
-                    'app_front_commande_show',
-                    [
-                        'id' => $commande->getId(),
-                    ]
-                );
+                return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
             }
 
-            if (!$this->isDetailDisponible($detail)) {
-                $this->addFlash(
-                    'warning',
-                    'Un article de cette commande n\'est plus disponible. La commande ne peut pas être relancée.'
-                );
+            if (!$this->isDetailDisponible($detail)) {$this->addFlash('warning','Un article de cette commande n\'est plus disponible. La commande ne peut pas être relancée.');
 
-                return $this->redirectToRoute(
-                    'app_front_commande_show',
-                    [
-                        'id' => $commande->getId(),
-                    ]
-                );
+                return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
             }
         }
 
-        $utilisateur =
-            $this->getCurrentUtilisateur();
+        $utilisateur =$this->getCurrentUtilisateur();
 
-        if ($utilisateur === null) {
-            throw $this->createAccessDeniedException();
-        }
+        if ($utilisateur === null) {throw $this->createAccessDeniedException();}
 
-        $nouvelleCommande =
-            new Commande();
-
-        $nouvelleCommande->setCommandeDate(
-            new \DateTime()
-        );
-
-        $nouvelleCommande->setCommandeStatut(
-            'en attente'
-        );
-
-        $nouvelleCommande->setUtilisateur(
-            $utilisateur
-        );
-
-        $nouvelleCommande->setCommandeTotal(
-            '0.00'
-        );
-
-        $entityManager->persist(
-            $nouvelleCommande
-        );
-
+        $nouvelleCommande = new Commande();
+        $nouvelleCommande->setCommandeDate(new \DateTime());
+        $nouvelleCommande->setCommandeStatut('en attente');
+        $nouvelleCommande->setUtilisateur($utilisateur);
+        $nouvelleCommande->setCommandeTotal('0.00');
+        $entityManager->persist($nouvelleCommande);
         $totalCommande = 0.0;
 
-        // Recrée les lignes  avec les prix actuels.
-        foreach (
-            $commande->getDetails()
-            as $ancienDetail
-        ) {
-            $quantite = max(
-                1,
-                (int) $ancienDetail
-                    ->getDetailQuantite()
-            );
+        foreach ($commande->getDetails()as $ancienDetail) {
+            $quantite = max(1,(int) $ancienDetail->getDetailQuantite());
+            $nouveauDetail =new Detail();
+            $nouveauDetail->setCommande($nouvelleCommande);
 
-            $nouveauDetail =
-                new Detail();
-
-            $nouveauDetail->setCommande(
-                $nouvelleCommande
-            );
-
-            if (
-                $ancienDetail->getProduit()
-                !== null
-            ) {
-                $produit =
-                    $ancienDetail->getProduit();
-
-                $prixUnitaire =
-                    (float) $produit
-                        ->getProduitPrix();
-
-                $nouveauDetail->setProduit(
-                    $produit
-                );
-
-                $nouveauDetail->setMenu(
-                    null
-                );
+            if ($ancienDetail->getProduit()!== null) {
+                $produit =$ancienDetail->getProduit();
+                $prixUnitaire =(float) $produit->getProduitPrix();
+                $nouveauDetail->setProduit($produit);
+                $nouveauDetail->setMenu(null);
             } else {
-                $menu =
-                    $ancienDetail->getMenu();
+                $menu =$ancienDetail->getMenu();
 
-                if ($menu === null) {
-                    continue;
-                }
-
-                $prixUnitaire =
-                    (float) $menu
-                        ->getMenuPrix();
-
-                $nouveauDetail->setProduit(
-                    null
-                );
-
-                $nouveauDetail->setMenu(
-                    $menu
-                );
+            if ($menu === null) {continue;
+            }
+                $prixUnitaire =(float) $menu->getMenuPrix();
+                $nouveauDetail->setProduit(null);
+                $nouveauDetail->setMenu($menu);
             }
 
-            $totalLigne =
-                $prixUnitaire * $quantite;
-
-            $nouveauDetail->setDetailQuantite(
-                $quantite
-            );
-
-            $nouveauDetail->setDetailUnitaire(
-                number_format(
-                    $prixUnitaire,
-                    2,
-                    '.',
-                    ''
-                )
-            );
-
-            $nouveauDetail->setDetailTotal(
-                number_format(
-                    $totalLigne,
-                    2,
-                    '.',
-                    ''
-                )
-            );
-
-            $nouvelleCommande->addDetail(
-                $nouveauDetail
-            );
-
-            $entityManager->persist(
-                $nouveauDetail
-            );
-
-            $totalCommande +=
-                $totalLigne;
+            $totalLigne =$prixUnitaire * $quantite;
+            $nouveauDetail->setDetailQuantite($quantite);
+            $nouveauDetail->setDetailUnitaire(number_format($prixUnitaire,2,'.',''));
+            $nouveauDetail->setDetailTotal(number_format($totalLigne,2,'.',''));
+            $nouvelleCommande->addDetail($nouveauDetail);
+            $entityManager->persist($nouveauDetail);
+            $totalCommande +=$totalLigne;
         }
 
-        $nouvelleCommande->setCommandeTotal(
-            number_format(
-                $totalCommande,
-                2,
-                '.',
-                ''
-            )
-        );
-
+        $nouvelleCommande->setCommandeTotal(number_format($totalCommande,2,'.',''));
         $entityManager->flush();
+        $this->addFlash('success','Votre commande a été relancée sous le numéro #'. $nouvelleCommande->getId(). '.');
 
-        $this->addFlash(
-            'success',
-            'Votre commande a été relancée sous le numéro #'
-            . $nouvelleCommande->getId()
-            . '.'
-        );
-
-        return $this->redirectToRoute(
-            'app_front_commande_show',
-            [
-                'id' =>
-                    $nouvelleCommande->getId(),
-            ],
-            Response::HTTP_SEE_OTHER
-        );
+        return $this->redirectToRoute('app_front_commande_show',['id' =>$nouvelleCommande->getId(),],Response::HTTP_SEE_OTHER);
     }
 
-    // Supprime définitivement une commande annulée.
-    #[Route(
-        '/{id}/supprimer',
-        name: 'app_front_commande_delete',
-        methods: ['POST']
-    )]
-    public function delete(
-        Request $request,
-        Commande $commande,
-        EntityManagerInterface $entityManager
-    ): Response {
-        $this->assertCommandeOwner(
-            $commande
-        );
+    #[Route('/{id}/supprimer',name: 'app_front_commande_delete',methods: ['POST'])]
+    
+// Supprime définitivement une commande annulée.
 
-        if (
-            !$this->isCsrfTokenValid(
-                'front_commande_delete'
-                . $commande->getId(),
-                $request
-                    ->getPayload()
-                    ->getString('_token')
-            )
-        ) {
+    public function delete(Request $request,Commande $commande,EntityManagerInterface $entityManager): Response {
+        $this->assertCommandeOwner($commande);
+
+        if (!$this->isCsrfTokenValid('front_commande_delete'. $commande->getId(),$request->getPayload()->getString('_token'))) {
             throw $this->createAccessDeniedException();
         }
 
-        if (
-            $commande->getCommandeStatut()
-            !== 'annulée'
-        ) {
-            $this->addFlash(
-                'warning',
-                'Seule une commande annulée peut être supprimée.'
-            );
+        if ($commande->getCommandeStatut()!== 'annulée') {$this->addFlash('warning','Seule une commande annulée peut être supprimée.');
 
-            return $this->redirectToRoute(
-                'app_front_commande_show',
-                [
-                    'id' => $commande->getId(),
-                ]
-            );
+        return $this->redirectToRoute('app_front_commande_show',['id' => $commande->getId(),]);
         }
 
-        foreach (
-            $commande
-                ->getDetails()
-                ->toArray()
-            as $detail
-        ) {
-            $entityManager->remove(
-                $detail
-            );
+        foreach ($commande->getDetails()->toArray()as $detail) {$entityManager->remove($detail);
         }
 
-        $entityManager->remove(
-            $commande
-        );
-
+        $entityManager->remove($commande);
         $entityManager->flush();
 
-        $this->addFlash(
-            'success',
-            'La commande a été supprimée définitivement.'
-        );
+        $this->addFlash('success','La commande a été supprimée définitivement.');
 
-        return $this->redirectToRoute(
-            'app_front_commande',
-            [],
-            Response::HTTP_SEE_OTHER
-        );
+        return $this->redirectToRoute('app_front_commande',[],Response::HTTP_SEE_OTHER);
     }
 
-    // Retourne l'utilisateur connecté.
-    private function getCurrentUtilisateur(): ?Utilisateur
-    {
-        $utilisateur = $this->getUser();
+// Récupère l'utilisateur actuellement connecté.
 
-        return $utilisateur instanceof Utilisateur
-            ? $utilisateur
-            : null;
+    private function getCurrentUtilisateur(): ?Utilisateur{$utilisateur = $this->getUser();
+
+        return $utilisateur instanceof Utilisateur? $utilisateur: null;
     }
 
-    // Vérifie que la commande appartient au client.
-    private function assertCommandeOwner(
-        Commande $commande
-    ): void {
-        $utilisateur =
-            $this->getCurrentUtilisateur();
+// Vérifie que la commande appartient au client connecté.
 
-        if ($utilisateur === null) {
-            throw $this->createAccessDeniedException(
-                'Vous devez être connecté.'
-            );
+    private function assertCommandeOwner(Commande $commande): void {
+        $utilisateur =$this->getCurrentUtilisateur();
+
+        if ($utilisateur === null) {throw $this->createAccessDeniedException('Vous devez être connecté.');
         }
 
-        if (
-            $commande
-                ->getUtilisateur()
-                ?->getId()
-            !== $utilisateur->getId()
-        ) {
-            throw $this->createAccessDeniedException(
-                'Vous ne pouvez pas accéder à cette commande.'
-            );
+        if ($commande->getUtilisateur()?->getId()!== $utilisateur->getId()) {throw $this->createAccessDeniedException('Vous ne pouvez pas accéder à cette commande.');
         }
     }
 
-    // Indique si la commande peut être modifiée.
-    private function canModify(
-        Commande $commande
-    ): bool {
-        return in_array(
-            $commande->getCommandeStatut(),
-            [
-                'en attente',
-                'en préparation',
-            ],
-            true
-        );
+// Vérifie si la commande peut encore être modifiée.
+
+    private function canModify(Commande $commande): bool {
+        return in_array($commande->getCommandeStatut(),['en attente','en préparation',],true);
     }
 
-    // Indique si la commande peut être annulée.
-    private function canCancel(
-        Commande $commande
-    ): bool {
-        return in_array(
-            $commande->getCommandeStatut(),
-            [
-                'en attente',
-                'en préparation',
-                'prête',
-            ],
-            true
-        );
+// Vérifie si la commande peut encore être annulée.
+
+    private function canCancel(Commande $commande): bool {
+        return in_array($commande->getCommandeStatut(),['en attente','en préparation','prête',],true);
     }
 
-    // Affiche le motif d'interdiction de modification.
-    private function addModificationDeniedFlash(
-        Commande $commande
-    ): void {
-        $statut =
-            $commande->getCommandeStatut();
+// Affiche le message correspondant à une modification refusée.
+
+    private function addModificationDeniedFlash(Commande $commande): void {
+        $statut =$commande->getCommandeStatut();
 
         if ($statut === 'prête') {
             $message =
@@ -1150,18 +479,12 @@ class FrontCommandeController extends AbstractController
                 'Cette commande ne peut plus être modifiée.';
         }
 
-        $this->addFlash(
-            'warning',
-            $message
-        );
+        $this->addFlash('warning',$message);
     }
 
-    // Affiche le motif d'interdiction d'annulation.
-    private function addCancellationDeniedFlash(
-        Commande $commande
-    ): void {
-        $statut =
-            $commande->getCommandeStatut();
+// Affiche le message correspondant à une annulation refusée.
+
+    private function addCancellationDeniedFlash(Commande $commande): void {$statut =$commande->getCommandeStatut();
 
         if (
             $statut === 'en livraison'
@@ -1183,139 +506,68 @@ class FrontCommandeController extends AbstractController
                 'Cette commande ne peut plus être annulée.';
         }
 
-        $this->addFlash(
-            'warning',
-            $message
-        );
+        $this->addFlash('warning',$message);
     }
 
-    // Récupère une ligne appartenant à la commande.
-    private function findDetail(
-        Commande $commande,
-        int $detailId,
-        EntityManagerInterface $entityManager
-    ): Detail {
-        $detail = $entityManager
-            ->getRepository(
-                Detail::class
-            )
-            ->find(
-                $detailId
-            );
+// Recherche une ligne appartenant à la commande.
 
-        if (
-            $detail === null
-            || $detail
-                ->getCommande()
-                ?->getId()
-            !== $commande->getId()
-        ) {
-            throw $this->createNotFoundException(
-                'Cette ligne de commande n\'existe pas.'
-            );
+    private function findDetail(Commande $commande,int $detailId,EntityManagerInterface $entityManager): Detail {
+        $detail = $entityManager->getRepository(Detail::class)->find($detailId);
+
+        if ($detail === null|| $detail->getCommande()?->getId()!== $commande->getId()) {
+            throw $this->createNotFoundException('Cette ligne de commande n\'existe pas.');
         }
 
         return $detail;
     }
 
-    // Recalcule le total d'une ligne.
-    private function updateDetailTotal(
-        Detail $detail
-    ): void {
-        $prixUnitaire =
-            (float) $detail
-                ->getDetailUnitaire();
+// Recalcule le total d'une ligne de commande.
 
-        $quantite =
-            $detail->getDetailQuantite()
-            ?? 0;
+    private function updateDetailTotal(Detail $detail): void {$prixUnitaire =(float) $detail->getDetailUnitaire();
 
-        $detail->setDetailTotal(
-            number_format(
-                $prixUnitaire * $quantite,
-                2,
-                '.',
-                ''
-            )
-        );
+        $quantite =$detail->getDetailQuantite()?? 0;
+        $detail->setDetailTotal(number_format($prixUnitaire * $quantite,2,'.',''));
     }
 
-    // Recalcule le total de la commande.
-    private function recalculateCommandeTotal(
-        Commande $commande
-    ): void {
-        $total = 0.0;
+// Recalcule le montant total de la commande.
 
-        foreach (
-            $commande->getDetails()
-            as $detail
-        ) {
-            if (
-                $detail->getProduit() === null
-                && $detail->getMenu() === null
-            ) {
+    private function recalculateCommandeTotal(Commande $commande): void {$total = 0.0;
+
+        foreach ($commande->getDetails()as $detail) {
+            if ($detail->getProduit() === null&& $detail->getMenu() === null) {
                 continue;
             }
 
-            $this->updateDetailTotal(
-                $detail
-            );
+            $this->updateDetailTotal($detail);
 
-            $total +=
-                (float) $detail
-                    ->getDetailTotal();
+            $total +=(float) $detail->getDetailTotal();
         }
 
-        $commande->setCommandeTotal(
-            number_format(
-                $total,
-                2,
-                '.',
-                ''
-            )
-        );
+        $commande->setCommandeTotal(number_format($total,2,'.',''));
     }
 
-    // Vérifie si une ligne de commande est encore disponible.
-    private function isDetailDisponible(
-        Detail $detail
-    ): bool {
+// Vérifie que l'article d'une ligne est encore disponible.
+
+    private function isDetailDisponible(Detail $detail): bool {
         if ($detail->getProduit() !== null) {
-            return $detail
-                ->getProduit()
-                ->isProduitStock();
+            return $detail->getProduit()->isProduitStock();
         }
 
         if ($detail->getMenu() !== null) {
-            return $this->isMenuDisponible(
-                $detail->getMenu()
-            );
+            return $this->isMenuDisponible($detail->getMenu());
         }
 
         return false;
     }
 
-    // Vérifie qu'un menu peut encore être commandé.
-    private function isMenuDisponible(
-        Menu $menu
-    ): bool {
-        if (!$menu->isMenuStatus()) {
-            return false;
-        }
+// Vérifie qu'un menu et tous ses produits sont disponibles.
 
-        if ($menu->getProduits()->isEmpty()) {
-            return false;
+    private function isMenuDisponible(Menu $menu): bool {
+        if (!$menu->isMenuStatus()) {return false;}
+        if ($menu->getProduits()->isEmpty()) {return false;}
+        foreach ($menu->getProduits()as $produit) {
+            if (!$produit->isProduitStock()) {return false;}
         }
-
-        foreach (
-            $menu->getProduits()
-            as $produit
-        ) {
-            if (!$produit->isProduitStock()) {
-                return false;
-            }
-        }
-
         return true;
     }
 }
