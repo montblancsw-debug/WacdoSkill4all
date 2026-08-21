@@ -6,6 +6,7 @@
 
 {% block body %}
 
+	{# En-tête de l'utilisateur à modifier. #}
 	<div class="mb-4">
 		<h1 class="h3 mb-1">
 			Modifier l'utilisateur
@@ -17,10 +18,12 @@
 		</p>
 	</div>
 
+	{# Formulaire de modification. #}
 	{{ include('admin_utilisateur/_form.html.twig', {
 		'button_label': 'Mettre à jour'
 	}) }}
 
+	{# Retour à la liste des utilisateurs. #}
 	<div class="mt-3">
 		<a
 			href="{{ path('app_admin_utilisateur_index') }}"

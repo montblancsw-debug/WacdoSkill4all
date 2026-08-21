@@ -1,303 +1,244 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-    Gestion des produits | Wacdo
+	Gestion des produits | Wacdo
 {% endblock %}
 
 {% block body %}
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-
-            <h1 class="h3 mb-1">
-                Gestion des produits
-            </h1>
-
-            <p class="text-muted mb-0">
-                Consultez et gérez les produits disponibles chez Wacdo.
-            </p>
-
-        </div>
-
-        <a
-            href="{{ path('app_admin_produit_new') }}"
-            class="btn btn-primary"
-        >
-            Ajouter un produit
-        </a>
-
-    </div>
-
-    <div class="card">
-
-        <div class="card-header">
-
-            <h5 class="card-title mb-0">
-                Liste des produits
-            </h5>
-
-        </div>
-
-        <div class="card-body">
-
-            {# Barre de recherche et de filtres. #}
-            <form
-                method="get"
-                action="{{ path('app_admin_produit_index') }}"
-                class="row g-2 mb-4"
-            >
-
-                <div class="col-12 col-xl">
-
-                    <input
-                        type="text"
-                        name="search"
-                        class="form-control"
-                        placeholder="ID, nom, description ou catégorie..."
-                        value="{{ search|default('') }}"
-                    >
-
-                </div>
-
-                <div class="col-12 col-md-6 col-xl-3">
-
-                    <select
-                        name="categorie"
-                        class="form-select"
-                    >
-
-                        <option value="">
-                            Toutes les catégories
-                        </option>
-
-                        {% for categorie in categories %}
-
-                            <option
-                                value="{{ categorie.id }}"
-                                {% if categorieSelectionnee|default('') == categorie.id ~ '' %}
-                                    selected
-                                {% endif %}
-                            >
-                                {{ categorie.categorieNom }}
-                            </option>
-
-                        {% endfor %}
-
-                    </select>
-
-                </div>
-
-                <div class="col-12 col-md-6 col-xl-2">
-
-                    <select
-                        name="stock"
-                        class="form-select"
-                    >
-
-                        <option value="">
-                            Toutes les disponibilités
-                        </option>
-
-                        <option
-                            value="1"
-                            {% if stock|default('') == '1' %}
-                                selected
-                            {% endif %}
-                        >
-                            Disponible
-                        </option>
-
-                        <option
-                            value="0"
-                            {% if stock|default('') == '0' %}
-                                selected
-                            {% endif %}
-                        >
-                            Indisponible
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <div class="col-6 col-xl-auto">
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary w-100"
-                    >
-                        Rechercher
-                    </button>
-
-                </div>
-
-                <div class="col-6 col-xl-auto">
-
-                    <a
-                        href="{{ path('app_admin_produit_index') }}"
-                        class="btn btn-secondary w-100"
-                    >
-                        Réinitialiser
-                    </a>
-
-                </div>
-
-            </form>
-
-            <div class="table-responsive">
-
-                <table class="table table-hover align-middle">
-
-                    <thead>
-
-                        <tr>
-                            <th>ID</th>
-                            <th>Nom</th>
-                            <th>Description</th>
-                            <th>Catégorie</th>
-                            <th>Prix</th>
-                            <th>Stock</th>
-                            <th>Image</th>
-
-                            <th class="text-end">
-                                Actions
-                            </th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for produit in produits %}
-
-                            <tr>
-
-                                <td>
-                                    {{ produit.id }}
-                                </td>
-
-                                <td>
-
-                                    <strong>
-                                        {{ produit.produitNom }}
-                                    </strong>
-
-                                </td>
-
-                                <td>
-
-                                    {% if produit.produitDescription %}
-
-                                        {{ produit.produitDescription|striptags }}
-
-                                    {% else %}
-
-                                        <span class="text-muted">
-                                            Aucune description
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                                <td>
-
-                                    {% if produit.categorie %}
-
-                                        {{ produit.categorie.categorieNom }}
-
-                                    {% else %}
-
-                                        <span class="badge bg-secondary">
-                                            Sans catégorie
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                                <td>
-                                    {{ produit.produitPrix|number_format(2, ',', ' ') }}
-                                    €
-                                </td>
-
-                                <td>
-
-                                    {% if produit.produitStock %}
-
-                                        <span class="badge bg-success">
-                                            Disponible
-                                        </span>
-
-                                    {% else %}
-
-                                        <span class="badge bg-danger">
-                                            Indisponible
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                                <td>
-
-                                    {% if produit.produitImage %}
-
-                                        <img
-                                            src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
-                                            alt="{{ produit.produitNom }}"
-                                            class="img-fluid rounded"
-                                            style="max-width: 80px; max-height: 80px;"
-                                        >
-
-                                    {% else %}
-
-                                        <span class="text-muted">
-                                            Aucune image
-                                        </span>
-
-                                    {% endif %}
-
-                                </td>
-
-                                <td class="text-end">
-
-                                    <a
-                                        href="{{ path('app_admin_produit_show', {'id': produit.id}) }}"
-                                        class="btn btn-info btn-sm"
-                                    >
-                                        Voir
-                                    </a>
-
-                                    <a
-                                        href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}"
-                                        class="btn btn-warning btn-sm"
-                                    >
-                                        Modifier
-                                    </a>
-
-                                    {{ include('admin_produit/_delete_form.html.twig') }}
-
-                                </td>
-
-                            </tr>
-
-                        {% else %}
-
-                            <tr>
-                                <td
-                                    colspan="8"
-                                    class="text-center text-muted"
-                                >
-                                    Aucun produit ne correspond aux critères sélectionnés.
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+	{# En-tête de la page. #}
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<div>
+			<h1 class="h3 mb-1">
+				Gestion des produits
+			</h1>
+
+			<p class="text-muted mb-0">
+				Consultez et gérez les produits disponibles chez Wacdo.
+			</p>
+		</div>
+
+		<a
+			href="{{ path('app_admin_produit_new') }}"
+			class="btn btn-primary"
+		>
+			Ajouter un produit
+		</a>
+	</div>
+
+	<div class="card">
+
+		<div class="card-header">
+			<h5 class="card-title mb-0">
+				Liste des produits
+			</h5>
+		</div>
+
+		<div class="card-body">
+
+			{# Recherche et filtres des produits. #}
+			<form
+				method="get"
+				action="{{ path('app_admin_produit_index') }}"
+				class="row g-2 mb-4"
+			>
+				<div class="col-12 col-xl">
+					<input
+						type="text"
+						name="search"
+						class="form-control"
+						placeholder="ID, nom, description ou catégorie..."
+						value="{{ search|default('') }}"
+					>
+				</div>
+
+				<div class="col-12 col-md-6 col-xl-3">
+					<select
+						name="categorie"
+						class="form-select"
+					>
+						<option value="">
+							Toutes les catégories
+						</option>
+
+						{% for categorie in categories %}
+							<option
+								value="{{ categorie.id }}"
+								{% if categorieSelectionnee|default('') == categorie.id ~ '' %}
+									selected
+								{% endif %}
+							>
+								{{ categorie.categorieNom }}
+							</option>
+						{% endfor %}
+					</select>
+				</div>
+
+				<div class="col-12 col-md-6 col-xl-2">
+					<select
+						name="stock"
+						class="form-select"
+					>
+						<option value="">
+							Toutes les disponibilités
+						</option>
+
+						<option
+							value="1"
+							{% if stock|default('') == '1' %}
+								selected
+							{% endif %}
+						>
+							Disponible
+						</option>
+
+						<option
+							value="0"
+							{% if stock|default('') == '0' %}
+								selected
+							{% endif %}
+						>
+							Indisponible
+						</option>
+					</select>
+				</div>
+
+				<div class="col-6 col-xl-auto">
+					<button
+						type="submit"
+						class="btn btn-primary w-100"
+					>
+						Rechercher
+					</button>
+				</div>
+
+				<div class="col-6 col-xl-auto">
+					<a
+						href="{{ path('app_admin_produit_index') }}"
+						class="btn btn-secondary w-100"
+					>
+						Réinitialiser
+					</a>
+				</div>
+			</form>
+
+			{# Liste des produits. #}
+			<div class="table-responsive">
+				<table class="table table-hover align-middle">
+
+					<thead>
+						<tr>
+							<th>ID</th>
+							<th>Nom</th>
+							<th>Description</th>
+							<th>Catégorie</th>
+							<th>Prix</th>
+							<th>Stock</th>
+							<th>Image</th>
+							<th class="text-end">Actions</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						{% for produit in produits %}
+							<tr>
+								<td>
+									{{ produit.id }}
+								</td>
+
+								<td>
+									<strong>
+										{{ produit.produitNom }}
+									</strong>
+								</td>
+
+								<td>
+									{% if produit.produitDescription %}
+										{{ produit.produitDescription|striptags }}
+									{% else %}
+										<span class="text-muted">
+											Aucune description
+										</span>
+									{% endif %}
+								</td>
+
+								<td>
+									{% if produit.categorie %}
+										{{ produit.categorie.categorieNom }}
+									{% else %}
+										<span class="badge bg-secondary">
+											Sans catégorie
+										</span>
+									{% endif %}
+								</td>
+
+								<td>
+									{{ produit.produitPrix|number_format(2, ',', ' ') }}
+									€
+								</td>
+
+								<td>
+									{% if produit.produitStock %}
+										<span class="badge bg-success">
+											Disponible
+										</span>
+									{% else %}
+										<span class="badge bg-danger">
+											Indisponible
+										</span>
+									{% endif %}
+								</td>
+
+								<td>
+									{% if produit.produitImage %}
+										<img
+											src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
+											alt="{{ produit.produitNom }}"
+											class="img-fluid rounded"
+											style="max-width: 80px; max-height: 80px;"
+										>
+									{% else %}
+										<span class="text-muted">
+											Aucune image
+										</span>
+									{% endif %}
+								</td>
+
+								<td class="text-end">
+									<a
+										href="{{ path('app_admin_produit_show', {'id': produit.id}) }}"
+										class="btn btn-info btn-sm"
+									>
+										Voir
+									</a>
+
+									<a
+										href="{{ path('app_admin_produit_edit', {'id': produit.id}) }}"
+										class="btn btn-warning btn-sm"
+									>
+										Modifier
+									</a>
+
+									{{ include('admin_produit/_delete_form.html.twig') }}
+								</td>
+							</tr>
+						{% else %}
+							<tr>
+								<td
+									colspan="8"
+									class="text-center text-muted"
+								>
+									Aucun produit ne correspond aux critères sélectionnés.
+								</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+
+				</table>
+			</div>
+
+		</div>
+
+	</div>
 
 {% endblock %}

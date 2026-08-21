@@ -1,125 +1,135 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-    {{ utilisateur.utilisateurNom }} | Wacdo
+	{{ utilisateur.utilisateurNom }} | Wacdo
 {% endblock %}
 
 {% block body %}
 
-    {# Affiche le titre de la fiche utilisateur. #}
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-1">
-                {{ utilisateur.utilisateurPrenom }}
-                {{ utilisateur.utilisateurNom }}
-            </h1>
-            <p class="text-muted mb-0">
-                Détail de l'utilisateur
-            </p>
-        </div>
-        <div>
+	{# En-tête de l'utilisateur. #}
+	<div class="d-flex justify-content-between align-items-center mb-4">
+		<div>
+			<h1 class="h3 mb-1">
+				{{ utilisateur.utilisateurPrenom }}
+				{{ utilisateur.utilisateurNom }}
+			</h1>
 
-            {# Ouvre la modification. #}
-            <a
-                href="{{ path('app_admin_utilisateur_edit', {'id': utilisateur.id}) }}"
-                class="btn btn-warning"
-            >
-                Modifier
-            </a>
+			<p class="text-muted mb-0">
+				Détail de l'utilisateur
+			</p>
+		</div>
 
-            {# Permet de supprimer l'utilisateur. #}
-            {{ include('admin_utilisateur/_delete_form.html.twig') }}
-        </div>
-    </div>
+		<div>
+			<a
+				href="{{ path('app_admin_utilisateur_edit', {'id': utilisateur.id}) }}"
+				class="btn btn-warning"
+			>
+				Modifier
+			</a>
 
-    {# Affiche les informations de l'utilisateur. #}
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-title mb-0">
-                Informations de l'utilisateur
-            </h5>
-        </div>
-        <div class="card-body">
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <th style="width: 250px;">
-                            Identifiant
-                        </th>
-                        <td>
-                            {{ utilisateur.id }}
-                        </td>
-                    </tr>
+			{{ include('admin_utilisateur/_delete_form.html.twig') }}
+		</div>
+	</div>
 
-                    <tr>
-                        <th>
-                            Nom
-                        </th>
-                        <td>
-                            {{ utilisateur.utilisateurNom }}
-                        </td>
-                    </tr>
+	{# Informations détaillées de l'utilisateur. #}
+	<div class="card">
 
-                    <tr>
-                        <th>
-                            Prénom
-                        </th>
-                        <td>
-                            {% if utilisateur.utilisateurPrenom %}
-                                {{ utilisateur.utilisateurPrenom }}
-                            {% else %}
-                                <span class="text-muted">
-                                    Non renseigné
-                                </span>
-                            {% endif %}
-                        </td>
-                    </tr>
+		<div class="card-header">
+			<h5 class="card-title mb-0">
+				Informations de l'utilisateur
+			</h5>
+		</div>
 
-                    <tr>
-                        <th>
-                            Email
-                        </th>
-                        <td>
-                            {{ utilisateur.utilisateurEmail }}
-                        </td>
-                    </tr>
+		<div class="card-body">
+			<table class="table">
+				<tbody>
 
-                    <tr>
-                        <th>
-                            Rôle
-                        </th>
-                        <td>
-                        {% if utilisateur.utilisateurRole == 'ROLE_ADMIN' %}
-                            <span class="badge bg-danger">
-                                Administrateur
-                            </span>
-                        {% elseif utilisateur.utilisateurRole == 'ROLE_PREPARATEUR' %}
-                            <span class="badge bg-warning">
-                                Préparateur
-                            </span>
-                        {% elseif utilisateur.utilisateurRole == 'ROLE_ACCUEIL' %}
-                            <span class="badge bg-info">
-                                Accueil
-                            </span>
-                        {% elseif utilisateur.utilisateurRole == 'ROLE_USER' %}
-                            <span class="badge bg-secondary">
-                                Client
-                            </span>
-                        {% endif %}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+					<tr>
+						<th style="width: 250px;">
+							Identifiant
+						</th>
 
-    {# Retourne vers la liste. #}
-    <div class="mt-3">
-        <a
-            href="{{ path('app_admin_utilisateur_index') }}"
-            class="btn btn-secondary"
-        >
-            Retour à la liste
-        </a>
-    </div>
+						<td>
+							{{ utilisateur.id }}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Nom
+						</th>
+
+						<td>
+							{{ utilisateur.utilisateurNom }}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Prénom
+						</th>
+
+						<td>
+							{% if utilisateur.utilisateurPrenom %}
+								{{ utilisateur.utilisateurPrenom }}
+							{% else %}
+								<span class="text-muted">
+									Non renseigné
+								</span>
+							{% endif %}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Email
+						</th>
+
+						<td>
+							{{ utilisateur.utilisateurEmail }}
+						</td>
+					</tr>
+
+					<tr>
+						<th>
+							Rôle
+						</th>
+
+						<td>
+							{% if utilisateur.utilisateurRole == 'ROLE_ADMIN' %}
+								<span class="badge bg-danger">
+									Administrateur
+								</span>
+							{% elseif utilisateur.utilisateurRole == 'ROLE_PREPARATEUR' %}
+								<span class="badge bg-warning">
+									Préparateur
+								</span>
+							{% elseif utilisateur.utilisateurRole == 'ROLE_ACCUEIL' %}
+								<span class="badge bg-info">
+									Accueil
+								</span>
+							{% elseif utilisateur.utilisateurRole == 'ROLE_USER' %}
+								<span class="badge bg-secondary">
+									Client
+								</span>
+							{% endif %}
+						</td>
+					</tr>
+
+				</tbody>
+			</table>
+		</div>
+
+	</div>
+
+	{# Retour à la liste des utilisateurs. #}
+	<div class="mt-3">
+		<a
+			href="{{ path('app_admin_utilisateur_index') }}"
+			class="btn btn-secondary"
+		>
+			Retour à la liste
+		</a>
+	</div>
+
 {% endblock %}

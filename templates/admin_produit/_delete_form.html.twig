@@ -1,5 +1,4 @@
-{# Formulaire sécurisé de suppression du produit. #}
-
+{# Supprime le produit sélectionné. #}
 <form
 	method="post"
 	action="{{ path('app_admin_produit_delete', {'id': produit.id}) }}"
@@ -12,7 +11,10 @@
 		value="{{ csrf_token('delete' ~ produit.id) }}"
 	>
 
-	<button type="submit" class="btn btn-danger">
+	<button
+		type="submit"
+		class="btn btn-danger"
+	>
 		<i class="align-middle me-1" data-feather="trash-2"></i>
 		Supprimer
 	</button>

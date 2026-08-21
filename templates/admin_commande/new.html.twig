@@ -1,32 +1,35 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-    Ajouter une commande | Wacdo
+	Ajouter une commande | Wacdo
 {% endblock %}
 
 {% block body %}
-    {# Affiche le titre de la page. #}
-    <div class="mb-4">
-        <h1 class="h3 mb-1">
-            Ajouter une commande
-        </h1>
-        <p class="text-muted mb-0">
-            Créez une nouvelle commande Wacdo.
-        </p>
-    </div>
 
-    {# Affiche le formulaire de création. #}
-    {{ include('admin_commande/_form.html.twig', {
-        'button_label': 'Ajouter la commande'
-    }) }}
+	{# En-tête de la page. #}
+	<div class="mb-4">
+		<h1 class="h3 mb-1">
+			Ajouter une commande
+		</h1>
 
-    {# Retourne vers la liste. #}
-    <div class="mt-3">
-        <a
-            href="{{ path('app_admin_commande_index') }}"
-            class="btn btn-secondary"
-        >
-            Retour à la liste
-        </a>
-    </div>
+		<p class="text-muted mb-0">
+			Créez une nouvelle commande Wacdo.
+		</p>
+	</div>
+
+	{# Formulaire de création. #}
+	{{ include('admin_commande/_form.html.twig', {
+		'button_label': 'Ajouter la commande'
+	}) }}
+
+	{# Retour à la liste des commandes. #}
+	<div class="mt-3">
+		<a
+			href="{{ path('app_admin_commande_index') }}"
+			class="btn btn-secondary"
+		>
+			Retour à la liste
+		</a>
+	</div>
+
 {% endblock %}

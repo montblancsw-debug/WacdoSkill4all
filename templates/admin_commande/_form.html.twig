@@ -1,6 +1,6 @@
-{# Formulaire du CRUD Commande. #}
-
+{# Affiche le formulaire de création ou de modification d'une commande. #}
 <div class="card">
+
 	<div class="card-header">
 		<h5 class="card-title mb-0">
 			Informations de la commande
@@ -16,28 +16,28 @@
 
 	<div class="card-body">
 
-		{# Affiche le statut de la commande. #}
+		{# Statut de la commande. #}
 		<div class="mb-3">
 			{{ form_label(form.commande_statut) }}
 			{{ form_widget(form.commande_statut) }}
 			{{ form_errors(form.commande_statut) }}
 		</div>
 
-		{# Affiche la date de la commande. #}
+		{# Date de la commande. #}
 		<div class="mb-3">
 			{{ form_label(form.commande_date) }}
 			{{ form_widget(form.commande_date) }}
 			{{ form_errors(form.commande_date) }}
 		</div>
 
-		{# Affiche le total de la commande. #}
+		{# Total de la commande. #}
 		<div class="mb-3">
 			{{ form_label(form.commande_total) }}
 			{{ form_widget(form.commande_total) }}
 			{{ form_errors(form.commande_total) }}
 		</div>
 
-		{# Affiche l'utilisateur associé. #}
+		{# Utilisateur associé à la commande. #}
 		<div class="mb-3">
 			{{ form_label(form.utilisateur) }}
 			{{ form_widget(form.utilisateur) }}
@@ -49,7 +49,6 @@
 	{{ form_end(form) }}
 
 	<div class="card-footer d-flex align-items-center gap-2">
-
 		<button
 			type="submit"
 			form="admin-commande-form"
@@ -61,6 +60,6 @@
 		{% if commande.id %}
 			{{ include('admin_commande/_delete_form.html.twig') }}
 		{% endif %}
-
 	</div>
+
 </div>

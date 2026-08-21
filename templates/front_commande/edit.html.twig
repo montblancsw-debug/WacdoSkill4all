@@ -1,668 +1,474 @@
-{# Modification d'une commande client. #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Modifier la commande #{{ commande.id }} | Wacdo
+	Modifier la commande #{{ commande.id }} | Wacdo
 {% endblock %}
 
 {% block body %}
 
-<section class="front-section">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-
-            <h1 class="h2 mb-1">
-                Modifier ma commande
-            </h1>
-
-            <p class="text-muted mb-0">
-                Commande #{{ commande.id }}
-            </p>
-
-        </div>
-
-        <a
-            href="{{ path(
-                'app_front_commande_show',
-                {
-                    'id': commande.id
-                }
-            ) }}"
-            class="btn btn-secondary"
-        >
-            Retour à la commande
-        </a>
-
-    </div>
-
-    <div class="card front-card mb-4">
-
-        <div class="card-header">
-
-            <h2 class="h5 mb-0">
-                Articles de la commande
-            </h2>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table class="table align-middle">
-
-                    <thead>
-
-                        <tr>
-                            <th>Image</th>
-                            <th>Article</th>
-                            <th>Prix unitaire</th>
-                            <th>Quantité</th>
-                            <th>Total</th>
-
-                            <th class="text-end">
-                                Action
-                            </th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% for detail in commande.details %}
-
-                            {% if
-                                detail.produit
-                                or detail.menu
-                            %}
-
-                                <tr>
-
-                                    <td>
-
-                                        {% if
-                                            detail.produit
-                                            and detail.produit.produitImage
-                                        %}
-
-                                            <img
-                                                src="{{ asset(
-                                                    'images/produits/'
-                                                    ~ detail.produit.produitImage
-                                                ) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
-                                                alt="{{ detail.produit.produitNom }}"
-                                                class="front-cart-image"
-                                            >
-
-                                        {% elseif
-                                            detail.menu
-                                            and detail.menu.menuImage
-                                        %}
-
-                                            <img
-                                                src="{{ asset(
-                                                    'images/menus/'
-                                                    ~ detail.menu.menuImage
-                                                ) }}?v={{ detail.menu.updatedAt ? detail.menu.updatedAt|date('U') : '1' }}"
-                                                alt="{{ detail.menu.menuNom }}"
-                                                class="front-cart-image"
-                                            >
-
-                                        {% else %}
-
-                                            <div class="front-cart-image-empty">
-                                                —
-                                            </div>
-
-                                        {% endif %}
-
-                                    </td>
-
-                                    <td>
-
-                                        {% if detail.produit %}
-
-                                            <strong>
-                                                {{ detail.produit.produitNom }}
-                                            </strong>
-
-                                            <div class="small text-muted">
-                                                Produit
-                                            </div>
-
-                                            {% if detail.produit.categorie %}
-
-                                                <div class="small text-muted">
-                                                    {{ detail.produit.categorie.categorieNom }}
-                                                </div>
-
-                                            {% endif %}
-
-                                            {% if not detail.produit.produitStock %}
-
-                                                <div class="mt-1">
-
-                                                    <span class="badge text-bg-danger">
-                                                        Indisponible
-                                                    </span>
-
-                                                </div>
-
-                                            {% endif %}
-
-                                        {% elseif detail.menu %}
-
-                                            <strong>
-                                                {{ detail.menu.menuNom }}
-                                            </strong>
-
-                                            <div class="small text-muted">
-                                                Menu
-                                            </div>
-
-                                            <div class="small text-muted">
-
-                                                {% for produit in detail.menu.produits %}
-
-                                                    {{ produit.produitNom }}
-
-                                                    {% if not loop.last %}
-                                                        •
-                                                    {% endif %}
-
-                                                {% endfor %}
-
-                                            </div>
-
-                                        {% endif %}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ detail.detailUnitaire
-                                            |number_format(
-                                                2,
-                                                ',',
-                                                ' '
-                                            )
-                                        }}
-                                        €
-
-                                    </td>
-
-                                    <td>
-
-                                        <div class="front-cart-quantity">
-
-                                            <form
-                                                method="post"
-                                                action="{{ path(
-                                                    'app_front_commande_detail_minus',
-                                                    {
-                                                        'id': commande.id,
-                                                        'detailId': detail.id
-                                                    }
-                                                ) }}"
-                                            >
-
-                                                <input
-                                                    type="hidden"
-                                                    name="_token"
-                                                    value="{{ csrf_token(
-                                                        'front_commande_detail_minus'
-                                                        ~ detail.id
-                                                    ) }}"
-                                                >
-
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-outline-secondary btn-sm front-cart-quantity-button"
-                                                    {% if detail.detailQuantite <= 1 %}
-                                                        disabled
-                                                    {% endif %}
-                                                >
-                                                    −
-                                                </button>
-
-                                            </form>
-
-                                            <span class="front-cart-quantity-value">
-                                                {{ detail.detailQuantite }}
-                                            </span>
-
-                                            <form
-                                                method="post"
-                                                action="{{ path(
-                                                    'app_front_commande_detail_plus',
-                                                    {
-                                                        'id': commande.id,
-                                                        'detailId': detail.id
-                                                    }
-                                                ) }}"
-                                            >
-
-                                                <input
-                                                    type="hidden"
-                                                    name="_token"
-                                                    value="{{ csrf_token(
-                                                        'front_commande_detail_plus'
-                                                        ~ detail.id
-                                                    ) }}"
-                                                >
-
-                                                {% set articleDisponible = true %}
-
-                                                {% if
-                                                    detail.produit
-                                                    and not detail.produit.produitStock
-                                                %}
-                                                    {% set articleDisponible = false %}
-                                                {% endif %}
-
-                                                {% if detail.menu %}
-
-                                                    {% if not detail.menu.menuStatus %}
-                                                        {% set articleDisponible = false %}
-                                                    {% endif %}
-
-                                                    {% for produit in detail.menu.produits %}
-
-                                                        {% if not produit.produitStock %}
-                                                            {% set articleDisponible = false %}
-                                                        {% endif %}
-
-                                                    {% endfor %}
-
-                                                {% endif %}
-
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-outline-primary btn-sm front-cart-quantity-button"
-                                                    {% if not articleDisponible %}
-                                                        disabled
-                                                    {% endif %}
-                                                >
-                                                    +
-                                                </button>
-
-                                            </form>
-
-                                        </div>
-
-                                    </td>
-
-                                    <td>
-
-                                        <strong>
-                                            {{ detail.detailTotal
-                                                |number_format(
-                                                    2,
-                                                    ',',
-                                                    ' '
-                                                )
-                                            }}
-                                            €
-                                        </strong>
-
-                                    </td>
-
-                                    <td class="text-end">
-
-                                        <form
-                                            method="post"
-                                            action="{{ path(
-                                                'app_front_commande_detail_delete',
-                                                {
-                                                    'id': commande.id,
-                                                    'detailId': detail.id
-                                                }
-                                            ) }}"
-                                            onsubmit="return confirm('Voulez-vous retirer cet article de la commande ?');"
-                                        >
-
-                                            <input
-                                                type="hidden"
-                                                name="_token"
-                                                value="{{ csrf_token(
-                                                    'front_commande_detail_delete'
-                                                    ~ detail.id
-                                                ) }}"
-                                            >
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger btn-sm"
-                                            >
-                                                Supprimer
-                                            </button>
-
-                                        </form>
-
-                                    </td>
-
-                                </tr>
-
-                            {% endif %}
-
-                        {% else %}
-
-                            <tr>
-
-                                <td
-                                    colspan="6"
-                                    class="text-center text-muted py-4"
-                                >
-                                    Aucun article dans cette commande.
-                                </td>
-
-                            </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            {% if commande.details is empty %}
-
-                <div class="text-center text-muted py-3">
-                    Aucun article dans cette commande.
-                </div>
-
-            {% endif %}
-
-            <div class="d-flex justify-content-end mt-3">
-
-                <div class="front-cart-total">
-
-                    <span class="me-3">
-                        Total
-                    </span>
-
-                    <strong>
-                        {{ commande.commandeTotal
-                            |number_format(
-                                2,
-                                ',',
-                                ' '
-                            )
-                        }}
-                        €
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="row g-4">
-
-        {# Ajouter un produit. #}
-        <div class="col-12 col-xl-6">
-
-            <div class="card front-card h-100">
-
-                <div class="card-header">
-
-                    <h2 class="h5 mb-0">
-                        Ajouter un produit
-                    </h2>
-
-                </div>
-
-                <div class="card-body">
-
-                    <form
-                        method="post"
-                        action="{{ path(
-                            'app_front_commande_add_product',
-                            {
-                                'id': commande.id
-                            }
-                        ) }}"
-                    >
-
-                        <input
-                            type="hidden"
-                            name="_token"
-                            value="{{ csrf_token(
-                                'front_commande_add_product'
-                                ~ commande.id
-                            ) }}"
-                        >
-
-                        <div class="mb-3">
-
-                            <label
-                                for="produit_id"
-                                class="form-label"
-                            >
-                                Produit
-                            </label>
-
-                            <select
-                                id="produit_id"
-                                name="produit_id"
-                                class="form-select"
-                                required
-                            >
-
-                                <option value="">
-                                    Choisir un produit
-                                </option>
-
-                                {% for produit in produitsDisponibles %}
-
-                                    <option value="{{ produit.id }}">
-
-                                        {{ produit.produitNom }}
-                                        -
-                                        {{ produit.produitPrix
-                                            |number_format(
-                                                2,
-                                                ',',
-                                                ' '
-                                            )
-                                        }}
-                                        €
-
-                                        {% if produit.categorie %}
-                                            -
-                                            {{ produit.categorie.categorieNom }}
-                                        {% endif %}
-
-                                    </option>
-
-                                {% endfor %}
-
-                            </select>
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label
-                                for="produit_quantite"
-                                class="form-label"
-                            >
-                                Quantité
-                            </label>
-
-                            <input
-                                id="produit_quantite"
-                                type="number"
-                                name="quantite"
-                                class="form-control"
-                                min="1"
-                                max="99"
-                                value="1"
-                                required
-                            >
-
-                        </div>
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            {% if produitsDisponibles is empty %}
-                                disabled
-                            {% endif %}
-                        >
-                            Ajouter le produit
-                        </button>
-
-                    </form>
-
-                    {% if produitsDisponibles is empty %}
-
-                        <p class="text-muted mt-3 mb-0">
-                            Aucun produit disponible.
-                        </p>
-
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-        </div>
-
-        {# Ajouter un menu. #}
-        <div class="col-12 col-xl-6">
-
-            <div class="card front-card h-100">
-
-                <div class="card-header">
-
-                    <h2 class="h5 mb-0">
-                        Ajouter un menu
-                    </h2>
-
-                </div>
-
-                <div class="card-body">
-
-                    <form
-                        method="post"
-                        action="{{ path(
-                            'app_front_commande_add_menu',
-                            {
-                                'id': commande.id
-                            }
-                        ) }}"
-                    >
-
-                        <input
-                            type="hidden"
-                            name="_token"
-                            value="{{ csrf_token(
-                                'front_commande_add_menu'
-                                ~ commande.id
-                            ) }}"
-                        >
-
-                        <div class="mb-3">
-
-                            <label
-                                for="menu_id"
-                                class="form-label"
-                            >
-                                Menu
-                            </label>
-
-                            <select
-                                id="menu_id"
-                                name="menu_id"
-                                class="form-select"
-                                required
-                            >
-
-                                <option value="">
-                                    Choisir un menu
-                                </option>
-
-                                {% for menu in menusDisponibles %}
-
-                                    <option value="{{ menu.id }}">
-
-                                        {{ menu.menuNom }}
-                                        -
-                                        {{ menu.menuPrix
-                                            |number_format(
-                                                2,
-                                                ',',
-                                                ' '
-                                            )
-                                        }}
-                                        €
-
-                                    </option>
-
-                                {% endfor %}
-
-                            </select>
-
-                        </div>
-
-                        <div class="mb-3">
-
-                            <label
-                                for="menu_quantite"
-                                class="form-label"
-                            >
-                                Quantité
-                            </label>
-
-                            <input
-                                id="menu_quantite"
-                                type="number"
-                                name="quantite"
-                                class="form-control"
-                                min="1"
-                                max="99"
-                                value="1"
-                                required
-                            >
-
-                        </div>
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                            {% if menusDisponibles is empty %}
-                                disabled
-                            {% endif %}
-                        >
-                            Ajouter le menu
-                        </button>
-
-                    </form>
-
-                    {% if menusDisponibles is empty %}
-
-                        <p class="text-muted mt-3 mb-0">
-                            Aucun menu disponible.
-                        </p>
-
-                    {% endif %}
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
+	<section class="front-section">
+
+		{# En-tête de la commande. #}
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h1 class="h2 mb-1">
+					Modifier ma commande
+				</h1>
+
+				<p class="text-muted mb-0">
+					Commande #{{ commande.id }}
+				</p>
+			</div>
+
+			<a
+				href="{{ path('app_front_commande_show', {'id': commande.id}) }}"
+				class="btn btn-secondary"
+			>
+				Retour à la commande
+			</a>
+		</div>
+
+		{# Articles actuellement présents dans la commande. #}
+		<div class="card front-card mb-4">
+
+			<div class="card-header">
+				<h2 class="h5 mb-0">
+					Articles de la commande
+				</h2>
+			</div>
+
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table align-middle">
+
+						<thead>
+							<tr>
+								<th>Image</th>
+								<th>Article</th>
+								<th>Prix unitaire</th>
+								<th>Quantité</th>
+								<th>Total</th>
+								<th class="text-end">Action</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% for detail in commande.details %}
+
+								{% if detail.produit or detail.menu %}
+									<tr>
+
+										{# Image du produit ou du menu. #}
+										<td>
+											{% if detail.produit and detail.produit.produitImage %}
+												<img
+													src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
+													alt="{{ detail.produit.produitNom }}"
+													class="front-cart-image"
+												>
+											{% elseif detail.menu and detail.menu.menuImage %}
+												<img
+													src="{{ asset('images/menus/' ~ detail.menu.menuImage) }}?v={{ detail.menu.updatedAt ? detail.menu.updatedAt|date('U') : '1' }}"
+													alt="{{ detail.menu.menuNom }}"
+													class="front-cart-image"
+												>
+											{% else %}
+												<div class="front-cart-image-empty">
+													—
+												</div>
+											{% endif %}
+										</td>
+
+										{# Informations de l'article. #}
+										<td>
+											{% if detail.produit %}
+												<strong>
+													{{ detail.produit.produitNom }}
+												</strong>
+
+												<div class="small text-muted">
+													Produit
+												</div>
+
+												{% if detail.produit.categorie %}
+													<div class="small text-muted">
+														{{ detail.produit.categorie.categorieNom }}
+													</div>
+												{% endif %}
+
+												{% if not detail.produit.produitStock %}
+													<div class="mt-1">
+														<span class="badge text-bg-danger">
+															Indisponible
+														</span>
+													</div>
+												{% endif %}
+											{% elseif detail.menu %}
+												<strong>
+													{{ detail.menu.menuNom }}
+												</strong>
+
+												<div class="small text-muted">
+													Menu
+												</div>
+
+												<div class="small text-muted">
+													{% for produit in detail.menu.produits %}
+														{{ produit.produitNom }}
+
+														{% if not loop.last %}
+															•
+														{% endif %}
+													{% endfor %}
+												</div>
+											{% endif %}
+										</td>
+
+										<td>
+											{{ detail.detailUnitaire|number_format(2, ',', ' ') }}
+											€
+										</td>
+
+										{# Modification de la quantité. #}
+										<td>
+											<div class="front-cart-quantity">
+
+												<form
+													method="post"
+													action="{{ path('app_front_commande_detail_minus', {
+														'id': commande.id,
+														'detailId': detail.id
+													}) }}"
+												>
+													<input
+														type="hidden"
+														name="_token"
+														value="{{ csrf_token('front_commande_detail_minus' ~ detail.id) }}"
+													>
+
+													<button
+														type="submit"
+														class="btn btn-outline-secondary btn-sm front-cart-quantity-button"
+														{% if detail.detailQuantite <= 1 %}
+															disabled
+														{% endif %}
+													>
+														−
+													</button>
+												</form>
+
+												<span class="front-cart-quantity-value">
+													{{ detail.detailQuantite }}
+												</span>
+
+												<form
+													method="post"
+													action="{{ path('app_front_commande_detail_plus', {
+														'id': commande.id,
+														'detailId': detail.id
+													}) }}"
+												>
+													<input
+														type="hidden"
+														name="_token"
+														value="{{ csrf_token('front_commande_detail_plus' ~ detail.id) }}"
+													>
+
+													{% set articleDisponible = true %}
+
+													{% if detail.produit and not detail.produit.produitStock %}
+														{% set articleDisponible = false %}
+													{% endif %}
+
+													{% if detail.menu %}
+														{% if not detail.menu.menuStatus %}
+															{% set articleDisponible = false %}
+														{% endif %}
+
+														{% for produit in detail.menu.produits %}
+															{% if not produit.produitStock %}
+																{% set articleDisponible = false %}
+															{% endif %}
+														{% endfor %}
+													{% endif %}
+
+													<button
+														type="submit"
+														class="btn btn-outline-primary btn-sm front-cart-quantity-button"
+														{% if not articleDisponible %}
+															disabled
+														{% endif %}
+													>
+														+
+													</button>
+												</form>
+
+											</div>
+										</td>
+
+										<td>
+											<strong>
+												{{ detail.detailTotal|number_format(2, ',', ' ') }}
+												€
+											</strong>
+										</td>
+
+										{# Suppression de l'article. #}
+										<td class="text-end">
+											<form
+												method="post"
+												action="{{ path('app_front_commande_detail_delete', {
+													'id': commande.id,
+													'detailId': detail.id
+												}) }}"
+												onsubmit="return confirm('Voulez-vous retirer cet article de la commande ?');"
+											>
+												<input
+													type="hidden"
+													name="_token"
+													value="{{ csrf_token('front_commande_detail_delete' ~ detail.id) }}"
+												>
+
+												<button
+													type="submit"
+													class="btn btn-danger btn-sm"
+												>
+													Supprimer
+												</button>
+											</form>
+										</td>
+
+									</tr>
+								{% endif %}
+
+							{% else %}
+								<tr>
+									<td
+										colspan="6"
+										class="text-center text-muted py-4"
+									>
+										Aucun article dans cette commande.
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+
+					</table>
+				</div>
+
+				{% if commande.details is empty %}
+					<div class="text-center text-muted py-3">
+						Aucun article dans cette commande.
+					</div>
+				{% endif %}
+
+				<div class="d-flex justify-content-end mt-3">
+					<div class="front-cart-total">
+						<span class="me-3">
+							Total
+						</span>
+
+						<strong>
+							{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+							€
+						</strong>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<div class="row g-4">
+
+			{# Ajout d'un produit. #}
+			<div class="col-12 col-xl-6">
+				<div class="card front-card h-100">
+
+					<div class="card-header">
+						<h2 class="h5 mb-0">
+							Ajouter un produit
+						</h2>
+					</div>
+
+					<div class="card-body">
+						<form
+							method="post"
+							action="{{ path('app_front_commande_add_product', {'id': commande.id}) }}"
+						>
+							<input
+								type="hidden"
+								name="_token"
+								value="{{ csrf_token('front_commande_add_product' ~ commande.id) }}"
+							>
+
+							<div class="mb-3">
+								<label
+									for="produit_id"
+									class="form-label"
+								>
+									Produit
+								</label>
+
+								<select
+									id="produit_id"
+									name="produit_id"
+									class="form-select"
+									required
+								>
+									<option value="">
+										Choisir un produit
+									</option>
+
+									{% for produit in produitsDisponibles %}
+										<option value="{{ produit.id }}">
+											{{ produit.produitNom }}
+											-
+											{{ produit.produitPrix|number_format(2, ',', ' ') }}
+											€
+
+											{% if produit.categorie %}
+												-
+												{{ produit.categorie.categorieNom }}
+											{% endif %}
+										</option>
+									{% endfor %}
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label
+									for="produit_quantite"
+									class="form-label"
+								>
+									Quantité
+								</label>
+
+								<input
+									id="produit_quantite"
+									type="number"
+									name="quantite"
+									class="form-control"
+									min="1"
+									max="99"
+									value="1"
+									required
+								>
+							</div>
+
+							<button
+								type="submit"
+								class="btn btn-primary"
+								{% if produitsDisponibles is empty %}
+									disabled
+								{% endif %}
+							>
+								Ajouter le produit
+							</button>
+						</form>
+
+						{% if produitsDisponibles is empty %}
+							<p class="text-muted mt-3 mb-0">
+								Aucun produit disponible.
+							</p>
+						{% endif %}
+					</div>
+
+				</div>
+			</div>
+
+			{# Ajout d'un menu. #}
+			<div class="col-12 col-xl-6">
+				<div class="card front-card h-100">
+
+					<div class="card-header">
+						<h2 class="h5 mb-0">
+							Ajouter un menu
+						</h2>
+					</div>
+
+					<div class="card-body">
+						<form
+							method="post"
+							action="{{ path('app_front_commande_add_menu', {'id': commande.id}) }}"
+						>
+							<input
+								type="hidden"
+								name="_token"
+								value="{{ csrf_token('front_commande_add_menu' ~ commande.id) }}"
+							>
+
+							<div class="mb-3">
+								<label
+									for="menu_id"
+									class="form-label"
+								>
+									Menu
+								</label>
+
+								<select
+									id="menu_id"
+									name="menu_id"
+									class="form-select"
+									required
+								>
+									<option value="">
+										Choisir un menu
+									</option>
+
+									{% for menu in menusDisponibles %}
+										<option value="{{ menu.id }}">
+											{{ menu.menuNom }}
+											-
+											{{ menu.menuPrix|number_format(2, ',', ' ') }}
+											€
+										</option>
+									{% endfor %}
+								</select>
+							</div>
+
+							<div class="mb-3">
+								<label
+									for="menu_quantite"
+									class="form-label"
+								>
+									Quantité
+								</label>
+
+								<input
+									id="menu_quantite"
+									type="number"
+									name="quantite"
+									class="form-control"
+									min="1"
+									max="99"
+									value="1"
+									required
+								>
+							</div>
+
+							<button
+								type="submit"
+								class="btn btn-primary"
+								{% if menusDisponibles is empty %}
+									disabled
+								{% endif %}
+							>
+								Ajouter le menu
+							</button>
+						</form>
+
+						{% if menusDisponibles is empty %}
+							<p class="text-muted mt-3 mb-0">
+								Aucun menu disponible.
+							</p>
+						{% endif %}
+					</div>
+
+				</div>
+			</div>
+
+		</div>
+
+	</section>
 
 {% endblock %}

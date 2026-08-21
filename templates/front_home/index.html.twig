@@ -1,5 +1,3 @@
-{# Page d'accueil du front-office Wacdo. #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
@@ -8,10 +6,9 @@
 
 {% block body %}
 
+	{# Présentation principale du site. #}
 	<section class="front-hero mb-5">
-
 		<div class="row align-items-center">
-
 			<div class="col-12 col-lg-8">
 
 				<h1 class="front-hero-title mb-3">
@@ -30,26 +27,22 @@
 				</a>
 
 				{% if not app.user %}
-
 					<a
 						href="{{ path('app_login') }}"
 						class="btn btn-secondary btn-lg ms-2"
 					>
 						Connexion
 					</a>
-
 				{% endif %}
 
 			</div>
-
 		</div>
-
 	</section>
 
+	{# Accès aux principales fonctionnalités du site. #}
 	<section class="front-section">
 
 		<div class="mb-4">
-
 			<h2 class="h3">
 				Nos Produits
 			</h2>
@@ -57,16 +50,13 @@
 			<p class="text-muted">
 				Retrouvez les produits et les menus disponibles chez Wacdo.
 			</p>
-
 		</div>
 
 		<div class="row g-4">
 
-			{# Carte des catégories. #}
+			{# Accès aux catégories. #}
 			<div class="col-12 col-md-6 col-xl-3">
-
 				<div class="card front-card">
-
 					<div class="card-body d-flex flex-column">
 
 						<h3 class="h5">
@@ -78,27 +68,21 @@
 						</p>
 
 						<div class="mt-auto">
-
 							<a
 								href="{{ path('app_front_categorie') }}"
 								class="btn btn-outline-primary"
 							>
 								Voir les catégories
 							</a>
-
 						</div>
 
 					</div>
-
 				</div>
-
 			</div>
 
-			{# Carte des produits. #}
+			{# Accès aux produits. #}
 			<div class="col-12 col-md-6 col-xl-3">
-
 				<div class="card front-card">
-
 					<div class="card-body d-flex flex-column">
 
 						<h3 class="h5">
@@ -110,27 +94,21 @@
 						</p>
 
 						<div class="mt-auto">
-
 							<a
 								href="{{ path('app_front_produit') }}"
 								class="btn btn-outline-primary"
 							>
 								Voir les Produits
 							</a>
-
 						</div>
 
 					</div>
-
 				</div>
-
 			</div>
 
-			{# Carte des menus. #}
+			{# Accès aux menus. #}
 			<div class="col-12 col-md-6 col-xl-3">
-
 				<div class="card front-card">
-
 					<div class="card-body d-flex flex-column">
 
 						<h3 class="h5">
@@ -142,27 +120,21 @@
 						</p>
 
 						<div class="mt-auto">
-
 							<a
 								href="{{ path('app_front_menu') }}"
 								class="btn btn-outline-primary"
 							>
 								Voir les menus
 							</a>
-
 						</div>
 
 					</div>
-
 				</div>
-
 			</div>
 
-			{# Carte des commandes. #}
+			{# Accès aux commandes selon le rôle de l'utilisateur. #}
 			<div class="col-12 col-md-6 col-xl-3">
-
 				<div class="card front-card">
-
 					<div class="card-body d-flex flex-column">
 
 						<h3 class="h5">
@@ -174,62 +146,48 @@
 							or is_granted('ROLE_PREPARATEUR')
 							or is_granted('ROLE_ACCUEIL')
 						%}
-
 							<p class="text-muted">
 								Consultez et gérez les commandes clients depuis la dashboard.
 							</p>
 
 							<div class="mt-auto">
-
 								<a
 									href="{{ path('app_admin_commande_index') }}"
 									class="btn btn-outline-primary"
 								>
 									Commandes
 								</a>
-
 							</div>
-
 						{% elseif is_granted('ROLE_USER') %}
-
 							<p class="text-muted">
 								Consultez l'historique et le statut de vos commandes.
 							</p>
 
 							<div class="mt-auto">
-
 								<a
 									href="{{ path('app_front_commande') }}"
 									class="btn btn-outline-primary"
 								>
 									Mes commandes
 								</a>
-
 							</div>
-
 						{% else %}
-
 							<p class="text-muted">
 								Connectez-vous pour passer et suivre vos commandes.
 							</p>
 
 							<div class="mt-auto">
-
 								<a
 									href="{{ path('app_login') }}"
 									class="btn btn-outline-primary"
 								>
 									Se connecter
 								</a>
-
 							</div>
-
 						{% endif %}
 
 					</div>
-
 				</div>
-
 			</div>
 
 		</div>

@@ -1,5 +1,4 @@
-{# Formulaire du CRUD admin_catégorie. #}
-
+{# Affiche le formulaire de création ou de modification d'une catégorie. #}
 <div class="card">
 
 	<div class="card-header">
@@ -17,20 +16,22 @@
 
 	<div class="card-body">
 
+		{# Nom de la catégorie. #}
 		<div class="mb-3">
 			{{ form_label(form.categorie_nom) }}
 			{{ form_widget(form.categorie_nom) }}
 			{{ form_errors(form.categorie_nom) }}
 		</div>
 
+		{# Description de la catégorie. #}
 		<div class="mb-3">
 			{{ form_label(form.categorie_description) }}
 			{{ form_widget(form.categorie_description) }}
 			{{ form_errors(form.categorie_description) }}
 		</div>
 
+		{# Image de la catégorie. #}
 		<div class="mb-3">
-
 			{{ form_label(form.imageFile) }}
 			{{ form_widget(form.imageFile) }}
 			{{ form_errors(form.imageFile) }}
@@ -40,9 +41,7 @@
 			</div>
 
 			{% if categorie.categorieNomdefichier %}
-
 				<div class="mt-3">
-
 					<img
 						src="{{ asset('images/categories/' ~ categorie.categorieNomdefichier) }}?v={{ categorie.updatedAt ? categorie.updatedAt|date('U') : '1' }}"
 						alt="{{ categorie.categorieNom }}"
@@ -56,11 +55,8 @@
 					<div class="form-text">
 						Laissez le champ vide pour conserver cette image.
 					</div>
-
 				</div>
-
 			{% endif %}
-
 		</div>
 
 	</div>
@@ -68,7 +64,6 @@
 	{{ form_end(form) }}
 
 	<div class="card-footer d-flex align-items-center gap-2">
-
 		<button
 			type="submit"
 			form="admin-categorie-form"
@@ -80,7 +75,6 @@
 		{% if categorie.id %}
 			{{ include('admin_categorie/_delete_form.html.twig') }}
 		{% endif %}
-
 	</div>
 
 </div>

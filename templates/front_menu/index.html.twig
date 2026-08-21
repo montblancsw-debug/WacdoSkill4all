@@ -1,28 +1,88 @@
 {% extends 'base.html.twig' %}
-{% block title %}Nos menus | Wacdo{% endblock %}
+
+{% block title %}
+	Nos menus | Wacdo
+{% endblock %}
+
 {% block body %}
-<section class="front-section">
-    <div class="mb-4"><h1 class="h2 mb-2">Nos menus</h1><p class="text-muted mb-0">Découvrez les menus proposés par Wacdo.</p></div>
-    <div class="row g-4">
-        {% for menu in menus %}
-            <div class="col-12 col-sm-6 col-lg-4">
-                <div class="card front-card h-100">
-                    {% if menu.menuImage %}
-                        <div class="front-product-image"><img src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}" class="card-img-top" alt="{{ menu.menuNom }}"></div>
-                    {% else %}<div class="front-product-image front-product-image-empty">Aucune image</div>{% endif %}
-                    <div class="card-body d-flex flex-column">
-                        <h2 class="h5 card-title">{{ menu.menuNom }}</h2>
-                        <p class="card-text text-muted">{{ menu.menuDescription ? menu.menuDescription|striptags|slice(0, 120) : 'Aucune description.' }}</p>
-                        <div class="mt-auto">
-                            <strong class="front-product-price">{{ menu.menuPrix|number_format(2, ',', ' ') }} €</strong>
-                            <div class="d-grid mt-3"><a href="{{ path('app_front_menu_detail', {'id': menu.id}) }}" class="btn btn-outline-primary">Voir le menu</a></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        {% else %}
-            <div class="col-12"><div class="alert alert-info">Aucun menu disponible.</div></div>
-        {% endfor %}
-    </div>
-</section>
+
+	<section class="front-section">
+
+		{# En-tête de la page. #}
+		<div class="mb-4">
+			<h1 class="h2 mb-2">
+				Nos menus
+			</h1>
+
+			<p class="text-muted mb-0">
+				Découvrez les menus proposés par Wacdo.
+			</p>
+		</div>
+
+		{# Liste des menus disponibles. #}
+		<div class="row g-4">
+			{% for menu in menus %}
+
+				<div class="col-12 col-sm-6 col-lg-4">
+					<div class="card front-card h-100">
+
+						{% if menu.menuImage %}
+							<div class="front-product-image">
+								<img
+									src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
+									class="card-img-top"
+									alt="{{ menu.menuNom }}"
+								>
+							</div>
+						{% else %}
+							<div class="front-product-image front-product-image-empty">
+								Aucune image
+							</div>
+						{% endif %}
+
+						<div class="card-body d-flex flex-column">
+							<h2 class="h5 card-title">
+								{{ menu.menuNom }}
+							</h2>
+
+							<p class="card-text text-muted">
+								{{ menu.menuDescription
+									? menu.menuDescription|striptags|slice(0, 120)
+									: 'Aucune description.'
+								}}
+							</p>
+
+							<div class="mt-auto">
+								<strong class="front-product-price">
+									{{ menu.menuPrix|number_format(2, ',', ' ') }}
+									€
+								</strong>
+
+								<div class="d-grid mt-3">
+									<a
+										href="{{ path('app_front_menu_detail', {'id': menu.id}) }}"
+										class="btn btn-outline-primary"
+									>
+										Voir le menu
+									</a>
+								</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+			{% else %}
+
+				<div class="col-12">
+					<div class="alert alert-info">
+						Aucun menu disponible.
+					</div>
+				</div>
+
+			{% endfor %}
+		</div>
+
+	</section>
+
 {% endblock %}

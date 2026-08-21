@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 
 <html lang="fr">
+{# ====================================================== #}
+{# ======================== HEAD ========================= #}
+{# ====================================================== #}
+
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,44 +14,60 @@
 			{% endblock %}
 		</title>
 
-		{# Charge Bootstrap pour le front-office. #}
+{# Charge Bootstrap pour la mise en forme du site. #}
+
 		<link
 		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
 
-		{# Charge les styles propres au front. #}
-		<link rel="stylesheet" href="{{ asset('css/front-wacdo.css') }}"> {% block stylesheets %}{% endblock %}
+{# Charge les styles personnalisés du front-office. #}
+
+		<link rel="stylesheet" href="{{ asset('css/front-wacdo.css') }}"> 
+		{% block stylesheets %}
+		{% endblock %}
 
 		</head>
 		<body
 			class="d-flex flex-column min-vh-100">
 
-			{# Affiche la navigation du site. #}
+{# ====================================================== #}
+{# ===================== NAVIGATION ===================== #}
+{# ====================================================== #}
+
 			{{ include('inc/_front-top-nav.html.twig') }}
 
-			{# Affiche le contenu principal. #}
+{# ====================================================== #}
+{# ================= CONTENU PRINCIPAL ================== #}
+{# ====================================================== #}
+
 			<main class="front-main flex-grow-1">
 				<div
 					class="container py-4">
 
-					{# Affiche les messages Flash Symfony. #}
+{# Affiche les messages de confirmation, d'erreur ou d'information. #}
+
 					{% for label, messages in app.flashes %}
 						{% for message in messages %}
+
 							<div class="alert alert-{{ label }} alert-dismissible fade show" role="alert">
 								{{ message }}
 								<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
 							</div>
+
 						{% endfor %}
 					{% endfor %}
-
 					{% block body %}
 					{% endblock %}
 				</div>
 			</main>
 
-			{# Affiche le pied de page. #}
+{# ====================================================== #}
+{# ==================== PIED DE PAGE ==================== #}
+{# ====================================================== #}
+
 			{{ include('inc/_front-footer.html.twig') }}
 
-			{# Charge le JavaScript Bootstrap. #}
+{# Charge les composants JavaScript de Bootstrap. #}
+
 			<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 			{% block javascripts %}

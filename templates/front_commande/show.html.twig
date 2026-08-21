@@ -1,476 +1,315 @@
-{# Détail d'une commande client. #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Commande #{{ commande.id }} | Wacdo
+	Commande #{{ commande.id }} | Wacdo
 {% endblock %}
 
 {% block body %}
 
-<section class="front-section">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-
-            <h1 class="h2 mb-1">
-                Commande #{{ commande.id }}
-            </h1>
-
-            <p class="text-muted mb-0">
-
-                {% if commande.commandeDate %}
-
-                    {{ commande.commandeDate
-                        |date('d/m/Y à H:i')
-                    }}
-
-                {% endif %}
-
-            </p>
-
-        </div>
-
-        <a
-            href="{{ path('app_front_commande') }}"
-            class="btn btn-secondary"
-        >
-            Retour à mes commandes
-        </a>
-
-    </div>
-
-    <div class="card front-card mb-4">
-
-        <div class="card-body">
-
-            <div class="row g-4 align-items-center">
-
-                <div class="col-12 col-md">
-
-                    <div class="text-muted small">
-                        Statut
-                    </div>
-
-                    <div class="mt-1">
-
-                        {% if commande.commandeStatut == 'en attente' %}
-
-                            <span class="badge text-bg-secondary">
-                                En attente
-                            </span>
-
-                        {% elseif commande.commandeStatut == 'en préparation' %}
-
-                            <span class="badge text-bg-warning">
-                                En préparation
-                            </span>
-
-                        {% elseif commande.commandeStatut == 'prête' %}
-
-                            <span class="badge text-bg-info">
-                                Prête
-                            </span>
-
-                        {% elseif commande.commandeStatut == 'en livraison' %}
-
-                            <span class="badge text-bg-primary">
-                                En livraison
-                            </span>
-
-                        {% elseif commande.commandeStatut == 'livrée' %}
-
-                            <span class="badge text-bg-success">
-                                Livrée
-                            </span>
-
-                        {% elseif commande.commandeStatut == 'annulée' %}
-
-                            <span class="badge text-bg-danger">
-                                Annulée
-                            </span>
-
-                        {% else %}
-
-                            <span class="badge text-bg-secondary">
-                                {{ commande.commandeStatut }}
-                            </span>
-
-                        {% endif %}
-
-                    </div>
-
-                </div>
-
-                <div class="col-12 col-md-auto">
-
-                    <div class="text-muted small">
-                        Total
-                    </div>
-
-                    <strong class="fs-4">
-                        {{ commande.commandeTotal
-                            |number_format(
-                                2,
-                                ',',
-                                ' '
-                            )
-                        }}
-                        €
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="card front-card mb-4">
-
-        <div class="card-header">
-
-            <h2 class="h5 mb-0">
-                Articles
-            </h2>
-
-        </div>
-
-        <div class="card-body">
-
-            <div class="table-responsive">
-
-                <table class="table align-middle">
-
-                    <thead>
-
-                        <tr>
-                            <th>Image</th>
-                            <th>Article</th>
-                            <th>Prix unitaire</th>
-                            <th>Quantité</th>
-                            <th>Total</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        {% set articleVisible = false %}
-
-                        {% for detail in commande.details %}
-
-                            {% if
-                                detail.produit
-                                or detail.menu
-                            %}
-
-                                {% set articleVisible = true %}
-
-                                <tr>
-
-                                    <td>
-
-                                        {% if
-                                            detail.produit
-                                            and detail.produit.produitImage
-                                        %}
-
-                                            <img
-                                                src="{{ asset(
-                                                    'images/produits/'
-                                                    ~ detail.produit.produitImage
-                                                ) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
-                                                alt="{{ detail.produit.produitNom }}"
-                                                class="front-cart-image"
-                                            >
-
-                                        {% elseif
-                                            detail.menu
-                                            and detail.menu.menuImage
-                                        %}
-
-                                            <img
-                                                src="{{ asset(
-                                                    'images/menus/'
-                                                    ~ detail.menu.menuImage
-                                                ) }}?v={{ detail.menu.updatedAt ? detail.menu.updatedAt|date('U') : '1' }}"
-                                                alt="{{ detail.menu.menuNom }}"
-                                                class="front-cart-image"
-                                            >
-
-                                        {% else %}
-
-                                            <div class="front-cart-image-empty">
-                                                —
-                                            </div>
-
-                                        {% endif %}
-
-                                    </td>
-
-                                    <td>
-
-                                        {% if detail.produit %}
-
-                                            <strong>
-                                                {{ detail.produit.produitNom }}
-                                            </strong>
-
-                                            <div class="small text-muted">
-                                                Produit
-                                            </div>
-
-                                            {% if detail.produit.categorie %}
-
-                                                <div class="small text-muted">
-                                                    {{ detail.produit.categorie.categorieNom }}
-                                                </div>
-
-                                            {% endif %}
-
-                                        {% elseif detail.menu %}
-
-                                            <strong>
-                                                {{ detail.menu.menuNom }}
-                                            </strong>
-
-                                            <div class="small text-muted">
-                                                Menu
-                                            </div>
-
-                                            <div class="small text-muted">
-
-                                                {% for produit in detail.menu.produits %}
-
-                                                    {{ produit.produitNom }}
-
-                                                    {% if not loop.last %}
-                                                        •
-                                                    {% endif %}
-
-                                                {% endfor %}
-
-                                            </div>
-
-                                        {% endif %}
-
-                                    </td>
-
-                                    <td>
-
-                                        {{ detail.detailUnitaire
-                                            |number_format(
-                                                2,
-                                                ',',
-                                                ' '
-                                            )
-                                        }}
-                                        €
-
-                                    </td>
-
-                                    <td>
-                                        {{ detail.detailQuantite }}
-                                    </td>
-
-                                    <td>
-
-                                        <strong>
-                                            {{ detail.detailTotal
-                                                |number_format(
-                                                    2,
-                                                    ',',
-                                                    ' '
-                                                )
-                                            }}
-                                            €
-                                        </strong>
-
-                                    </td>
-
-                                </tr>
-
-                            {% endif %}
-
-                        {% endfor %}
-
-                        {% if not articleVisible %}
-
-                            <tr>
-
-                                <td
-                                    colspan="5"
-                                    class="text-center text-muted py-4"
-                                >
-                                    Cette commande ne contient aucun article.
-                                </td>
-
-                            </tr>
-
-                        {% endif %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div class="d-flex justify-content-end mt-3">
-
-                <div class="front-cart-total">
-
-                    <span class="me-3">
-                        Total
-                    </span>
-
-                    <strong>
-                        {{ commande.commandeTotal
-                            |number_format(
-                                2,
-                                ',',
-                                ' '
-                            )
-                        }}
-                        €
-                    </strong>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="d-flex flex-wrap gap-2">
-
-        {% if
-            commande.commandeStatut == 'en attente'
-            or commande.commandeStatut == 'en préparation'
-        %}
-
-            <a
-                href="{{ path(
-                    'app_front_commande_edit',
-                    {
-                        'id': commande.id
-                    }
-                ) }}"
-                class="btn btn-primary"
-            >
-                Modifier la commande
-            </a>
-
-        {% endif %}
-
-        {% if
-            commande.commandeStatut == 'en attente'
-            or commande.commandeStatut == 'en préparation'
-            or commande.commandeStatut == 'prête'
-        %}
-
-            <form
-                method="post"
-                action="{{ path(
-                    'app_front_commande_cancel',
-                    {
-                        'id': commande.id
-                    }
-                ) }}"
-                onsubmit="return confirm('Voulez-vous annuler cette commande ?');"
-            >
-
-                <input
-                    type="hidden"
-                    name="_token"
-                    value="{{ csrf_token(
-                        'front_commande_cancel'
-                        ~ commande.id
-                    ) }}"
-                >
-
-                <button
-                    type="submit"
-                    class="btn btn-danger"
-                >
-                    Annuler la commande
-                </button>
-
-            </form>
-
-        {% endif %}
-
-        {% if commande.commandeStatut == 'annulée' %}
-
-            {% if commande.details is not empty %}
-
-                <form
-                    method="post"
-                    action="{{ path(
-                        'app_front_commande_relaunch',
-                        {
-                            'id': commande.id
-                        }
-                    ) }}"
-                    onsubmit="return confirm('Voulez-vous relancer cette commande ?');"
-                >
-
-                    <input
-                        type="hidden"
-                        name="_token"
-                        value="{{ csrf_token(
-                            'front_commande_relaunch'
-                            ~ commande.id
-                        ) }}"
-                    >
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        Relancer la commande
-                    </button>
-
-                </form>
-
-            {% endif %}
-
-            <form
-                method="post"
-                action="{{ path(
-                    'app_front_commande_delete',
-                    {
-                        'id': commande.id
-                    }
-                ) }}"
-                onsubmit="return confirm('Voulez-vous supprimer définitivement cette commande ?');"
-            >
-
-                <input
-                    type="hidden"
-                    name="_token"
-                    value="{{ csrf_token(
-                        'front_commande_delete'
-                        ~ commande.id
-                    ) }}"
-                >
-
-                <button
-                    type="submit"
-                    class="btn btn-danger"
-                >
-                    Supprimer définitivement
-                </button>
-
-            </form>
-
-        {% endif %}
-
-    </div>
-
-</section>
+	<section class="front-section">
+
+		{# En-tête de la commande. #}
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h1 class="h2 mb-1">
+					Commande #{{ commande.id }}
+				</h1>
+
+				<p class="text-muted mb-0">
+					{% if commande.commandeDate %}
+						{{ commande.commandeDate|date('d/m/Y à H:i') }}
+					{% endif %}
+				</p>
+			</div>
+
+			<a
+				href="{{ path('app_front_commande') }}"
+				class="btn btn-secondary"
+			>
+				Retour à mes commandes
+			</a>
+		</div>
+
+		{# Statut et total de la commande. #}
+		<div class="card front-card mb-4">
+			<div class="card-body">
+				<div class="row g-4 align-items-center">
+
+					<div class="col-12 col-md">
+						<div class="text-muted small">
+							Statut
+						</div>
+
+						<div class="mt-1">
+							{% if commande.commandeStatut == 'en attente' %}
+								<span class="badge text-bg-secondary">
+									En attente
+								</span>
+							{% elseif commande.commandeStatut == 'en préparation' %}
+								<span class="badge text-bg-warning">
+									En préparation
+								</span>
+							{% elseif commande.commandeStatut == 'prête' %}
+								<span class="badge text-bg-info">
+									Prête
+								</span>
+							{% elseif commande.commandeStatut == 'en livraison' %}
+								<span class="badge text-bg-primary">
+									En livraison
+								</span>
+							{% elseif commande.commandeStatut == 'livrée' %}
+								<span class="badge text-bg-success">
+									Livrée
+								</span>
+							{% elseif commande.commandeStatut == 'annulée' %}
+								<span class="badge text-bg-danger">
+									Annulée
+								</span>
+							{% else %}
+								<span class="badge text-bg-secondary">
+									{{ commande.commandeStatut }}
+								</span>
+							{% endif %}
+						</div>
+					</div>
+
+					<div class="col-12 col-md-auto">
+						<div class="text-muted small">
+							Total
+						</div>
+
+						<strong class="fs-4">
+							{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+							€
+						</strong>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		{# Articles présents dans la commande. #}
+		<div class="card front-card mb-4">
+
+			<div class="card-header">
+				<h2 class="h5 mb-0">
+					Articles
+				</h2>
+			</div>
+
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table align-middle">
+
+						<thead>
+							<tr>
+								<th>Image</th>
+								<th>Article</th>
+								<th>Prix unitaire</th>
+								<th>Quantité</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+
+						<tbody>
+							{% set articleVisible = false %}
+
+							{% for detail in commande.details %}
+
+								{% if detail.produit or detail.menu %}
+									{% set articleVisible = true %}
+
+									<tr>
+										<td>
+											{% if detail.produit and detail.produit.produitImage %}
+												<img
+													src="{{ asset('images/produits/' ~ detail.produit.produitImage) }}?v={{ detail.produit.updatedAt ? detail.produit.updatedAt|date('U') : '1' }}"
+													alt="{{ detail.produit.produitNom }}"
+													class="front-cart-image"
+												>
+											{% elseif detail.menu and detail.menu.menuImage %}
+												<img
+													src="{{ asset('images/menus/' ~ detail.menu.menuImage) }}?v={{ detail.menu.updatedAt ? detail.menu.updatedAt|date('U') : '1' }}"
+													alt="{{ detail.menu.menuNom }}"
+													class="front-cart-image"
+												>
+											{% else %}
+												<div class="front-cart-image-empty">
+													—
+												</div>
+											{% endif %}
+										</td>
+
+										<td>
+											{% if detail.produit %}
+												<strong>
+													{{ detail.produit.produitNom }}
+												</strong>
+
+												<div class="small text-muted">
+													Produit
+												</div>
+
+												{% if detail.produit.categorie %}
+													<div class="small text-muted">
+														{{ detail.produit.categorie.categorieNom }}
+													</div>
+												{% endif %}
+											{% elseif detail.menu %}
+												<strong>
+													{{ detail.menu.menuNom }}
+												</strong>
+
+												<div class="small text-muted">
+													Menu
+												</div>
+
+												<div class="small text-muted">
+													{% for produit in detail.menu.produits %}
+														{{ produit.produitNom }}
+
+														{% if not loop.last %}
+															•
+														{% endif %}
+													{% endfor %}
+												</div>
+											{% endif %}
+										</td>
+
+										<td>
+											{{ detail.detailUnitaire|number_format(2, ',', ' ') }}
+											€
+										</td>
+
+										<td>
+											{{ detail.detailQuantite }}
+										</td>
+
+										<td>
+											<strong>
+												{{ detail.detailTotal|number_format(2, ',', ' ') }}
+												€
+											</strong>
+										</td>
+									</tr>
+								{% endif %}
+
+							{% endfor %}
+
+							{% if not articleVisible %}
+								<tr>
+									<td
+										colspan="5"
+										class="text-center text-muted py-4"
+									>
+										Cette commande ne contient aucun article.
+									</td>
+								</tr>
+							{% endif %}
+						</tbody>
+
+					</table>
+				</div>
+
+				<div class="d-flex justify-content-end mt-3">
+					<div class="front-cart-total">
+						<span class="me-3">
+							Total
+						</span>
+
+						<strong>
+							{{ commande.commandeTotal|number_format(2, ',', ' ') }}
+							€
+						</strong>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		{# Actions disponibles selon le statut de la commande. #}
+		<div class="d-flex flex-wrap gap-2">
+
+			{% if commande.commandeStatut == 'en attente' or commande.commandeStatut == 'en préparation' %}
+				<a
+					href="{{ path('app_front_commande_edit', {'id': commande.id}) }}"
+					class="btn btn-primary"
+				>
+					Modifier la commande
+				</a>
+			{% endif %}
+
+			{% if
+				commande.commandeStatut == 'en attente'
+				or commande.commandeStatut == 'en préparation'
+				or commande.commandeStatut == 'prête'
+			%}
+				<form
+					method="post"
+					action="{{ path('app_front_commande_cancel', {'id': commande.id}) }}"
+					onsubmit="return confirm('Voulez-vous annuler cette commande ?');"
+				>
+					<input
+						type="hidden"
+						name="_token"
+						value="{{ csrf_token('front_commande_cancel' ~ commande.id) }}"
+					>
+
+					<button
+						type="submit"
+						class="btn btn-danger"
+					>
+						Annuler la commande
+					</button>
+				</form>
+			{% endif %}
+
+			{% if commande.commandeStatut == 'annulée' %}
+
+				{% if commande.details is not empty %}
+					<form
+						method="post"
+						action="{{ path('app_front_commande_relaunch', {'id': commande.id}) }}"
+						onsubmit="return confirm('Voulez-vous relancer cette commande ?');"
+					>
+						<input
+							type="hidden"
+							name="_token"
+							value="{{ csrf_token('front_commande_relaunch' ~ commande.id) }}"
+						>
+
+						<button
+							type="submit"
+							class="btn btn-primary"
+						>
+							Relancer la commande
+						</button>
+					</form>
+				{% endif %}
+
+				<form
+					method="post"
+					action="{{ path('app_front_commande_delete', {'id': commande.id}) }}"
+					onsubmit="return confirm('Voulez-vous supprimer définitivement cette commande ?');"
+				>
+					<input
+						type="hidden"
+						name="_token"
+						value="{{ csrf_token('front_commande_delete' ~ commande.id) }}"
+					>
+
+					<button
+						type="submit"
+						class="btn btn-danger"
+					>
+						Supprimer définitivement
+					</button>
+				</form>
+
+			{% endif %}
+
+		</div>
+
+	</section>
 
 {% endblock %}

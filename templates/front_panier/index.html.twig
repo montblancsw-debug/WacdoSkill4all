@@ -1,659 +1,531 @@
-{# Panier du front-office Wacdo. #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
-    Mon panier | Wacdo
+	Mon panier | Wacdo
 {% endblock %}
 
 {% block body %}
 
-<section class="front-section">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-
-        <div>
-
-            <h1 class="h2 mb-1">
-                Mon panier
-            </h1>
-
-            <p class="text-muted mb-0">
-                Gérez vos produits et menus avant de valider votre commande.
-            </p>
-
-        </div>
-
-        <div class="d-flex gap-2">
-
-            <a
-                href="{{ path('app_front_categorie') }}"
-                class="btn btn-secondary"
-            >
-                Produits
-            </a>
-
-            <a
-                href="{{ path('app_front_menu') }}"
-                class="btn btn-secondary"
-            >
-                Menus
-            </a>
-
-        </div>
-
-    </div>
-
-    <div id="panier-content">
-
-        {% if
-            articles is not empty
-            or menus is not empty
-        %}
-
-            <div class="card front-card">
-
-                <div class="card-body">
-
-                    <div class="table-responsive">
-
-                        <table class="table align-middle">
-
-                            <thead>
-
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Article</th>
-                                    <th>Prix</th>
-                                    <th>Quantité</th>
-                                    <th>Total</th>
-
-                                    <th class="text-end">
-                                        Action
-                                    </th>
-                                </tr>
-
-                            </thead>
-
-                            <tbody>
-
-                                {# Produits. #}
-                                {% for article in articles %}
-
-                                    {% set produit = article.produit %}
-
-                                    <tr>
-
-                                        <td>
-
-                                            {% if produit.produitImage %}
-
-                                                <img
-                                                    src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
-                                                    alt="{{ produit.produitNom }}"
-                                                    class="front-cart-image"
-                                                >
-
-                                            {% else %}
-
-                                                <div class="front-cart-image-empty">
-                                                    —
-                                                </div>
-
-                                            {% endif %}
-
-                                        </td>
-
-                                        <td>
-
-                                            <strong>
-                                                {{ produit.produitNom }}
-                                            </strong>
-
-                                            <div class="small text-muted">
-                                                Produit
-                                            </div>
-
-                                            {% if produit.categorie %}
-
-                                                <div class="small text-muted">
-                                                    {{ produit.categorie.categorieNom }}
-                                                </div>
-
-                                            {% endif %}
-
-                                            {% if not produit.produitStock %}
-
-                                                <div class="mt-1">
-
-                                                    <span class="badge text-bg-danger">
-                                                        Indisponible
-                                                    </span>
-
-                                                </div>
-
-                                            {% endif %}
-
-                                        </td>
-
-                                        <td>
-                                            {{ produit.produitPrix|number_format(2, ',', ' ') }}
-                                            €
-                                        </td>
-
-                                        <td>
-
-                                            <div class="front-cart-quantity">
-
-                                                <form
-                                                    method="post"
-                                                    action="{{ path('app_front_panier_minus', {'id': produit.id}) }}"
-                                                    class="js-panier-async-form"
-                                                >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="_token"
-                                                        value="{{ csrf_token('panier_minus' ~ produit.id) }}"
-                                                    >
-
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-outline-secondary btn-sm front-cart-quantity-button"
-                                                        title="Diminuer"
-                                                    >
-                                                        −
-                                                    </button>
-
-                                                </form>
-
-                                                <span class="front-cart-quantity-value">
-                                                    {{ article.quantite }}
-                                                </span>
-
-                                                <form
-                                                    method="post"
-                                                    action="{{ path('app_front_panier_plus', {'id': produit.id}) }}"
-                                                    class="js-panier-async-form"
-                                                >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="_token"
-                                                        value="{{ csrf_token('panier_plus' ~ produit.id) }}"
-                                                    >
-
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-outline-primary btn-sm front-cart-quantity-button"
-                                                        title="Augmenter"
-                                                    >
-                                                        +
-                                                    </button>
-
-                                                </form>
-
-                                            </div>
-
-                                        </td>
-
-                                        <td>
-
-                                            <strong>
-                                                {{ article.sousTotal|number_format(2, ',', ' ') }}
-                                                €
-                                            </strong>
-
-                                        </td>
-
-                                        <td class="text-end">
-
-                                            <form
-                                                method="post"
-                                                action="{{ path('app_front_panier_delete', {'id': produit.id}) }}"
-                                                class="d-inline js-panier-async-form"
-                                                data-confirm="Voulez-vous retirer ce produit du panier ?"
-                                            >
-
-                                                <input
-                                                    type="hidden"
-                                                    name="_token"
-                                                    value="{{ csrf_token('panier_delete' ~ produit.id) }}"
-                                                >
-
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                >
-                                                    Supprimer
-                                                </button>
-
-                                            </form>
-
-                                        </td>
-
-                                    </tr>
-
-                                {% endfor %}
-
-                                {# Menus. #}
-                                {% for article in menus %}
-
-                                    {% set menu = article.menu %}
-
-                                    <tr>
-
-                                        <td>
-
-                                            {% if menu.menuImage %}
-
-                                                <img
-                                                    src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
-                                                    alt="{{ menu.menuNom }}"
-                                                    class="front-cart-image"
-                                                >
-
-                                            {% else %}
-
-                                                <div class="front-cart-image-empty">
-                                                    —
-                                                </div>
-
-                                            {% endif %}
-
-                                        </td>
-
-                                        <td>
-
-                                            <strong>
-                                                {{ menu.menuNom }}
-                                            </strong>
-
-                                            <div class="small text-muted">
-                                                Menu
-                                            </div>
-
-                                            <div class="small text-muted">
-
-                                                {% for produit in menu.produits %}
-
-                                                    {{ produit.produitNom }}
-
-                                                    {% if not loop.last %}
-                                                        •
-                                                    {% endif %}
-
-                                                {% endfor %}
-
-                                            </div>
-
-                                            {% if not article.disponible %}
-
-                                                <div class="mt-1">
-
-                                                    <span class="badge text-bg-danger">
-                                                        Indisponible
-                                                    </span>
-
-                                                </div>
-
-                                            {% endif %}
-
-                                        </td>
-
-                                        <td>
-                                            {{ menu.menuPrix|number_format(2, ',', ' ') }}
-                                            €
-                                        </td>
-
-                                        <td>
-
-                                            <div class="front-cart-quantity">
-
-                                                <form
-                                                    method="post"
-                                                    action="{{ path('app_front_panier_menu_minus', {'id': menu.id}) }}"
-                                                    class="js-panier-async-form"
-                                                >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="_token"
-                                                        value="{{ csrf_token('panier_menu_minus' ~ menu.id) }}"
-                                                    >
-
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-outline-secondary btn-sm front-cart-quantity-button"
-                                                    >
-                                                        −
-                                                    </button>
-
-                                                </form>
-
-                                                <span class="front-cart-quantity-value">
-                                                    {{ article.quantite }}
-                                                </span>
-
-                                                <form
-                                                    method="post"
-                                                    action="{{ path('app_front_panier_menu_plus', {'id': menu.id}) }}"
-                                                    class="js-panier-async-form"
-                                                >
-
-                                                    <input
-                                                        type="hidden"
-                                                        name="_token"
-                                                        value="{{ csrf_token('panier_menu_plus' ~ menu.id) }}"
-                                                    >
-
-                                                    <button
-                                                        type="submit"
-                                                        class="btn btn-outline-primary btn-sm front-cart-quantity-button"
-                                                        {% if not article.disponible %}
-                                                            disabled
-                                                        {% endif %}
-                                                    >
-                                                        +
-                                                    </button>
-
-                                                </form>
-
-                                            </div>
-
-                                        </td>
-
-                                        <td>
-
-                                            <strong>
-                                                {{ article.sousTotal|number_format(2, ',', ' ') }}
-                                                €
-                                            </strong>
-
-                                        </td>
-
-                                        <td class="text-end">
-
-                                            <form
-                                                method="post"
-                                                action="{{ path('app_front_panier_menu_delete', {'id': menu.id}) }}"
-                                                class="d-inline js-panier-async-form"
-                                                data-confirm="Voulez-vous retirer ce menu du panier ?"
-                                            >
-
-                                                <input
-                                                    type="hidden"
-                                                    name="_token"
-                                                    value="{{ csrf_token('panier_menu_delete' ~ menu.id) }}"
-                                                >
-
-                                                <button
-                                                    type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                >
-                                                    Supprimer
-                                                </button>
-
-                                            </form>
-
-                                        </td>
-
-                                    </tr>
-
-                                {% endfor %}
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="row justify-content-end mt-4">
-
-                <div class="col-12 col-md-6 col-lg-4">
-
-                    <div class="card front-cart-summary">
-
-                        <div class="card-body">
-
-                            <div class="d-flex justify-content-between align-items-center mb-3">
-
-                                <span>
-                                    Articles
-                                </span>
-
-                                <strong>
-                                    {{ quantiteTotale }}
-                                </strong>
-
-                            </div>
-
-                            <div class="front-cart-total">
-
-                                <span>
-                                    Total
-                                </span>
-
-                                <strong>
-                                    {{ total|number_format(2, ',', ' ') }}
-                                    €
-                                </strong>
-
-                            </div>
-
-                            <hr>
-
-                            {% if app.user %}
-
-                                <form
-                                    method="post"
-                                    action="{{ path('app_front_panier_validate') }}"
-                                    onsubmit="return confirm('Voulez-vous valider cette commande ?');"
-                                >
-
-                                    <input
-                                        type="hidden"
-                                        name="_token"
-                                        value="{{ csrf_token('panier_validate') }}"
-                                    >
-
-                                    <button
-                                        type="submit"
-                                        class="btn btn-primary w-100"
-                                    >
-                                        Valider la commande
-                                    </button>
-
-                                </form>
-
-                            {% else %}
-
-                                <a
-                                    href="{{ path('app_login') }}"
-                                    class="btn btn-primary w-100"
-                                >
-                                    Se connecter pour commander
-                                </a>
-
-                            {% endif %}
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        {% else %}
-
-            <div class="front-empty-cart text-center">
-
-                <h2 class="h4">
-                    Votre panier est vide
-                </h2>
-
-                <p class="text-muted">
-                    Ajoutez des produits ou des menus.
-                </p>
-
-                <div class="d-flex justify-content-center gap-2">
-
-                    <a
-                        href="{{ path('app_front_categorie') }}"
-                        class="btn btn-primary"
-                    >
-                        Découvrir les produits
-                    </a>
-
-                    <a
-                        href="{{ path('app_front_menu') }}"
-                        class="btn btn-primary"
-                    >
-                        Découvrir les menus
-                    </a>
-
-                </div>
-
-            </div>
-
-        {% endif %}
-
-    </div>
-
-</section>
+	<section class="front-section">
+
+		{# En-tête du panier. #}
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div>
+				<h1 class="h2 mb-1">
+					Mon panier
+				</h1>
+
+				<p class="text-muted mb-0">
+					Gérez vos produits et menus avant de valider votre commande.
+				</p>
+			</div>
+
+			<div class="d-flex gap-2">
+				<a
+					href="{{ path('app_front_categorie') }}"
+					class="btn btn-secondary"
+				>
+					Produits
+				</a>
+
+				<a
+					href="{{ path('app_front_menu') }}"
+					class="btn btn-secondary"
+				>
+					Menus
+				</a>
+			</div>
+		</div>
+
+		<div id="panier-content">
+
+			{% if articles is not empty or menus is not empty %}
+
+				{# Articles présents dans le panier. #}
+				<div class="card front-card">
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table align-middle">
+
+								<thead>
+									<tr>
+										<th>Image</th>
+										<th>Article</th>
+										<th>Prix</th>
+										<th>Quantité</th>
+										<th>Total</th>
+										<th class="text-end">Action</th>
+									</tr>
+								</thead>
+
+								<tbody>
+
+									{# Produits du panier. #}
+									{% for article in articles %}
+
+										{% set produit = article.produit %}
+
+										<tr>
+											<td>
+												{% if produit.produitImage %}
+													<img
+														src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
+														alt="{{ produit.produitNom }}"
+														class="front-cart-image"
+													>
+												{% else %}
+													<div class="front-cart-image-empty">
+														—
+													</div>
+												{% endif %}
+											</td>
+
+											<td>
+												<strong>
+													{{ produit.produitNom }}
+												</strong>
+
+												<div class="small text-muted">
+													Produit
+												</div>
+
+												{% if produit.categorie %}
+													<div class="small text-muted">
+														{{ produit.categorie.categorieNom }}
+													</div>
+												{% endif %}
+
+												{% if not produit.produitStock %}
+													<div class="mt-1">
+														<span class="badge text-bg-danger">
+															Indisponible
+														</span>
+													</div>
+												{% endif %}
+											</td>
+
+											<td>
+												{{ produit.produitPrix|number_format(2, ',', ' ') }}
+												€
+											</td>
+
+											<td>
+												<div class="front-cart-quantity">
+
+													<form
+														method="post"
+														action="{{ path('app_front_panier_minus', {'id': produit.id}) }}"
+														class="js-panier-async-form"
+													>
+														<input
+															type="hidden"
+															name="_token"
+															value="{{ csrf_token('panier_minus' ~ produit.id) }}"
+														>
+
+														<button
+															type="submit"
+															class="btn btn-outline-secondary btn-sm front-cart-quantity-button"
+															title="Diminuer"
+														>
+															−
+														</button>
+													</form>
+
+													<span class="front-cart-quantity-value">
+														{{ article.quantite }}
+													</span>
+
+													<form
+														method="post"
+														action="{{ path('app_front_panier_plus', {'id': produit.id}) }}"
+														class="js-panier-async-form"
+													>
+														<input
+															type="hidden"
+															name="_token"
+															value="{{ csrf_token('panier_plus' ~ produit.id) }}"
+														>
+
+														<button
+															type="submit"
+															class="btn btn-outline-primary btn-sm front-cart-quantity-button"
+															title="Augmenter"
+														>
+															+
+														</button>
+													</form>
+
+												</div>
+											</td>
+
+											<td>
+												<strong>
+													{{ article.sousTotal|number_format(2, ',', ' ') }}
+													€
+												</strong>
+											</td>
+
+											<td class="text-end">
+												<form
+													method="post"
+													action="{{ path('app_front_panier_delete', {'id': produit.id}) }}"
+													class="d-inline js-panier-async-form"
+													data-confirm="Voulez-vous retirer ce produit du panier ?"
+												>
+													<input
+														type="hidden"
+														name="_token"
+														value="{{ csrf_token('panier_delete' ~ produit.id) }}"
+													>
+
+													<button
+														type="submit"
+														class="btn btn-danger btn-sm"
+													>
+														Supprimer
+													</button>
+												</form>
+											</td>
+										</tr>
+
+									{% endfor %}
+
+									{# Menus du panier. #}
+									{% for article in menus %}
+
+										{% set menu = article.menu %}
+
+										<tr>
+											<td>
+												{% if menu.menuImage %}
+													<img
+														src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
+														alt="{{ menu.menuNom }}"
+														class="front-cart-image"
+													>
+												{% else %}
+													<div class="front-cart-image-empty">
+														—
+													</div>
+												{% endif %}
+											</td>
+
+											<td>
+												<strong>
+													{{ menu.menuNom }}
+												</strong>
+
+												<div class="small text-muted">
+													Menu
+												</div>
+
+												<div class="small text-muted">
+													{% for produit in menu.produits %}
+														{{ produit.produitNom }}
+
+														{% if not loop.last %}
+															•
+														{% endif %}
+													{% endfor %}
+												</div>
+
+												{% if not article.disponible %}
+													<div class="mt-1">
+														<span class="badge text-bg-danger">
+															Indisponible
+														</span>
+													</div>
+												{% endif %}
+											</td>
+
+											<td>
+												{{ menu.menuPrix|number_format(2, ',', ' ') }}
+												€
+											</td>
+
+											<td>
+												<div class="front-cart-quantity">
+
+													<form
+														method="post"
+														action="{{ path('app_front_panier_menu_minus', {'id': menu.id}) }}"
+														class="js-panier-async-form"
+													>
+														<input
+															type="hidden"
+															name="_token"
+															value="{{ csrf_token('panier_menu_minus' ~ menu.id) }}"
+														>
+
+														<button
+															type="submit"
+															class="btn btn-outline-secondary btn-sm front-cart-quantity-button"
+														>
+															−
+														</button>
+													</form>
+
+													<span class="front-cart-quantity-value">
+														{{ article.quantite }}
+													</span>
+
+													<form
+														method="post"
+														action="{{ path('app_front_panier_menu_plus', {'id': menu.id}) }}"
+														class="js-panier-async-form"
+													>
+														<input
+															type="hidden"
+															name="_token"
+															value="{{ csrf_token('panier_menu_plus' ~ menu.id) }}"
+														>
+
+														<button
+															type="submit"
+															class="btn btn-outline-primary btn-sm front-cart-quantity-button"
+															{% if not article.disponible %}
+																disabled
+															{% endif %}
+														>
+															+
+														</button>
+													</form>
+
+												</div>
+											</td>
+
+											<td>
+												<strong>
+													{{ article.sousTotal|number_format(2, ',', ' ') }}
+													€
+												</strong>
+											</td>
+
+											<td class="text-end">
+												<form
+													method="post"
+													action="{{ path('app_front_panier_menu_delete', {'id': menu.id}) }}"
+													class="d-inline js-panier-async-form"
+													data-confirm="Voulez-vous retirer ce menu du panier ?"
+												>
+													<input
+														type="hidden"
+														name="_token"
+														value="{{ csrf_token('panier_menu_delete' ~ menu.id) }}"
+													>
+
+													<button
+														type="submit"
+														class="btn btn-danger btn-sm"
+													>
+														Supprimer
+													</button>
+												</form>
+											</td>
+										</tr>
+
+									{% endfor %}
+
+								</tbody>
+
+							</table>
+						</div>
+					</div>
+				</div>
+
+				{# Résumé et validation du panier. #}
+				<div class="row justify-content-end mt-4">
+					<div class="col-12 col-md-6 col-lg-4">
+						<div class="card front-cart-summary">
+							<div class="card-body">
+
+								<div class="d-flex justify-content-between align-items-center mb-3">
+									<span>
+										Articles
+									</span>
+
+									<strong>
+										{{ quantiteTotale }}
+									</strong>
+								</div>
+
+								<div class="front-cart-total">
+									<span>
+										Total
+									</span>
+
+									<strong>
+										{{ total|number_format(2, ',', ' ') }}
+										€
+									</strong>
+								</div>
+
+								<hr>
+
+								{% if app.user %}
+									<form
+										method="post"
+										action="{{ path('app_front_panier_validate') }}"
+										onsubmit="return confirm('Voulez-vous valider cette commande ?');"
+									>
+										<input
+											type="hidden"
+											name="_token"
+											value="{{ csrf_token('panier_validate') }}"
+										>
+
+										<button
+											type="submit"
+											class="btn btn-primary w-100"
+										>
+											Valider la commande
+										</button>
+									</form>
+								{% else %}
+									<a
+										href="{{ path('app_login') }}"
+										class="btn btn-primary w-100"
+									>
+										Se connecter pour commander
+									</a>
+								{% endif %}
+
+							</div>
+						</div>
+					</div>
+				</div>
+
+			{% else %}
+
+				{# Message affiché lorsque le panier est vide. #}
+				<div class="front-empty-cart text-center">
+					<h2 class="h4">
+						Votre panier est vide
+					</h2>
+
+					<p class="text-muted">
+						Ajoutez des produits ou des menus.
+					</p>
+
+					<div class="d-flex justify-content-center gap-2">
+						<a
+							href="{{ path('app_front_categorie') }}"
+							class="btn btn-primary"
+						>
+							Découvrir les produits
+						</a>
+
+						<a
+							href="{{ path('app_front_menu') }}"
+							class="btn btn-primary"
+						>
+							Découvrir les menus
+						</a>
+					</div>
+				</div>
+
+			{% endif %}
+
+		</div>
+
+	</section>
 
 {% endblock %}
 
 {% block javascripts %}
 
-<script>
-document.addEventListener(
-    'submit',
-    async function (event) {
+	<script>
+		// Modifie le panier sans recharger entièrement la page.
+		document.addEventListener('submit', async function (event) {
+			const form = event.target.closest(
+				'.js-panier-async-form'
+			);
 
-        const form = event.target.closest(
-            '.js-panier-async-form'
-        );
+			if (!form) {
+				return;
+			}
 
-        if (!form) {
-            return;
-        }
+			event.preventDefault();
 
-        event.preventDefault();
+			const confirmation = form.dataset.confirm;
 
-        const confirmation =
-            form.dataset.confirm;
+			if (confirmation && !window.confirm(confirmation)) {
+				return;
+			}
 
-        if (
-            confirmation
-            && !window.confirm(
-                confirmation
-            )
-        ) {
-            return;
-        }
+			const button = form.querySelector(
+				'button[type="submit"]'
+			);
 
-        const button = form.querySelector(
-            'button[type="submit"]'
-        );
+			if (button) {
+				button.disabled = true;
+			}
 
-        if (button) {
-            button.disabled = true;
-        }
+			try {
+				const response = await fetch(
+					form.action,
+					{
+						method: 'POST',
+						body: new FormData(form),
+						credentials: 'same-origin',
+						headers: {
+							'X-Requested-With': 'XMLHttpRequest'
+						}
+					}
+				);
 
-        try {
+				if (!response.ok) {
+					throw new Error(
+						'La modification du panier a échoué.'
+					);
+				}
 
-            const response = await fetch(
-                form.action,
-                {
-                    method: 'POST',
-                    body: new FormData(form),
-                    credentials: 'same-origin',
+				const html = await response.text();
+				const parser = new DOMParser();
 
-                    headers: {
-                        'X-Requested-With':
-                            'XMLHttpRequest'
-                    }
-                }
-            );
+				const documentResponse = parser.parseFromString(
+					html,
+					'text/html'
+				);
 
-            if (!response.ok) {
-                throw new Error(
-                    'La modification du panier a échoué.'
-                );
-            }
+				// Actualise le contenu du panier.
+				const nouveauPanier = documentResponse.querySelector(
+					'#panier-content'
+				);
 
-            const html =
-                await response.text();
+				const panierActuel = document.querySelector(
+					'#panier-content'
+				);
 
-            const parser =
-                new DOMParser();
+				if (nouveauPanier && panierActuel) {
+					panierActuel.replaceWith(nouveauPanier);
+				}
 
-            const documentResponse =
-                parser.parseFromString(
-                    html,
-                    'text/html'
-                );
+				// Actualise le nombre d'articles affiché dans la navigation.
+				const nouveauBadge = documentResponse.querySelector(
+					'#front-panier-badge'
+				);
 
-            const nouveauPanier =
-                documentResponse.querySelector(
-                    '#panier-content'
-                );
+				const badgeActuel = document.querySelector(
+					'#front-panier-badge'
+				);
 
-            const panierActuel =
-                document.querySelector(
-                    '#panier-content'
-                );
+				if (nouveauBadge && badgeActuel) {
+					badgeActuel.replaceWith(nouveauBadge);
+				}
+			} catch (error) {
+				console.error(error);
 
-            if (
-                nouveauPanier
-                && panierActuel
-            ) {
-                panierActuel.replaceWith(
-                    nouveauPanier
-                );
-            }
+				window.alert(
+					'Une erreur est survenue pendant la modification du panier.'
+				);
 
-            const nouveauBadge =
-                documentResponse.querySelector(
-                    '#front-panier-badge'
-                );
-
-            const badgeActuel =
-                document.querySelector(
-                    '#front-panier-badge'
-                );
-
-            if (
-                nouveauBadge
-                && badgeActuel
-            ) {
-                badgeActuel.replaceWith(
-                    nouveauBadge
-                );
-            }
-
-        } catch (error) {
-
-            console.error(
-                error
-            );
-
-            window.alert(
-                'Une erreur est survenue pendant la modification du panier.'
-            );
-
-            if (button) {
-                button.disabled = false;
-            }
-        }
-    }
-);
-</script>
+				if (button) {
+					button.disabled = false;
+				}
+			}
+		});
+	</script>
 
 {% endblock %}

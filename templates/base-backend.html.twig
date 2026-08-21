@@ -11,19 +11,17 @@
 			{% endblock %}
 		</title>
 
+		{# Charge les styles principaux du back-office. #}
 		<link rel="stylesheet" href="{{ asset('css/app.css') }}">
+		<link rel="stylesheet" href="{{ asset('css/backend-wacdo.css') }}?v=20260816-2">
 
-		{# Force le navigateur à recharger la CSS Wacdo. #}
-		<link
-			rel="stylesheet"
-			href="{{ asset('css/backend-wacdo.css') }}?v=20260816-2"
-		>
-
+		{# Charge la police utilisée dans le back-office. #}
 		<link
 			href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap"
 			rel="stylesheet"
 		>
 
+		{# Définit l'apparence des messages Flash. #}
 		<style>
 			.wacdo-flash {
 				position: relative;
@@ -34,31 +32,26 @@
 				font-weight: 500;
 				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 			}
-
 			.wacdo-flash-success {
 				color: #0f5132;
 				background-color: #d1e7dd;
 				border-color: #badbcc;
 			}
-
 			.wacdo-flash-danger {
 				color: #842029;
 				background-color: #f8d7da;
 				border-color: #f5c2c7;
 			}
-
 			.wacdo-flash-warning {
 				color: #664d03;
 				background-color: #fff3cd;
 				border-color: #ffecb5;
 			}
-
 			.wacdo-flash-info {
 				color: #055160;
 				background-color: #cff4fc;
 				border-color: #b6effb;
 			}
-
 			.wacdo-flash-close {
 				position: absolute;
 				top: 50%;
@@ -73,7 +66,6 @@
 				opacity: 0.65;
 				z-index: 2;
 			}
-
 			.wacdo-flash-close:hover {
 				opacity: 1;
 			}
@@ -85,15 +77,19 @@
 	<body>
 		<div class="wrapper">
 
+			{# Affiche le menu latéral du back-office. #}
 			{{ include('inc/_backend-left-nav.html.twig') }}
 
 			<div class="main">
 
+				{# Affiche la barre de navigation du back-office. #}
 				{{ include('inc/_backend-top-nav.html.twig') }}
 
+				{# Affiche le contenu principal. #}
 				<main class="content">
 					<div class="container-fluid p-0">
 
+						{# Affiche les messages Flash Symfony. #}
 						{% for label, messages in app.flashes %}
 							{% for message in messages %}
 
@@ -132,43 +128,39 @@
 					</div>
 				</main>
 
+				{# Affiche le pied de page du back-office. #}
 				<footer class="footer">
 					<div class="container-fluid">
-
 						<div class="row text-muted">
 
 							<div class="col-6 text-start">
-
 								<p class="mb-0">
 									<strong>Wacdo</strong>
 									&copy;
 									{{ "now"|date("Y") }}
 								</p>
-
 							</div>
 
 							<div class="col-6 text-end">
-
 								<span>
 									Administration Wacdo
 								</span>
-
 							</div>
 
 						</div>
-
 					</div>
 				</footer>
 
 			</div>
-
 		</div>
 
+		{# Charge le JavaScript principal du back-office. #}
 		<script src="{{ asset('js/app.js') }}"></script>
 
 		<script>
 			document.addEventListener('DOMContentLoaded', function () {
 
+				// Permet de fermer les messages Flash.
 				document.addEventListener('click', function (event) {
 					const button = event.target.closest('.wacdo-flash-close');
 
@@ -183,17 +175,21 @@
 					}
 				});
 
+				// Charge les icônes Feather.
 				if (window.feather) {
 					window.feather.replace();
 				}
 
+				// Récupère les formulaires utilisant la validation en direct.
 				const forms = document.querySelectorAll(
 					'form[data-live-validation="true"]'
 				);
 
+				// Définit le format attendu pour une adresse email.
 				const emailPattern =
 					/^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 
+				// Vérifie le format d'une adresse email.
 				function prepareFieldValidity(field) {
 					if (field.type === 'email') {
 						const value = field.value.trim();
@@ -214,26 +210,19 @@
 
 						const parts = value.split('@');
 
-						if (
-							parts.length !== 2
-							|| parts[0].trim() === ''
-							|| parts[1].trim() === ''
-						) {
-							field.setCustomValidity(
-								"Saisissez une adresse complète, par exemple utilisateur@wacdo.fr."
-							);
+						if (parts.length !== 2|| parts[0].trim() === ''|| parts[1].trim() === '') {
+							field.setCustomValidity("Saisissez une adresse complète, par exemple utilisateur@wacdo.fr.");
 
 							return;
 						}
 
 						if (!emailPattern.test(value)) {
-							field.setCustomValidity(
-								"L'adresse email doit contenir une extension valide comme .fr, .com ou .org."
-							);
+							field.setCustomValidity("L'adresse email doit contenir une extension valide comme .fr, .com ou .org.");
 						}
 					}
 				}
 
+				// Lance la validation d'un champ.
 				function validateField(field) {
 					if (field.disabled || field.readOnly) {
 						return;
@@ -243,6 +232,7 @@
 					field.reportValidity();
 				}
 
+				// Active la validation automatique des formulaires.
 				forms.forEach(function (form) {
 					const fields = form.querySelectorAll(
 						'input:not([type="hidden"]):not([type="submit"]):not([type="button"]), select, textarea'
@@ -270,6 +260,7 @@
 						});
 					});
 
+					// Vérifie les champs avant l'envoi du formulaire.
 					form.addEventListener('submit', function () {
 						fields.forEach(function (field) {
 							prepareFieldValidity(field);
@@ -278,6 +269,7 @@
 				});
 			});
 
+			// Gère le retour sur une page conservée en cache.
 			window.addEventListener('pageshow', function (event) {
 				if (event.persisted) {
 					window.location.reload();

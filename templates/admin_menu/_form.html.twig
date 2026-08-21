@@ -1,605 +1,422 @@
-{# Formulaire du CRUD Menu. #}
-
+{# Affiche le formulaire de création ou de modification d'un menu. #}
 <div class="card">
 
-    <div class="card-header">
-
-        <h5 class="card-title mb-0">
-            Informations du menu
-        </h5>
-
-    </div>
-
-    {{ form_start(form, {
-        'attr': {
-            'id': 'admin-menu-form',
-            'data-live-validation': 'true'
-        }
-    }) }}
-
-    <div class="card-body">
-
-        {# Nom. #}
-        <div class="mb-3">
-
-            {{ form_label(form.menu_nom) }}
-            {{ form_widget(form.menu_nom) }}
-            {{ form_errors(form.menu_nom) }}
-
-        </div>
-
-        {# Description. #}
-        <div class="mb-3">
-
-            {{ form_label(form.menu_description) }}
-            {{ form_widget(form.menu_description) }}
-            {{ form_errors(form.menu_description) }}
-
-        </div>
-
-        {# Prix. #}
-        <div class="mb-3">
-
-            {{ form_label(form.menu_prix) }}
-            {{ form_widget(form.menu_prix) }}
-            {{ form_errors(form.menu_prix) }}
-
-        </div>
-
-        {# Composition du menu. #}
-        <div class="mb-4">
-
-            <label class="form-label">
-                Produits du menu
-            </label>
-
-            <div class="card">
-
-                <div class="card-body">
-
-                    {# Filtre catégorie. #}
-                    <div class="row g-3 align-items-end">
-
-                        <div class="col-12 col-lg-4">
-
-                            <label
-                                for="menu-product-category"
-                                class="form-label"
-                            >
-                                Catégorie
-                            </label>
-
-                            <select
-                                id="menu-product-category"
-                                class="form-select"
-                            >
-
-                                <option value="">
-                                    Toutes les catégories
-                                </option>
-
-                                {% for categorie in categories %}
-
-                                    <option
-                                        value="{{ categorie.id }}"
-                                    >
-                                        {{ categorie.categorieNom }}
-                                    </option>
-
-                                {% endfor %}
-
-                            </select>
-
-                        </div>
-
-                        {# Choix du produit. #}
-                        <div class="col-12 col-lg-5">
-
-                            <label
-                                for="menu-product-select"
-                                class="form-label"
-                            >
-                                Produit
-                            </label>
-
-                            <select
-                                id="menu-product-select"
-                                class="form-select"
-                            >
-
-                                <option value="">
-                                    Choisir un produit
-                                </option>
-
-                            </select>
-
-                        </div>
-
-                        {# Bouton Ajouter. #}
-                        <div class="col-12 col-lg-3">
-
-                            <button
-                                type="button"
-                                id="menu-product-add"
-                                class="btn btn-primary w-100"
-                            >
-                                Ajouter le produit
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <hr>
-
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-
-                        <h6 class="mb-0">
-                            Produits sélectionnés
-                        </h6>
-
-                        <span class="badge bg-secondary">
-
-                            <span id="menu-product-count">
-                                0
-                            </span>
-
-                            produit(s)
-
-                        </span>
-
-                    </div>
-
-                    {# Liste visible des produits sélectionnés. #}
-                    <div
-                        id="menu-selected-products"
-                        class="list-group"
-                    >
-                    </div>
-
-                    {# Message panier vide. #}
-                    <div
-                        id="menu-selected-empty"
-                        class="text-muted"
-                    >
-                        Aucun produit sélectionné.
-                    </div>
-
-                    <div
-                        id="menu-products-symfony"
-                        class="d-none"
-                    >
-
-                        {{ form_widget(
-                            form.produits
-                        ) }}
-
-                    </div>
-
-                    {{ form_errors(
-                        form.produits
-                    ) }}
-
-                </div>
-
-            </div>
-
-            <div class="form-text mt-2">
-                Sélectionnez une catégorie si nécessaire,
-                choisissez un produit puis cliquez sur
-                « Ajouter le produit ».
-            </div>
-
-        </div>
-
-        {# Image. #}
-        <div class="mb-3">
-
-            {{ form_label(form.imageFile) }}
-            {{ form_widget(form.imageFile) }}
-            {{ form_errors(form.imageFile) }}
-
-            <div class="form-text">
-                Formats acceptés :
-                JPG, PNG ou WEBP.
-                Taille maximale : 2 Mo.
-            </div>
-
-            {% if menu.menuImage %}
-
-                <div class="mt-3">
-
-                    <img
-                        src="{{ asset(
-                            'images/menus/'
-                            ~ menu.menuImage
-                        ) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
-                        alt="{{ menu.menuNom }}"
-                        class="wacdo-edit-image-preview"
-                    >
-
-                    <div class="form-text">
-                        Image actuelle :
-                        {{ menu.menuImage }}
-                    </div>
-
-                    <div class="form-text">
-                        Laissez le champ vide
-                        pour conserver cette image.
-                    </div>
-
-                </div>
-
-            {% endif %}
-
-        </div>
-
-        {# Statut. #}
-        <div class="mb-3">
-
-            <div class="form-check">
-
-                {{ form_widget(
-                    form.menu_status
-                ) }}
-
-                {{ form_label(
-                    form.menu_status
-                ) }}
-
-                {{ form_errors(
-                    form.menu_status
-                ) }}
-
-            </div>
-
-        </div>
-
-    </div>
-
-    {{ form_end(form) }}
-
-    <div class="card-footer d-flex align-items-center gap-2">
-
-        <button
-            type="submit"
-            form="admin-menu-form"
-            class="btn btn-primary"
-        >
-            {{ button_label|default(
-                'Enregistrer'
-            ) }}
-        </button>
-
-        {% if menu.id %}
-
-            {{ include(
-                'admin_menu/_delete_form.html.twig'
-            ) }}
-
-        {% endif %}
-
-    </div>
+	<div class="card-header">
+		<h5 class="card-title mb-0">
+			Informations du menu
+		</h5>
+	</div>
+
+	{{ form_start(form, {
+		'attr': {
+			'id': 'admin-menu-form',
+			'data-live-validation': 'true'
+		}
+	}) }}
+
+	<div class="card-body">
+
+		{# Nom du menu. #}
+		<div class="mb-3">
+			{{ form_label(form.menu_nom) }}
+			{{ form_widget(form.menu_nom) }}
+			{{ form_errors(form.menu_nom) }}
+		</div>
+
+		{# Description du menu. #}
+		<div class="mb-3">
+			{{ form_label(form.menu_description) }}
+			{{ form_widget(form.menu_description) }}
+			{{ form_errors(form.menu_description) }}
+		</div>
+
+		{# Prix du menu. #}
+		<div class="mb-3">
+			{{ form_label(form.menu_prix) }}
+			{{ form_widget(form.menu_prix) }}
+			{{ form_errors(form.menu_prix) }}
+		</div>
+
+		{# Produits composant le menu. #}
+		<div class="mb-4">
+			<label class="form-label">
+				Produits du menu
+			</label>
+
+			<div class="card">
+				<div class="card-body">
+
+					<div class="row g-3 align-items-end">
+
+						{# Filtre des produits par catégorie. #}
+						<div class="col-12 col-lg-4">
+							<label
+								for="menu-product-category"
+								class="form-label"
+							>
+								Catégorie
+							</label>
+
+							<select
+								id="menu-product-category"
+								class="form-select"
+							>
+								<option value="">
+									Toutes les catégories
+								</option>
+
+								{% for categorie in categories %}
+									<option value="{{ categorie.id }}">
+										{{ categorie.categorieNom }}
+									</option>
+								{% endfor %}
+							</select>
+						</div>
+
+						{# Choix du produit à ajouter. #}
+						<div class="col-12 col-lg-5">
+							<label
+								for="menu-product-select"
+								class="form-label"
+							>
+								Produit
+							</label>
+
+							<select
+								id="menu-product-select"
+								class="form-select"
+							>
+								<option value="">
+									Choisir un produit
+								</option>
+							</select>
+						</div>
+
+						<div class="col-12 col-lg-3">
+							<button
+								type="button"
+								id="menu-product-add"
+								class="btn btn-primary w-100"
+							>
+								Ajouter le produit
+							</button>
+						</div>
+
+					</div>
+
+					<hr>
+
+					<div class="d-flex justify-content-between align-items-center mb-3">
+						<h6 class="mb-0">
+							Produits sélectionnés
+						</h6>
+
+						<span class="badge bg-secondary">
+							<span id="menu-product-count">
+								0
+							</span>
+							produit(s)
+						</span>
+					</div>
+
+					{# Affiche les produits actuellement sélectionnés. #}
+					<div
+						id="menu-selected-products"
+						class="list-group"
+					></div>
+
+					<div
+						id="menu-selected-empty"
+						class="text-muted"
+					>
+						Aucun produit sélectionné.
+					</div>
+
+					{# Conserve les cases à cocher Symfony utilisées par le formulaire. #}
+					<div
+						id="menu-products-symfony"
+						class="d-none"
+					>
+						{{ form_widget(form.produits) }}
+					</div>
+
+					{{ form_errors(form.produits) }}
+
+				</div>
+			</div>
+
+			<div class="form-text mt-2">
+				Sélectionnez une catégorie si nécessaire,
+				choisissez un produit puis cliquez sur
+				« Ajouter le produit ».
+			</div>
+		</div>
+
+		{# Image du menu. #}
+		<div class="mb-3">
+			{{ form_label(form.imageFile) }}
+			{{ form_widget(form.imageFile) }}
+			{{ form_errors(form.imageFile) }}
+
+			<div class="form-text">
+				Formats acceptés : JPG, PNG ou WEBP.
+				Taille maximale : 2 Mo.
+			</div>
+
+			{% if menu.menuImage %}
+				<div class="mt-3">
+					<img
+						src="{{ asset('images/menus/' ~ menu.menuImage) }}?v={{ menu.updatedAt ? menu.updatedAt|date('U') : '1' }}"
+						alt="{{ menu.menuNom }}"
+						class="wacdo-edit-image-preview"
+					>
+
+					<div class="form-text">
+						Image actuelle :
+						{{ menu.menuImage }}
+					</div>
+
+					<div class="form-text">
+						Laissez le champ vide pour conserver cette image.
+					</div>
+				</div>
+			{% endif %}
+		</div>
+
+		{# Statut du menu. #}
+		<div class="mb-3">
+			<div class="form-check">
+				{{ form_widget(form.menu_status) }}
+				{{ form_label(form.menu_status) }}
+				{{ form_errors(form.menu_status) }}
+			</div>
+		</div>
+
+	</div>
+
+	{{ form_end(form) }}
+
+	<div class="card-footer d-flex align-items-center gap-2">
+		<button
+			type="submit"
+			form="admin-menu-form"
+			class="btn btn-primary"
+		>
+			{{ button_label|default('Enregistrer') }}
+		</button>
+
+		{% if menu.id %}
+			{{ include('admin_menu/_delete_form.html.twig') }}
+		{% endif %}
+	</div>
 
 </div>
 
 <script>
-document.addEventListener(
-    'DOMContentLoaded',
-    function () {
-
-        const categorySelect =
-            document.getElementById(
-                'menu-product-category'
-            );
-
-        const productSelect =
-            document.getElementById(
-                'menu-product-select'
-            );
-
-        const addButton =
-            document.getElementById(
-                'menu-product-add'
-            );
-
-        const selectedContainer =
-            document.getElementById(
-                'menu-selected-products'
-            );
-
-        const emptyMessage =
-            document.getElementById(
-                'menu-selected-empty'
-            );
-
-        const count =
-            document.getElementById(
-                'menu-product-count'
-            );
-
-        const symfonyContainer =
-            document.getElementById(
-                'menu-products-symfony'
-            );
-
-        if (
-            !categorySelect
-            || !productSelect
-            || !addButton
-            || !selectedContainer
-            || !symfonyContainer
-        ) {
-            return;
-        }
-
-        const checkboxes =
-            symfonyContainer.querySelectorAll(
-                'input[type="checkbox"]'
-            );
-
-        function getCheckboxLabel(
-            checkbox
-        ) {
-            const id =
-                checkbox.id;
-
-            if (!id) {
-                return '';
-            }
-
-            const label =
-                symfonyContainer.querySelector(
-                    'label[for="' + id + '"]'
-                );
-
-            if (!label) {
-                return (
-                    checkbox.dataset.productName
-                    || ''
-                );
-            }
-
-            return label
-                .textContent
-                .trim();
-        }
-
-        function isSelected(
-            checkbox
-        ) {
-            return checkbox.checked;
-        }
-
-
-        function refreshProductSelect() {
-
-            const selectedCategory =
-                categorySelect.value;
-
-            productSelect.innerHTML =
-                '<option value="">'
-                + 'Choisir un produit'
-                + '</option>';
-
-            checkboxes.forEach(
-                function (checkbox) {
-
-                    const category =
-                        checkbox.dataset.category
-                        || '';
-
-
-                    if (
-                        selectedCategory !== ''
-                        && category
-                            !== selectedCategory
-                    ) {
-                        return;
-                    }
-
-
-                    if (
-                        isSelected(
-                            checkbox
-                        )
-                    ) {
-                        return;
-                    }
-
-                    const option =
-                        document.createElement(
-                            'option'
-                        );
-
-                    option.value =
-                        checkbox.id;
-
-                    option.textContent =
-                        getCheckboxLabel(
-                            checkbox
-                        );
+	document.addEventListener('DOMContentLoaded', function () {
+
+		// Récupère les éléments utilisés pour sélectionner les produits.
+		const categorySelect = document.getElementById(
+			'menu-product-category'
+		);
+
+		const productSelect = document.getElementById(
+			'menu-product-select'
+		);
+
+		const addButton = document.getElementById(
+			'menu-product-add'
+		);
+
+		const selectedContainer = document.getElementById(
+			'menu-selected-products'
+		);
+
+		const emptyMessage = document.getElementById(
+			'menu-selected-empty'
+		);
+
+		const count = document.getElementById(
+			'menu-product-count'
+		);
+
+		const symfonyContainer = document.getElementById(
+			'menu-products-symfony'
+		);
+
+		if (
+			!categorySelect
+			|| !productSelect
+			|| !addButton
+			|| !selectedContainer
+			|| !symfonyContainer
+		) {
+			return;
+		}
 
+		const checkboxes = symfonyContainer.querySelectorAll(
+			'input[type="checkbox"]'
+		);
 
-                    if (
-                        checkbox.dataset.stock
-                        === '0'
-                    ) {
-                        option.disabled = true;
-                    }
+		// Récupère le texte associé à une case à cocher Symfony.
+		function getCheckboxLabel(checkbox) {
+			const id = checkbox.id;
 
-                    productSelect.appendChild(
-                        option
-                    );
-                }
-            );
-        }
+			if (!id) {
+				return '';
+			}
 
+			const label = symfonyContainer.querySelector(
+				'label[for="' + id + '"]'
+			);
 
-        function refreshSelectedProducts() {
+			if (!label) {
+				return checkbox.dataset.productName || '';
+			}
 
-            selectedContainer.innerHTML =
-                '';
+			return label.textContent.trim();
+		}
 
-            let total = 0;
+		// Vérifie si un produit est déjà sélectionné.
+		function isSelected(checkbox) {
+			return checkbox.checked;
+		}
 
-            checkboxes.forEach(
-                function (checkbox) {
-
-                    if (
-                        !checkbox.checked
-                    ) {
-                        return;
-                    }
+		// Actualise la liste des produits pouvant être ajoutés.
+		function refreshProductSelect() {
+			const selectedCategory = categorySelect.value;
 
-                    total++;
-
-                    const item =
-                        document.createElement(
-                            'div'
-                        );
+			productSelect.innerHTML =
+				'<option value="">'
+				+ 'Choisir un produit'
+				+ '</option>';
 
-                    item.className =
-                        'list-group-item '
-                        + 'd-flex '
-                        + 'justify-content-between '
-                        + 'align-items-center';
+			checkboxes.forEach(function (checkbox) {
+				const category = checkbox.dataset.category || '';
 
-                    const infos =
-                        document.createElement(
-                            'div'
-                        );
-
-                    const productName =
-                        document.createElement(
-                            'strong'
-                        );
-
-                    productName.textContent =
-                        checkbox.dataset.productName
-                        || getCheckboxLabel(
-                            checkbox
-                        );
+				if (
+					selectedCategory !== ''
+					&& category !== selectedCategory
+				) {
+					return;
+				}
 
-                    infos.appendChild(
-                        productName
-                    );
+				if (isSelected(checkbox)) {
+					return;
+				}
 
-                    const category =
-                        document.createElement(
-                            'div'
-                        );
+				const option = document.createElement('option');
 
-                    category.className =
-                        'small text-muted';
+				option.value = checkbox.id;
+				option.textContent = getCheckboxLabel(checkbox);
 
-                    category.textContent =
-                        checkbox.dataset.categoryName
-                        || '';
+				if (checkbox.dataset.stock === '0') {
+					option.disabled = true;
+				}
 
-                    infos.appendChild(
-                        category
-                    );
+				productSelect.appendChild(option);
+			});
+		}
 
-                    const removeButton =
-                        document.createElement(
-                            'button'
-                        );
+		// Actualise la liste visible des produits sélectionnés.
+		function refreshSelectedProducts() {
+			selectedContainer.innerHTML = '';
 
-                    removeButton.type =
-                        'button';
+			let total = 0;
 
-                    removeButton.className =
-                        'btn btn-danger btn-sm';
+			checkboxes.forEach(function (checkbox) {
+				if (!checkbox.checked) {
+					return;
+				}
 
-                    removeButton.textContent =
-                        'Retirer';
+				total++;
 
-                    removeButton.addEventListener(
-                        'click',
-                        function () {
+				const item = document.createElement('div');
 
-                            checkbox.checked =
-                                false;
+				item.className =
+					'list-group-item '
+					+ 'd-flex '
+					+ 'justify-content-between '
+					+ 'align-items-center';
 
-                            refreshSelectedProducts();
+				const infos = document.createElement('div');
+				const productName = document.createElement('strong');
 
-                            refreshProductSelect();
-                        }
-                    );
+				productName.textContent =
+					checkbox.dataset.productName
+					|| getCheckboxLabel(checkbox);
 
-                    item.appendChild(
-                        infos
-                    );
+				infos.appendChild(productName);
 
-                    item.appendChild(
-                        removeButton
-                    );
+				const category = document.createElement('div');
 
-                    selectedContainer.appendChild(
-                        item
-                    );
-                }
-            );
+				category.className = 'small text-muted';
 
-            if (count) {
-                count.textContent =
-                    total;
-            }
+				category.textContent =
+					checkbox.dataset.categoryName
+					|| '';
 
-            if (emptyMessage) {
+				infos.appendChild(category);
 
-                emptyMessage.style.display =
-                    total === 0
-                        ? ''
-                        : 'none';
-            }
-        }
+				const removeButton = document.createElement('button');
 
+				removeButton.type = 'button';
+				removeButton.className = 'btn btn-danger btn-sm';
+				removeButton.textContent = 'Retirer';
 
-        addButton.addEventListener(
-            'click',
-            function () {
+				removeButton.addEventListener('click', function () {
+					checkbox.checked = false;
 
-                const checkboxId =
-                    productSelect.value;
+					refreshSelectedProducts();
+					refreshProductSelect();
+				});
 
-                if (
-                    checkboxId === ''
-                ) {
-                    return;
-                }
+				item.appendChild(infos);
+				item.appendChild(removeButton);
 
-                const checkbox =
-                    document.getElementById(
-                        checkboxId
-                    );
+				selectedContainer.appendChild(item);
+			});
 
-                if (!checkbox) {
-                    return;
-                }
+			if (count) {
+				count.textContent = total;
+			}
 
-                checkbox.checked =
-                    true;
+			if (emptyMessage) {
+				emptyMessage.style.display =
+					total === 0
+						? ''
+						: 'none';
+			}
+		}
 
-                refreshSelectedProducts();
+		// Ajoute le produit sélectionné au menu.
+		addButton.addEventListener('click', function () {
+			const checkboxId = productSelect.value;
 
-                refreshProductSelect();
-            }
-        );
+			if (checkboxId === '') {
+				return;
+			}
 
-        categorySelect.addEventListener(
-            'change',
-            function () {
+			const checkbox = document.getElementById(
+				checkboxId
+			);
 
-                refreshProductSelect();
+			if (!checkbox) {
+				return;
+			}
 
-            }
-        );
+			checkbox.checked = true;
 
-        refreshSelectedProducts();
+			refreshSelectedProducts();
+			refreshProductSelect();
+		});
 
-        refreshProductSelect();
-    }
-);
+		// Actualise les produits lorsqu'une catégorie est sélectionnée.
+		categorySelect.addEventListener('change', function () {
+			refreshProductSelect();
+		});
+
+		refreshSelectedProducts();
+		refreshProductSelect();
+	});
 </script>

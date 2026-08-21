@@ -1,5 +1,4 @@
-{# Formulaire sécurisé de suppression. #}
-
+{# Supprime la commande sélectionnée. #}
 <form
 	method="post"
 	action="{{ path('app_admin_commande_delete', {'id': commande.id}) }}"
@@ -16,11 +15,7 @@
 		type="submit"
 		class="btn btn-danger btn-sm wacdo-delete-button"
 	>
-		<i
-			class="align-middle"
-			data-feather="trash-2"
-		></i>
-
+		<i class="align-middle" data-feather="trash-2"></i>
 		Supprimer
 	</button>
 </form>

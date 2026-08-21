@@ -1,5 +1,3 @@
-{# Détail public d'une catégorie Wacdo. #}
-
 {% extends 'base.html.twig' %}
 
 {% block title %}
@@ -10,40 +8,32 @@
 
 	<section class="front-section">
 
+		{# Retour à la liste des catégories. #}
 		<div class="mb-4">
-
 			<a
 				href="{{ path('app_front_categorie') }}"
 				class="btn btn-secondary"
 			>
 				Retour aux catégories
 			</a>
-
 		</div>
 
+		{# Présentation de la catégorie. #}
 		<div class="front-category-header mb-5">
-
 			<div class="row align-items-center g-4">
 
 				<div class="col-12 col-lg-4">
-
 					{% if categorie.categorieNomdefichier %}
-
 						<div class="front-category-detail-image">
-
 							<img
 								src="{{ asset('images/categories/' ~ categorie.categorieNomdefichier) }}?v={{ categorie.updatedAt ? categorie.updatedAt|date('U') : '1' }}"
 								alt="{{ categorie.categorieNom }}"
 							>
-
 						</div>
-
 					{% endif %}
-
 				</div>
 
 				<div class="col-12 col-lg-8">
-
 					<span class="front-category-label">
 						Catégorie
 					</span>
@@ -53,27 +43,21 @@
 					</h1>
 
 					{% if categorie.categorieDescription %}
-
 						<div class="front-category-description">
 							{{ categorie.categorieDescription|raw }}
 						</div>
-
 					{% else %}
-
 						<p class="text-muted mb-0">
 							Découvrez les produits de cette catégorie.
 						</p>
-
 					{% endif %}
-
 				</div>
 
 			</div>
-
 		</div>
 
+		{# Présentation des produits de la catégorie. #}
 		<div class="mb-4">
-
 			<h2 class="h3 mb-1">
 				Produits
 			</h2>
@@ -82,27 +66,17 @@
 				Produits disponibles dans la catégorie
 				{{ categorie.categorieNom }}.
 			</p>
-
 		</div>
 
 		{# Recherche uniquement dans cette catégorie. #}
 		<div class="card front-card mb-4">
-
 			<div class="card-body">
-
 				<form
 					method="post"
-					action="{{ path(
-						'app_front_categorie_detail',
-						{
-							'id': categorie.id
-						}
-					) }}"
+					action="{{ path('app_front_categorie_detail', {'id': categorie.id}) }}"
 					class="row g-2"
 				>
-
 					<div class="col-12 col-md">
-
 						<input
 							type="text"
 							name="search"
@@ -110,160 +84,105 @@
 							placeholder="Rechercher un produit dans {{ categorie.categorieNom }}..."
 							value="{{ search|default('') }}"
 						>
-
 					</div>
 
 					<div class="col-12 col-md-auto">
-
 						<button
 							type="submit"
 							class="btn btn-primary w-100"
 						>
 							Rechercher
 						</button>
-
 					</div>
-
 				</form>
-
 			</div>
-
 		</div>
 
+		{# Liste des produits. #}
 		<div class="row g-4">
-
 			{% for produit in produits %}
 
 				<div class="col-12 col-sm-6 col-lg-4">
-
 					<div class="card front-card">
 
 						{% if produit.produitImage %}
-
 							<div class="front-product-image">
-
 								<img
 									src="{{ asset('images/produits/' ~ produit.produitImage) }}?v={{ produit.updatedAt ? produit.updatedAt|date('U') : '1' }}"
 									class="card-img-top"
 									alt="{{ produit.produitNom }}"
 								>
-
 							</div>
-
 						{% else %}
-
 							<div class="front-product-image front-product-image-empty">
 								Aucune image
 							</div>
-
 						{% endif %}
 
 						<div class="card-body d-flex flex-column">
-
 							<h3 class="h5">
 								{{ produit.produitNom }}
 							</h3>
 
 							{% if produit.produitDescription %}
-
 								<p class="text-muted">
+									{{ produit.produitDescription|striptags|slice(0, 110) }}
 
-									{{ produit.produitDescription
-										|striptags
-										|slice(0, 110)
-									}}
-
-									{% if
-										produit.produitDescription
-											|striptags
-											|length > 110
-									%}
+									{% if produit.produitDescription|striptags|length > 110 %}
 										...
 									{% endif %}
-
 								</p>
-
 							{% else %}
-
 								<p class="text-muted">
 									Aucune description.
 								</p>
-
 							{% endif %}
 
 							<div class="mt-auto">
-
 								<div class="d-flex justify-content-between align-items-center mb-3">
-
 									<strong class="front-product-price">
-
-										{{ produit.produitPrix
-											|number_format(2, ',', ' ')
-										}}
+										{{ produit.produitPrix|number_format(2, ',', ' ') }}
 										€
-
 									</strong>
 
 									{% if produit.produitStock %}
-
 										<span class="badge text-bg-success">
 											Disponible
 										</span>
-
 									{% else %}
-
 										<span class="badge text-bg-danger">
 											Indisponible
 										</span>
-
 									{% endif %}
-
 								</div>
 
 								<a
-									href="{{ path(
-										'app_front_produit_detail',
-										{
-											'id': produit.id
-										}
-									) }}"
+									href="{{ path('app_front_produit_detail', {'id': produit.id}) }}"
 									class="btn btn-primary w-100"
 								>
 									Voir le produit
 								</a>
-
 							</div>
-
 						</div>
 
 					</div>
-
 				</div>
 
 			{% else %}
 
 				<div class="col-12">
-
 					<div class="alert alert-info">
-
 						{% if search|default('') %}
-
 							Aucun produit de la catégorie
 							{{ categorie.categorieNom }}
 							ne correspond à votre recherche.
-
 						{% else %}
-
 							Aucun produit n'est actuellement associé à cette catégorie.
-
 						{% endif %}
-
 					</div>
-
 				</div>
 
 			{% endfor %}
-
 		</div>
 
 	</section>

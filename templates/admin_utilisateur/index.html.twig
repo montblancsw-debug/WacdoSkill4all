@@ -6,10 +6,9 @@
 
 {% block body %}
 
+	{# En-tête de la page. #}
 	<div class="d-flex justify-content-between align-items-center mb-4">
-
 		<div>
-
 			<h1 class="h3 mb-1">
 				Gestion des utilisateurs
 			</h1>
@@ -17,7 +16,6 @@
 			<p class="text-muted mb-0">
 				Consultez et gérez les comptes Wacdo.
 			</p>
-
 		</div>
 
 		<a
@@ -26,30 +24,25 @@
 		>
 			Ajouter un utilisateur
 		</a>
-
 	</div>
 
 	<div class="card">
 
 		<div class="card-header">
-
 			<h5 class="card-title mb-0">
 				Liste des utilisateurs
 			</h5>
-
 		</div>
 
 		<div class="card-body">
 
-			{# Recherche, filtre et trie les utilisateurs. #}
+			{# Recherche, filtre et tri des utilisateurs. #}
 			<form
 				method="post"
 				action="{{ path('app_admin_utilisateur_index') }}"
 				class="row g-2 mb-4"
 			>
-
 				<div class="col-12 col-xl">
-
 					<input
 						type="text"
 						name="search"
@@ -57,16 +50,13 @@
 						placeholder="Rechercher par ID, nom, prénom ou email..."
 						value="{{ search|default('') }}"
 					>
-
 				</div>
 
 				<div class="col-12 col-md-6 col-xl-3">
-
 					<select
 						name="role"
 						class="form-select"
 					>
-
 						<option value="">
 							Tous les rôles
 						</option>
@@ -106,18 +96,14 @@
 						>
 							Client
 						</option>
-
 					</select>
-
 				</div>
 
 				<div class="col-12 col-md-6 col-xl-2">
-
 					<select
 						name="tri_role"
 						class="form-select"
 					>
-
 						<option value="">
 							Tri par défaut
 						</option>
@@ -139,76 +125,55 @@
 						>
 							Rôles Z → A
 						</option>
-
 					</select>
-
 				</div>
 
 				<div class="col-12 col-xl-auto">
-
 					<button
 						type="submit"
 						class="btn btn-primary w-100"
 					>
 						Rechercher
 					</button>
-
 				</div>
-
 			</form>
 
+			{# Liste des utilisateurs. #}
 			<div class="table-responsive">
-
 				<table class="table table-hover align-middle">
 
 					<thead>
-
 						<tr>
 							<th>ID</th>
 							<th>Nom</th>
 							<th>Prénom</th>
 							<th>Email</th>
 							<th>Rôle</th>
-
-							<th class="text-end">
-								Actions
-							</th>
+							<th class="text-end">Actions</th>
 						</tr>
-
 					</thead>
 
 					<tbody>
-
 						{% for utilisateur in utilisateurs %}
-
 							<tr>
-
 								<td>
 									{{ utilisateur.id }}
 								</td>
 
 								<td>
-
 									<strong>
 										{{ utilisateur.utilisateurNom }}
 									</strong>
-
 								</td>
 
 								<td>
-
 									{% if utilisateur.utilisateurPrenom %}
-
 										{{ utilisateur.utilisateurPrenom }}
-
 									{% else %}
-
 										<span class="text-muted">
 											Non renseigné
 										</span>
-
 									{% endif %}
-
 								</td>
 
 								<td>
@@ -216,37 +181,26 @@
 								</td>
 
 								<td>
-
 									{% if utilisateur.utilisateurRole == 'ROLE_ADMIN' %}
-
 										<span class="badge bg-danger">
 											Administrateur
 										</span>
-
 									{% elseif utilisateur.utilisateurRole == 'ROLE_PREPARATEUR' %}
-
 										<span class="badge bg-warning">
 											Préparateur
 										</span>
-
 									{% elseif utilisateur.utilisateurRole == 'ROLE_ACCUEIL' %}
-
 										<span class="badge bg-info">
 											Accueil
 										</span>
-
 									{% elseif utilisateur.utilisateurRole == 'ROLE_USER' %}
-
 										<span class="badge bg-secondary">
 											Client
 										</span>
-
 									{% endif %}
-
 								</td>
 
 								<td class="text-end">
-
 									<a
 										href="{{ path('app_admin_utilisateur_show', {'id': utilisateur.id}) }}"
 										class="btn btn-info btn-sm"
@@ -262,30 +216,21 @@
 									</a>
 
 									{{ include('admin_utilisateur/_delete_form.html.twig') }}
-
 								</td>
-
 							</tr>
-
 						{% else %}
-
 							<tr>
-
 								<td
 									colspan="6"
 									class="text-center text-muted"
 								>
 									Aucun utilisateur ne correspond aux critères sélectionnés.
 								</td>
-
 							</tr>
-
 						{% endfor %}
-
 					</tbody>
 
 				</table>
-
 			</div>
 
 		</div>

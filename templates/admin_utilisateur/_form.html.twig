@@ -1,5 +1,4 @@
-{# Formulaire du CRUD Utilisateur. #}
-
+{# Affiche le formulaire de création ou de modification d'un utilisateur. #}
 <div class="card">
 
 	<div class="card-header">
@@ -17,24 +16,28 @@
 
 	<div class="card-body">
 
+		{# Nom de l'utilisateur. #}
 		<div class="mb-3">
 			{{ form_label(form.utilisateur_nom) }}
 			{{ form_widget(form.utilisateur_nom) }}
 			{{ form_errors(form.utilisateur_nom) }}
 		</div>
 
+		{# Prénom de l'utilisateur. #}
 		<div class="mb-3">
 			{{ form_label(form.utilisateur_prenom) }}
 			{{ form_widget(form.utilisateur_prenom) }}
 			{{ form_errors(form.utilisateur_prenom) }}
 		</div>
 
+		{# Adresse email de l'utilisateur. #}
 		<div class="mb-3">
 			{{ form_label(form.utilisateur_email) }}
 			{{ form_widget(form.utilisateur_email) }}
 			{{ form_errors(form.utilisateur_email) }}
 		</div>
 
+		{# Mot de passe de l'utilisateur. #}
 		<div class="mb-3">
 			{{ form_label(form.plain_password) }}
 			{{ form_widget(form.plain_password) }}
@@ -47,6 +50,7 @@
 			{% endif %}
 		</div>
 
+		{# Rôle de l'utilisateur. #}
 		<div class="mb-3">
 			{{ form_label(form.utilisateur_role) }}
 			{{ form_widget(form.utilisateur_role) }}
@@ -58,7 +62,6 @@
 	{{ form_end(form) }}
 
 	<div class="card-footer d-flex align-items-center gap-2">
-
 		<button
 			type="submit"
 			form="admin-utilisateur-form"
@@ -70,7 +73,6 @@
 		{% if utilisateur.id %}
 			{{ include('admin_utilisateur/_delete_form.html.twig') }}
 		{% endif %}
-
 	</div>
 
 </div>
