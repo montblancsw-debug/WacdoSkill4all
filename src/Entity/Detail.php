@@ -9,57 +9,59 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: DetailRepository::class)]
 class Detail
 {
-    // Identifiant unique de la ligne de commande.
+// ====================================================== //
+// ===================== PROPRIETES. ==================== //
+// ====================================================== //
+
+// Identifiant unique de la ligne de commande.
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // La quantité doit être supérieure à zéro.
+// Quantité commandée pour cet article.
+
     #[ORM\Column]
-    #[Assert\NotNull(
-        message: 'La quantité est obligatoire.'
-    )]
-    #[Assert\Positive(
-        message: 'La quantité doit être supérieure à 0.'
-    )]
+    #[Assert\NotNull(message: 'La quantité est obligatoire.')]
+    #[Assert\Positive(message: 'La quantité doit être supérieure à 0.')]
     private ?int $detail_quantite = null;
 
-    // Le prix unitaire doit être supérieur à zéro.
+// Prix unitaire enregistré lors de la commande.
+
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(
-        message: 'Le prix unitaire est obligatoire.'
-    )]
-    #[Assert\Positive(
-        message: 'Le prix unitaire doit être supérieur à 0 €.'
-    )]
+    #[Assert\NotBlank(message: 'Le prix unitaire est obligatoire.')]
+    #[Assert\Positive(message: 'Le prix unitaire doit être supérieur à 0 €.')]
     private ?string $detail_unitaire = null;
 
-    // Une ligne appartient obligatoirement à une commande.
+// Commande à laquelle appartient cette ligne.
+
     #[ORM\ManyToOne(inversedBy: 'details')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(
-        message: 'La commande est obligatoire.'
-    )]
+    #[Assert\NotNull(message: 'La commande est obligatoire.')]
     private ?Commande $commande = null;
 
-    // Le produit peut devenir NULL après sa suppression.
+// Produit associé à la ligne si elle contient un produit.
+
     #[ORM\ManyToOne(inversedBy: 'details')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Produit $produit = null;
 
-    // Le total de la ligne doit être supérieur à zéro.
+// Montant total de la ligne.
+
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(
-        message: 'Le total de la ligne est obligatoire.'
-    )]
-    #[Assert\Positive(
-        message: 'Le total de la ligne doit être supérieur à 0 €.'
-    )]
+    #[Assert\NotBlank(message: 'Le total de la ligne est obligatoire.')]
+    #[Assert\Positive(message: 'Le total de la ligne doit être supérieur à 0 €.')]
     private ?string $detail_total = null;
+
+// Menu associé à la ligne si elle contient un menu.
 
     #[ORM\ManyToOne(inversedBy: 'details')]
     private ?Menu $menu = null;
+
+// ====================================================== //
+// ================== GETTERS/SETTERS. ================== //
+// ====================================================== //
 
     public function getId(): ?int
     {

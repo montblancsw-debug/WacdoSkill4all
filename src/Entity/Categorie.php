@@ -15,72 +15,71 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[Vich\Uploadable]
 class Categorie
 {
+// ====================================================== //
+// ===================== PROPRIETES. ==================== //
+// ====================================================== //
+
+// Identifiant unique de la catégorie.
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // Le nom de la catégorie est obligatoire.
+// Nom de la catégorie.
+
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(
-        message: 'Le nom de la catégorie est obligatoire.',
-        normalizer: 'trim'
-    )]
-    #[Assert\Length(
-        min: 2,
-        max: 255,
-        minMessage: 'Le nom de la catégorie doit contenir au moins {{ limit }} caractères.',
-        maxMessage: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.'
-    )]
+    #[Assert\NotBlank(message: 'Le nom de la catégorie est obligatoire.',normalizer: 'trim')]
+    #[Assert\Length(min: 2,max: 255,minMessage: 'Le nom de la catégorie doit contenir au moins {{ limit }} caractères.',maxMessage: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $categorie_nom = null;
 
-    // La description de la catégorie reste facultative.
+// Description de la catégorie.
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $categorie_description = null;
 
-    // Contient le nom du fichier enregistré.
+// Nom du fichier image enregistré.
+
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: 'Le nom du fichier ne peut pas dépasser {{ limit }} caractères.'
-    )]
+    #[Assert\Length(max: 255,maxMessage: 'Le nom du fichier ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $categorie_nomdefichier = null;
 
-    // Conserve le champ image existant.
+// Nom de l'image de la catégorie.
+
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.'
-    )]
+    #[Assert\Length(max: 255,maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $categorie_image = null;
 
-    // Reçoit temporairement le fichier envoyé.
-    #[Vich\UploadableField(
-        mapping: 'categories',
-        fileNameProperty: 'categorieNomdefichier'
-    )]
-    #[Assert\Image(
-        maxSize: '2M',
-        mimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/webp'
-        ],
-        mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.'
-    )]
+// Fichier image envoyé depuis le formulaire.
+
+    #[Vich\UploadableField(mapping: 'categories',fileNameProperty: 'categorieNomdefichier')]
+    #[Assert\Image(maxSize: '2M',mimeTypes: ['image/jpeg','image/png','image/webp'],mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.')]
     private ?File $imageFile = null;
 
-    // Permet à Doctrine de détecter un changement d'image.
+// Date de la dernière modification de l'image.
+
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+// Produits appartenant à cette catégorie.
+
     #[ORM\OneToMany(targetEntity: Produit::class, mappedBy: 'categorie')]
     private Collection $produits;
+
+// ====================================================== //
+// ==================== CONSTRUCTEUR. =================== //
+// ====================================================== //
+
+// Initialise la collection des produits.
 
     public function __construct()
     {
         $this->produits = new ArrayCollection();
     }
+
+// ====================================================== //
+// ================== GETTERS/SETTERS. ================== //
+// ====================================================== //
 
     public function getId(): ?int
     {
@@ -136,6 +135,8 @@ class Categorie
         return $this->imageFile;
     }
 
+// Met à jour la date lorsqu'une nouvelle image est envoyée.
+
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
@@ -161,6 +162,12 @@ class Categorie
         return $this->produits;
     }
 
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Ajoute un produit à la catégorie.
+
     public function addProduit(Produit $produit): static
     {
         if (!$this->produits->contains($produit)) {
@@ -169,6 +176,8 @@ class Categorie
         }
         return $this;
     }
+
+// Retire un produit de la catégorie.
 
     public function removeProduit(Produit $produit): static
     {

@@ -12,69 +12,67 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
 {
-    // Identifiant unique de la commande.
+// ====================================================== //
+// ===================== PROPRIETES. ==================== //
+// ====================================================== //
+
+// Identifiant unique de la commande.
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // Le statut de la commande est obligatoire.
+// Statut actuel de la commande.
+
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(
-        message: 'Le statut de la commande est obligatoire.'
-    )]
-    #[Assert\Choice(
-        choices: [
-            'en attente',
-            'en préparation',
-            'prête',
-            'en livraison',
-            'livrée',
-            'annulée',
-        ],
-        message: 'Le statut sélectionné est invalide.'
-    )]
+    #[Assert\NotBlank(message: 'Le statut de la commande est obligatoire.')]
+    #[Assert\Choice(choices: ['en attente','en préparation','prête','en livraison','livrée','annulée',],message: 'Le statut sélectionné est invalide.')]
     private ?string $commande_statut = null;
 
-    // La date de la commande est obligatoire.
+// Date et heure de la commande.
+
     #[ORM\Column]
     #[Assert\NotNull(
         message: 'La date de la commande est obligatoire.'
     )]
     private ?\DateTime $commande_date = null;
 
-    // Le total de la commande peut être égal à zéro.
-    #[ORM\Column(
-        type: Types::DECIMAL,
-        precision: 10,
-        scale: 2
-    )]
-    #[Assert\NotBlank(
-        message: 'Le total de la commande est obligatoire.'
-    )]
-    #[Assert\PositiveOrZero(
-        message: 'Le total de la commande ne peut pas être négatif.'
-    )]
+// Montant total de la commande.
+
+    #[ORM\Column(type: Types::DECIMAL,precision: 10,scale: 2)]
+    #[Assert\NotBlank(message: 'Le total de la commande est obligatoire.')]
+    #[Assert\PositiveOrZero(message: 'Le total de la commande ne peut pas être négatif.')]
     private ?string $commande_total = null;
 
-    // Une commande peut conserver son historique sans utilisateur
+// Utilisateur associé à la commande.
+
     #[ORM\ManyToOne(inversedBy: 'commandes')]
-    #[ORM\JoinColumn(
-        nullable: true,
-        onDelete: 'SET NULL'
-    )]
+
+// L'utilisateur peut être supprimé sans supprimer la commande.
+
+    #[ORM\JoinColumn(nullable: true,onDelete: 'SET NULL')]
     private ?Utilisateur $utilisateur = null;
 
-    #[ORM\OneToMany(
-        targetEntity: Detail::class,
-        mappedBy: 'commande'
-    )]
+// Lignes contenant les articles de la commande.
+
+    #[ORM\OneToMany(targetEntity: Detail::class,mappedBy: 'commande')]
     private Collection $details;
+
+// ====================================================== //
+// ==================== CONSTRUCTEUR. =================== //
+// ====================================================== //
+
+// Initialise la collection des détails de la commande.
 
     public function __construct()
     {
         $this->details = new ArrayCollection();
     }
+
+// ====================================================== //
+// ================== GETTERS/SETTERS. ================== //
+// ====================================================== //
 
     public function getId(): ?int
     {
@@ -138,60 +136,32 @@ class Commande
         return $this->details;
     }
 
-    public function addDetail(
-        Detail $detail
-    ): static {
-        if (!$this->details->contains($detail)) {
-            $this->details->add(
-                $detail
-            );
+// Ajoute une ligne à la commande.
 
-            $detail->setCommande(
-                $this
-            );
-        }
-
+    public function addDetail(Detail $detail): static {
+        if (!$this->details->contains($detail)) {$this->details->add($detail);$detail->setCommande($this);}
         return $this;
     }
 
-    public function removeDetail(
-        Detail $detail
-    ): static {
-        if ($this->details->removeElement($detail)) {
-            if ($detail->getCommande() === $this) {
-                $detail->setCommande(
-                    null
-                );
+// Retire une ligne de la commande.
+
+    public function removeDetail(Detail $detail): static {if ($this->details->removeElement($detail)) {if ($detail->getCommande() === $this) {$detail->setCommande(null);
             }
         }
-
         return $this;
     }
 
-    // Indique si le client peut modifier la commande.
+// Vérifie si le client peut encore modifier la commande.
+
     public function isModifiableByClient(): bool
     {
-        return in_array(
-            $this->commande_statut,
-            [
-                'en attente',
-                'en préparation',
-            ],
-            true
-        );
+        return in_array($this->commande_statut,['en attente','en préparation',],true);
     }
 
-    // Indique si le client peut annuler la commande
+// Vérifie si le client peut encore annuler la commande.
+
     public function isAnnulableByClient(): bool
     {
-        return in_array(
-            $this->commande_statut,
-            [
-                'en attente',
-                'en préparation',
-                'prête',
-            ],
-            true
-        );
+        return in_array($this->commande_statut,['en attente','en préparation','prête',],true);
     }
 }

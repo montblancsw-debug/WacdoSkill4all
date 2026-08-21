@@ -15,97 +15,89 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 #[Vich\Uploadable]
 class Produit
 {
-    // Identifiant unique du produit.
+// ====================================================== //
+// ===================== PROPRIETES. ==================== //
+// ====================================================== //
+
+// Identifiant unique du produit.
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    // Le nom du produit est obligatoire.
+// Nom du produit.
+
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(
-        message: 'Le nom du produit est obligatoire.',
-        normalizer: 'trim'
-    )]
-    #[Assert\Length(
-        min: 2,
-        max: 255,
-        minMessage: 'Le nom du produit doit contenir au moins {{ limit }} caractères.',
-        maxMessage: 'Le nom du produit ne peut pas dépasser {{ limit }} caractères.'
-    )]
+    #[Assert\NotBlank(message: 'Le nom du produit est obligatoire.',normalizer: 'trim')]
+    #[Assert\Length(min: 2,max: 255,minMessage: 'Le nom du produit doit contenir au moins {{ limit }} caractères.',maxMessage: 'Le nom du produit ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $produit_nom = null;
 
-    // La description reste facultative.
+// Description du produit.
+
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $produit_description = null;
 
-    // Le prix est obligatoire et doit être positif.
+// Prix du produit.
+
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(
-        message: 'Le prix du produit est obligatoire.'
-    )]
-    #[Assert\Positive(
-        message: 'Le prix du produit doit être supérieur à 0 €.'
-    )]
+    #[Assert\NotBlank(message: 'Le prix du produit est obligatoire.')]
+    #[Assert\Positive(message: 'Le prix du produit doit être supérieur à 0 €.')]
     private ?string $produit_prix = null;
 
-    // Indique si le produit est disponible.
+// Indique si le produit est disponible.
+
     #[ORM\Column]
-    #[Assert\NotNull(
-        message: 'La disponibilité du produit doit être renseignée.'
-    )]
+    #[Assert\NotNull(message: 'La disponibilité du produit doit être renseignée.')]
     private ?bool $produit_stock = null;
 
-    // Contient le nom du fichier enregistré.
+// Nom du fichier image enregistré.
+
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.'
-    )]
+    #[Assert\Length(max: 255,maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $produit_image = null;
 
-    // Reçoit temporairement le fichier envoyé.
-    #[Vich\UploadableField(
-        mapping: 'produits',
-        fileNameProperty: 'produitImage'
-    )]
-    #[Assert\Image(
-        maxSize: '2M',
-        mimeTypes: [
-            'image/jpeg',
-            'image/png',
-            'image/webp'
-        ],
-        mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.'
-    )]
+// Fichier image envoyé depuis le formulaire.
+
+    #[Vich\UploadableField(mapping: 'produits',fileNameProperty: 'produitImage')]
+    #[Assert\Image(maxSize: '2M',mimeTypes: ['image/jpeg','image/png','image/webp'],mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.')]
     private ?File $imageFile = null;
 
-    // Permet à Doctrine de détecter un changement d'image.
+// Date de la dernière modification de l'image.
+
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-    // La catégorie peut être supprimée sans supprimer le produit.
+// Catégorie à laquelle appartient le produit.
+
     #[ORM\ManyToOne(inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Categorie $categorie = null;
 
-    #[ORM\OneToMany(
-        targetEntity: Detail::class,
-        mappedBy: 'produit'
-    )]
+// Lignes de commande contenant ce produit.
+    #[ORM\OneToMany(targetEntity: Detail::class,mappedBy: 'produit')]
     private Collection $details;
 
-    /**
-     * @var Collection<int, Menu>
-     */
+// Menus contenant ce produit.
+
     #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'produits')]
     private Collection $menus;
+
+// ====================================================== //
+// ==================== CONSTRUCTEUR. =================== //
+// ====================================================== //
+
+// Initialise les collections des détails et des menus.
 
     public function __construct()
     {
         $this->details = new ArrayCollection();
         $this->menus = new ArrayCollection();
     }
+
+// ====================================================== //
+// ================== GETTERS/SETTERS. ================== //
+// ====================================================== //
 
     public function getId(): ?int
     {
@@ -172,6 +164,8 @@ class Produit
         return $this->imageFile;
     }
 
+// Met à jour la date lorsqu'une nouvelle image est envoyée.
+
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
@@ -208,6 +202,12 @@ class Produit
         return $this->details;
     }
 
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Ajoute une ligne de commande contenant ce produit.
+
     public function addDetail(Detail $detail): static
     {
         if (!$this->details->contains($detail)) {
@@ -216,6 +216,8 @@ class Produit
         }
         return $this;
     }
+
+// Retire une ligne de commande liée à ce produit.
 
     public function removeDetail(Detail $detail): static
     {
@@ -227,13 +229,12 @@ class Produit
         return $this;
     }
 
-    /**
-     * @return Collection<int, Menu>
-     */
     public function getMenus(): Collection
     {
         return $this->menus;
     }
+
+// Ajoute le produit à un menu.
 
     public function addMenu(Menu $menu): static
     {
@@ -241,16 +242,16 @@ class Produit
             $this->menus->add($menu);
             $menu->addProduit($this);
         }
-
         return $this;
     }
+
+// Retire le produit d'un menu.
 
     public function removeMenu(Menu $menu): static
     {
         if ($this->menus->removeElement($menu)) {
             $menu->removeProduit($this);
         }
-
         return $this;
     }
 }
