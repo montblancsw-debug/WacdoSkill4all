@@ -16,10 +16,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProduitType extends AbstractType
 {
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Construit le formulaire de création et de modification d'un produit.
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Champ obligatoire contenant le nom du produit.
+// Ajoute le champ du nom du produit.
+
             ->add('produit_nom', TextType::class, [
                 'label' => 'Nom du produit',
                 'required' => true,
@@ -31,14 +38,16 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Utilise CKEditor pour la description facultative.
+// Ajoute le champ de description avec CKEditor.
+
             ->add('produit_description', CKEditorType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'config_name' => 'main_config',
             ])
 
-            // Champ obligatoire contenant le prix.
+// Ajoute le champ du prix du produit.
+
             ->add('produit_prix', NumberType::class, [
                 'label' => 'Prix (€)',
                 'required' => true,
@@ -53,7 +62,8 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Indique si le produit est disponible.
+// Ajoute le choix de disponibilité du produit.
+
             ->add('produit_stock', CheckboxType::class, [
                 'label' => 'Produit disponible en stock',
                 'required' => false,
@@ -62,7 +72,8 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Permet de sélectionner une image.
+// Ajoute le champ permettant de sélectionner une image.
+
             ->add('imageFile', FileType::class, [
                 'label' => 'Image du produit',
                 'required' => false,
@@ -72,7 +83,8 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-            // Permet de sélectionner une catégorie.
+// Ajoute le choix de la catégorie du produit.
+
             ->add('categorie', EntityType::class, [
                 'class' => Categorie::class,
                 'choice_label' => 'categorie_nom',
@@ -85,9 +97,10 @@ class ProduitType extends AbstractType
             ]);
     }
 
+// Associe le formulaire à l'entité Produit.
+
     public function configureOptions(OptionsResolver $resolver): void
     {
-        // Lie le formulaire à l'entité Produit.
         $resolver->setDefaults([
             'data_class' => Produit::class,
         ]);

@@ -12,10 +12,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CategorieType extends AbstractType
 {
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Construit le formulaire de création et de modification d'une catégorie.
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            // Champ obligatoire contenant le nom de la catégorie.
+// Ajoute le champ du nom de la catégorie.
+
             ->add('categorie_nom', TextType::class, [
                 'label' => 'Nom de la catégorie',
                 'required' => true,
@@ -27,14 +34,16 @@ class CategorieType extends AbstractType
                 ],
             ])
 
-            // Utilise CKEditor pour la description facultative.
+// Ajoute le champ de description avec CKEditor.
+
             ->add('categorie_description', CKEditorType::class, [
                 'label' => 'Description',
                 'required' => false,
                 'config_name' => 'main_config',
             ])
 
-            // Permet de sélectionner une image.
+// Ajoute le champ permettant de sélectionner une image.
+
             ->add('imageFile', FileType::class, [
                 'label' => 'Image de la catégorie',
                 'required' => false,
@@ -45,9 +54,10 @@ class CategorieType extends AbstractType
             ]);
     }
 
+// Associe le formulaire à l'entité Categorie.
+
     public function configureOptions(OptionsResolver $resolver): void
     {
-        // Lie le formulaire à l'entité Categorie.
         $resolver->setDefaults([
             'data_class' => Categorie::class,
         ]);

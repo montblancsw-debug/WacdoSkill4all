@@ -16,24 +16,28 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class MenuType extends AbstractType
 {
-    public function buildForm(
-        FormBuilderInterface $builder,
-        array $options
-    ): void {
+// ====================================================== //
+// ====================== METHODES ====================== //
+// ====================================================== //
+
+// Construit le formulaire de création et de modification d'un menu.
+
+    public function buildForm(FormBuilderInterface $builder,array $options): void {
         $builder
-            ->add(
-                'menu_nom',
-                TextType::class,
+
+// Ajoute le champ du nom du menu.
+
+        ->add('menu_nom',TextType::class,
                 [
                     'label' => 'Nom du menu',
                     'required' => true,
-
-                    'attr' => [
-                        'class' => 'form-control',
+                    'attr' => ['class' => 'form-control',
                         'placeholder' => 'Ex : Menu Wacdo',
                     ],
                 ]
             )
+
+// Ajoute le champ de description avec CKEditor.
 
             ->add(
                 'menu_description',
@@ -44,6 +48,8 @@ class MenuType extends AbstractType
                     'config_name' => 'main_config',
                 ]
             )
+
+// Ajoute le champ du prix du menu.
 
             ->add(
                 'menu_prix',
@@ -64,88 +70,33 @@ class MenuType extends AbstractType
                 ]
             )
 
-            /*
-             * Symfony conserve ici son système
-             * de cases à cocher en arrière-plan.
-             *
-             * Le template les masque ensuite
-             * et propose un menu déroulant
-             * beaucoup plus simple à utiliser.
-             */
-            ->add(
-                'produits',
-                EntityType::class,
+// Ajoute les produits qui composent le menu.
+
+            ->add('produits',EntityType::class,
                 [
                     'class' => Produit::class,
 
-                    'choice_label' => function (
-                        Produit $produit
-                    ): string {
-                        $label =
-                            $produit->getProduitNom();
+// Affiche le nom, la catégorie et la disponibilité de chaque produit.
 
-                        if (
-                            $produit->getCategorie()
-                            !== null
-                        ) {
-                            $label .=
-                                ' - '
-                                . $produit
-                                    ->getCategorie()
-                                    ->getCategorieNom();
+                    'choice_label' => function (Produit $produit): string {$label =$produit->getProduitNom();
+
+                        if ($produit->getCategorie()!== null) {$label .=' - '. $produit->getCategorie()->getCategorieNom();
                         }
-
-                        if (
-                            !$produit->isProduitStock()
-                        ) {
-                            $label .=
-                                ' - Indisponible';
+                        if (!$produit->isProduitStock()) {$label .=' - Indisponible';
                         }
-
                         return $label;
                     },
 
-                    /*
-                     * Ces informations seront
-                     * utilisées par JavaScript
-                     * pour construire le select.
-                     */
-                    'choice_attr' => function (
-                        Produit $produit
-                    ): array {
-                        return [
-                            'data-product-id' =>
-                                (string) $produit->getId(),
+// Ajoute les informations utilisées pour filtrer les produits dans le formulaire.
 
-                            'data-product-name' =>
-                                $produit->getProduitNom(),
-
-                            'data-category' =>
-                                $produit->getCategorie()
-                                !== null
-                                    ? (string) $produit
-                                        ->getCategorie()
-                                        ->getId()
-                                    : '',
-
-                            'data-category-name' =>
-                                $produit->getCategorie()
-                                !== null
-                                    ? $produit
-                                        ->getCategorie()
-                                        ->getCategorieNom()
-                                    : 'Sans catégorie',
-
-                            'data-stock' =>
-                                $produit->isProduitStock()
-                                    ? '1'
-                                    : '0',
-                        ];
+                    'choice_attr' => function (Produit $produit): array {
+                        return ['data-product-id' =>(string) $produit->getId(),
+                            'data-product-name' =>$produit->getProduitNom(),
+                            'data-category' =>$produit->getCategorie()!== null? (string) $produit->getCategorie()->getId(): '',
+                            'data-category-name' =>$produit->getCategorie()!== null? $produit->getCategorie()->getCategorieNom(): 'Sans catégorie',
+                            'data-stock' =>$produit->isProduitStock()? '1': '0',];
                     },
-
-                    'label' =>
-                        'Produits du menu',
-
+                    'label' =>'Produits du menu',
                     'multiple' => true,
                     'expanded' => true,
                     'required' => true,
@@ -153,45 +104,37 @@ class MenuType extends AbstractType
                 ]
             )
 
-            ->add(
-                'imageFile',
-                FileType::class,
+// Ajoute le champ permettant de sélectionner une image.
+
+            ->add('imageFile',FileType::class,
                 [
                     'label' => 'Image du menu',
                     'required' => false,
 
                     'attr' => [
-                        'class' =>
-                            'form-control',
-
-                        'accept' =>
-                            'image/jpeg,image/png,image/webp',
+                        'class' =>'form-control',
+                        'accept' =>'image/jpeg,image/png,image/webp',
                     ],
                 ]
             )
 
+// Ajoute le choix permettant d'activer ou désactiver le menu.
+
             ->add(
-                'menu_status',
-                CheckboxType::class,
+                'menu_status',CheckboxType::class,
                 [
                     'label' => 'Menu actif',
                     'required' => false,
 
                     'attr' => [
-                        'class' =>
-                            'form-check-input',
+                        'class' =>'form-check-input',
                     ],
                 ]
             );
     }
 
-    public function configureOptions(
-        OptionsResolver $resolver
-    ): void {
-        $resolver->setDefaults(
-            [
-                'data_class' => Menu::class,
-            ]
-        );
+// Associe le formulaire à l'entité Menu.
+
+    public function configureOptions(OptionsResolver $resolver): void {$resolver->setDefaults(['data_class' => Menu::class,]);
     }
 }
