@@ -7,18 +7,27 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 class UtilisateurFixtures extends Fixture
 {
-    // Références permettant d'identifier les utilisateurs dans les autres Fixtures.
+// ====================================================== //
+// ===================== CONSTANTES ====================== //
+// ====================================================== //
+
+// Références permettant d'identifier les utilisateurs dans les autres Fixtures.
+
     public const ADMIN_REFERENCE = 'utilisateur-admin';
     public const PREPARATEUR_REFERENCE = 'utilisateur-preparateur';
     public const ACCUEIL_REFERENCE = 'utilisateur-accueil';
 
+// ====================================================== //
+// ====================== METHODES ======================= //
+// ====================================================== //
+
+// Crée les utilisateurs nécessaires au fonctionnement de l'application.
+
     public function load(ObjectManager $manager): void
     {
-        // ====================================================== //
-        // ============= Création des utilisateurs : ============ //
-        // ====================================================== //
 
-        // 1. Le rôle Administrateur :
+// Crée le compte administrateur.
+
         $administrateur = new Utilisateur();
         $administrateur->setUtilisateurNom('Administrateur');
         $administrateur->setUtilisateurPrenom('Wacdo');
@@ -28,10 +37,13 @@ class UtilisateurFixtures extends Fixture
         );
         $administrateur->setUtilisateurRole('ROLE_ADMIN');
         $manager->persist($administrateur);
-        // Référence utilisée pour retrouver cet administrateur dans d'autres Fixtures.
+
+// Enregistre les références utilisées dans les autres Fixtures.
+
         $this->addReference(self::ADMIN_REFERENCE, $administrateur);
 
-        // 2. Le rôle Préparateur :
+// Crée le compte préparateur.
+
         $preparateur = new Utilisateur();
         $preparateur->setUtilisateurNom('Preparateur');
         $preparateur->setUtilisateurPrenom('Wacdo');
@@ -41,10 +53,11 @@ class UtilisateurFixtures extends Fixture
         );
         $preparateur->setUtilisateurRole('ROLE_PREPARATEUR');
         $manager->persist($preparateur);
-        // Référence vers le compte de préparation.
+
         $this->addReference(self::PREPARATEUR_REFERENCE, $preparateur);
 
-        // 3. Le rôle Acceuil :
+// Crée le compte accueil.
+
         $accueil = new Utilisateur();
         $accueil->setUtilisateurNom('Accueil');
         $accueil->setUtilisateurPrenom('Wacdo');
@@ -54,10 +67,11 @@ class UtilisateurFixtures extends Fixture
         );
         $accueil->setUtilisateurRole('ROLE_ACCUEIL');
         $manager->persist($accueil);
-        // Référence utilisée par CommandeFixtures.
+
         $this->addReference(self::ACCUEIL_REFERENCE, $accueil);
 
-        // Enregistrement des utilisateurs dans la base de données.
+// Enregistre tous les utilisateurs dans la base de données.
+
         $manager->flush();
     }
 }

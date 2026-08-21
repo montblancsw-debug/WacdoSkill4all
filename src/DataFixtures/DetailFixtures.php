@@ -10,19 +10,19 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 class DetailFixtures extends Fixture implements DependentFixtureInterface
 {
+// ====================================================== //
+// ====================== METHODES ======================= //
+// ====================================================== //
+
+// Crée les lignes de détail associées aux commandes.
+
     public function load(ObjectManager $manager): void
     {
-        /*
-         * Création des lignes de détail des commandes.
-         * Chaque détail associe un produit à une commande
-         * avec une quantité, un prix unitaire et un total.
-         */
 
-        // ==================================================
-        // COMMANDE 1 : 2 Wacfat + 1 Wacoco = 19,50 €
-        // ==================================================
+// =================== COMMANDE 1 ======================== //
 
-        // Ligne 1 : 2 Wacfat à 8,50 € = 17,00 €
+// Ajoute deux WacFat à la première commande.
+
         $detail1 = new Detail();
         $detail1->setDetailQuantite(2);
         $detail1->setDetailUnitaire('8.50');
@@ -41,7 +41,8 @@ class DetailFixtures extends Fixture implements DependentFixtureInterface
         );
         $manager->persist($detail1);
 
-        // Ligne 2 : 1 Wacoco à 2,50 € = 2,50 €
+// Ajoute un Wacoco à la première commande.
+
         $detail2 = new Detail();
         $detail2->setDetailQuantite(1);
         $detail2->setDetailUnitaire('2.50');
@@ -60,11 +61,10 @@ class DetailFixtures extends Fixture implements DependentFixtureInterface
         );
         $manager->persist($detail2);
 
-        // ==================================================
-        // COMMANDE 2 : 2 Wacadele + 2 Eaux = 9,00 €
-        // ==================================================
+// =================== COMMANDE 2 ======================== //
 
-        // Ligne 3 : 2 Wacadele à 3,00 € = 6,00 €
+// Ajoute deux Wacadele à la deuxième commande.
+
         $detail3 = new Detail();
         $detail3->setDetailQuantite(2);
         $detail3->setDetailUnitaire('3.00');
@@ -83,7 +83,8 @@ class DetailFixtures extends Fixture implements DependentFixtureInterface
         );
         $manager->persist($detail3);
 
-        // Ligne 4 : 2 bouteilles d'eau à 1,50 € = 3,00 €
+// Ajoute deux bouteilles d'eau à la deuxième commande.
+
         $detail4 = new Detail();
         $detail4->setDetailQuantite(2);
         $detail4->setDetailUnitaire('1.50');
@@ -102,11 +103,10 @@ class DetailFixtures extends Fixture implements DependentFixtureInterface
         );
         $manager->persist($detail4);
 
-        // ==================================================
-        // COMMANDE 3 : 1 Tommeawac + 1 Wacadamia = 10,00 €
-        // ==================================================
+// =================== COMMANDE 3 ======================== //
 
-        // Ligne 5 : 1 Tommeawac à 6,50 € = 6,50 €
+// Ajoute un Tommeawac à la troisième commande.
+
         $detail5 = new Detail();
         $detail5->setDetailQuantite(1);
         $detail5->setDetailUnitaire('6.50');
@@ -125,7 +125,8 @@ class DetailFixtures extends Fixture implements DependentFixtureInterface
         );
         $manager->persist($detail5);
 
-        // Ligne 6 : 1 Wacadamia à 3,50 € = 3,50 €
+// Ajoute un Wacadamia à la troisième commande.
+
         $detail6 = new Detail();
         $detail6->setDetailQuantite(1);
         $detail6->setDetailUnitaire('3.50');
@@ -144,14 +145,13 @@ class DetailFixtures extends Fixture implements DependentFixtureInterface
         );
         $manager->persist($detail6);
 
-        // Enregistrement de toutes les lignes de détail dans la base de données.
+// Enregistre toutes les lignes de détail dans la base de données.
+
         $manager->flush();
     }
-    public function getDependencies(): array
-    {
-        return [
-            ProduitFixtures::class,
-            CommandeFixtures::class,
-        ];
+
+// Indique que les produits et les commandes doivent être créés avant les détails.
+
+    public function getDependencies(): array{return [ProduitFixtures::class,CommandeFixtures::class,];
     }
 }
