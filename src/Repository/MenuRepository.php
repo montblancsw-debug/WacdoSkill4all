@@ -5,35 +5,41 @@ namespace App\Repository;
 use App\Entity\Menu;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-
-/** @extends ServiceEntityRepository<Menu> */
 class MenuRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
-    {
-        parent::__construct($registry, Menu::class);
-    }
+// ====================================================== //
+// ==================== CONSTRUCTEUR. =================== //
+// ====================================================== //
 
-    public function search(string $value = '', string $status = ''): array
-    {
+// Initialise le repository de l'entité Menu.
+
+    public function __construct(ManagerRegistry $registry){parent::__construct($registry, Menu::class);}
+
+// ====================================================== //
+// ====================== METHODES. ===================== //
+// ====================================================== //
+
+// Recherche et filtre les menus.
+
+    public function search(string $value = '', string $status = ''): array{
+
+// Prépare la requête avec les produits associés aux menus.
+
         $queryBuilder = $this
             ->createQueryBuilder('m')
             ->leftJoin('m.produits', 'p')
             ->addSelect('p')
             ->distinct();
 
+// Recherche par nom de menu, produit ou identifiant.
+
         $value = trim($value);
 
-        if ($value !== '') {
-            $conditions = $queryBuilder->expr()->orX(
-                $queryBuilder->expr()->like('m.menu_nom', ':value'),
-                $queryBuilder->expr()->like('p.produit_nom', ':value')
-            );
+        if ($value !== '') {$conditions = $queryBuilder->expr()->orX($queryBuilder->expr()->like('m.menu_nom', ':value'),$queryBuilder->expr()->like('p.produit_nom', ':value'));
 
             $idValue = ltrim($value, '#');
 
-            if (ctype_digit($idValue)) {
-                $conditions->add($queryBuilder->expr()->eq('m.id', ':id'));
+            if (ctype_digit($idValue)) {$conditions->add($queryBuilder->expr()->eq('m.id', ':id'));
                 $queryBuilder->setParameter('id', (int) $idValue);
             }
 
@@ -42,17 +48,23 @@ class MenuRepository extends ServiceEntityRepository
                 ->setParameter('value', '%' . $value . '%');
         }
 
+// Filtre les menus selon leur statut.
+
         if ($status === '1' || $status === '0') {
             $queryBuilder
                 ->andWhere('m.menu_status = :status')
                 ->setParameter('status', $status === '1');
         }
 
+// Trie les menus par nom dans l'ordre alphabétique.
+
         return $queryBuilder
             ->orderBy('m.menu_nom', 'ASC')
             ->getQuery()
             ->getResult();
     }
+
+// Retourne tous les menus actifs avec leurs produits.
 
     public function findActive(): array
     {
@@ -66,6 +78,8 @@ class MenuRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+// Retourne un menu actif selon son identifiant.
 
     public function findOneActive(int $id): ?Menu
     {
