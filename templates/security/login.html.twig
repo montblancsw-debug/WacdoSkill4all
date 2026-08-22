@@ -7,37 +7,46 @@
 {% block body %}
 
 	<div class="container py-5">
+
 		<div class="row justify-content-center">
+
 			<div class="col-12 col-md-8 col-lg-5">
+
 				<div class="card shadow-sm">
+
 					<div class="card-body p-4">
 
 						{# En-tête du formulaire de connexion. #}
 						<div class="text-center mb-4">
+
 							<h1 class="h3">
 								Connexion
 							</h1>
 
 							<p class="text-muted">
-								Accès à l'administration Wacdo
+								Accès à Wacdo
 							</p>
+
 						</div>
 
 						{# Affiche une erreur lorsque la connexion échoue. #}
 						{% if error %}
+
 							<div
 								class="alert alert-danger"
 								role="alert"
 							>
 								Adresse email ou mot de passe incorrect.
 							</div>
+
 						{% endif %}
 
 						{# Formulaire de connexion. #}
 						<form method="post">
 
-							{# Adresse email utilisée pour la connexion. #}
+							{# Adresse email. #}
 							<div class="mb-3">
+
 								<label
 									for="inputEmail"
 									class="form-label"
@@ -52,14 +61,16 @@
 									id="inputEmail"
 									class="form-control"
 									autocomplete="email"
-									placeholder="Ex : blabla@wacdo.fr"
+									placeholder="Ex : admin@wacdo.fr"
 									required
 									autofocus
 								>
+
 							</div>
 
-							{# Mot de passe de l'utilisateur. #}
+							{# Mot de passe. #}
 							<div class="mb-3">
+
 								<label
 									for="inputPassword"
 									class="form-label"
@@ -75,9 +86,10 @@
 									autocomplete="current-password"
 									required
 								>
+
 							</div>
 
-							{# Protection CSRF du formulaire de connexion. #}
+							{# Protection CSRF. #}
 							<input
 								type="hidden"
 								name="_csrf_token"
@@ -86,6 +98,7 @@
 
 							{# Permet de rester connecté. #}
 							<div class="form-check mb-4">
+
 								<input
 									type="checkbox"
 									name="_remember_me"
@@ -99,30 +112,42 @@
 								>
 									Se souvenir de moi
 								</label>
+
 							</div>
 
 							<div class="d-grid">
+
 								<button
 									type="submit"
 									class="btn btn-primary"
 								>
 									Se connecter
 								</button>
+
 							</div>
 
 						</form>
 
 						{# Retour à l'accueil du site. #}
-						<div class="text-center mt-3">
-							<a href="{{ path('app_front_home') }}">
+						<div class="d-grid mt-3">
+
+							<a
+								href="{{ path('app_front_home') }}"
+								class="btn btn-secondary"
+							>
 								Retour au site
 							</a>
+
 						</div>
 
 					</div>
+
 				</div>
+
 			</div>
+
 		</div>
+
 	</div>
 
 {% endblock %}

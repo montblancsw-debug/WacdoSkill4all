@@ -18,12 +18,14 @@
 			</p>
 		</div>
 
-		<a
-			href="{{ path('app_admin_commande_new') }}"
-			class="btn btn-primary"
-		>
-			Ajouter une commande
-		</a>
+		{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+			<a
+				href="{{ path('app_admin_commande_new') }}"
+				class="btn btn-primary"
+			>
+				Ajouter une commande
+			</a>
+		{% endif %}
 	</div>
 
 	<div class="card">
@@ -106,6 +108,7 @@
 					</thead>
 
 					<tbody id="commandes-table-body">
+
 						{% for commande in commandes %}
 							<tr
 								class="commande-row"
@@ -179,6 +182,7 @@
 								</td>
 
 								<td class="text-end">
+
 									<a
 										href="{{ path('app_admin_commande_show', {'id': commande.id}) }}"
 										class="btn btn-info btn-sm"
@@ -186,17 +190,24 @@
 										Voir
 									</a>
 
-									<a
-										href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
-										class="btn btn-warning btn-sm"
-									>
-										Modifier
-									</a>
+									{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+										<a
+											href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
+											class="btn btn-warning btn-sm"
+										>
+											Modifier
+										</a>
+									{% endif %}
 
-									{{ include('admin_commande/_delete_form.html.twig') }}
+									{% if is_granted('ROLE_ADMIN') %}
+										{{ include('admin_commande/_delete_form.html.twig') }}
+									{% endif %}
+
 								</td>
 							</tr>
+
 						{% else %}
+
 							<tr>
 								<td
 									colspan="7"
@@ -209,7 +220,9 @@
 									{% endif %}
 								</td>
 							</tr>
+
 						{% endfor %}
+
 					</tbody>
 
 				</table>
@@ -227,9 +240,17 @@
 		document.addEventListener('DOMContentLoaded', function () {
 
 			// Récupère les éléments nécessaires au tri.
-			const sortSelect = document.getElementById('commande-sort');
-			const tableBody = document.getElementById('commandes-table-body');
-			const resetButton = document.getElementById('commande-reset');
+			const sortSelect = document.getElementById(
+				'commande-sort'
+			);
+
+			const tableBody = document.getElementById(
+				'commandes-table-body'
+			);
+
+			const resetButton = document.getElementById(
+				'commande-reset'
+			);
 
 			if (!sortSelect || !tableBody) {
 				return;
@@ -240,19 +261,27 @@
 				'wacdo-commande-sort'
 			);
 
-			if (savedSort === 'asc' || savedSort === 'desc') {
+			if (
+				savedSort === 'asc'
+				|| savedSort === 'desc'
+			) {
 				sortSelect.value = savedSort;
 			}
 
 			// Trie les commandes selon leur date.
 			function sortCommandes() {
 				const rows = Array.from(
-					tableBody.querySelectorAll('.commande-row')
+					tableBody.querySelectorAll(
+						'.commande-row'
+					)
 				);
 
 				const direction = sortSelect.value;
 
-				rows.sort(function (firstRow, secondRow) {
+				rows.sort(function (
+					firstRow,
+					secondRow
+				) {
 					const firstDate = Number(
 						firstRow.dataset.date || 0
 					);
@@ -274,22 +303,28 @@
 			}
 
 			// Enregistre le tri sélectionné.
-			sortSelect.addEventListener('change', function () {
-				localStorage.setItem(
-					'wacdo-commande-sort',
-					sortSelect.value
-				);
+			sortSelect.addEventListener(
+				'change',
+				function () {
+					localStorage.setItem(
+						'wacdo-commande-sort',
+						sortSelect.value
+					);
 
-				sortCommandes();
-			});
+					sortCommandes();
+				}
+			);
 
 			// Réinitialise le tri enregistré.
 			if (resetButton) {
-				resetButton.addEventListener('click', function () {
-					localStorage.removeItem(
-						'wacdo-commande-sort'
-					);
-				});
+				resetButton.addEventListener(
+					'click',
+					function () {
+						localStorage.removeItem(
+							'wacdo-commande-sort'
+						);
+					}
+				);
 			}
 
 			sortCommandes();

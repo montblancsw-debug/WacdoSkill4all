@@ -8,6 +8,7 @@
 
 	{# En-tête de la commande. #}
 	<div class="d-flex justify-content-between align-items-center mb-4">
+
 		<div>
 			<h1 class="h3 mb-1">
 				Commande #{{ commande.id }}
@@ -19,15 +20,22 @@
 		</div>
 
 		<div class="d-flex gap-2">
-			<a
-				href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
-				class="btn btn-warning"
-			>
-				Modifier
-			</a>
 
-			{{ include('admin_commande/_delete_form.html.twig') }}
+			{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
+				<a
+					href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
+					class="btn btn-warning"
+				>
+					Modifier
+				</a>
+			{% endif %}
+
+			{% if is_granted('ROLE_ADMIN') %}
+				{{ include('admin_commande/_delete_form.html.twig') }}
+			{% endif %}
+
 		</div>
+
 	</div>
 
 	{# Informations générales de la commande. #}
@@ -40,6 +48,7 @@
 		</div>
 
 		<div class="card-body">
+
 			<table class="table align-middle">
 				<tbody>
 
@@ -99,13 +108,25 @@
 								<span class="badge bg-warning">
 									En attente
 								</span>
-							{% elseif commande.commandeStatut == 'préparée' %}
+							{% elseif commande.commandeStatut == 'en préparation' %}
 								<span class="badge bg-info">
-									Préparée
+									En préparation
+								</span>
+							{% elseif commande.commandeStatut == 'prête' %}
+								<span class="badge bg-primary">
+									Prête
+								</span>
+							{% elseif commande.commandeStatut == 'en livraison' %}
+								<span class="badge bg-info">
+									En livraison
 								</span>
 							{% elseif commande.commandeStatut == 'livrée' %}
 								<span class="badge bg-success">
 									Livrée
+								</span>
+							{% elseif commande.commandeStatut == 'annulée' %}
+								<span class="badge bg-danger">
+									Annulée
 								</span>
 							{% else %}
 								<span class="badge bg-secondary">
@@ -130,6 +151,121 @@
 
 				</tbody>
 			</table>
+
+		</div>
+
+	</div>
+
+	{# Modification du statut de la commande. #}
+	<div class="card mt-4">
+
+		<div class="card-header">
+			<h5 class="card-title mb-0">
+				Statut de la commande
+			</h5>
+		</div>
+
+		<div class="card-body">
+
+			<form
+				method="post"
+				action="{{ path('app_admin_commande_status', {'id': commande.id}) }}"
+				class="row g-3 align-items-end"
+			>
+
+				<div class="col-12 col-md">
+
+					<label
+						for="commande-statut"
+						class="form-label"
+					>
+						Statut
+					</label>
+
+					<select
+						id="commande-statut"
+						name="commande_statut"
+						class="form-select"
+						required
+					>
+
+						<option
+							value="en attente"
+							{% if commande.commandeStatut == 'en attente' %}
+								selected
+							{% endif %}
+						>
+							En attente
+						</option>
+
+						<option
+							value="en préparation"
+							{% if commande.commandeStatut == 'en préparation' %}
+								selected
+							{% endif %}
+						>
+							En préparation
+						</option>
+
+						<option
+							value="prête"
+							{% if commande.commandeStatut == 'prête' %}
+								selected
+							{% endif %}
+						>
+							Prête
+						</option>
+
+						<option
+							value="en livraison"
+							{% if commande.commandeStatut == 'en livraison' %}
+								selected
+							{% endif %}
+						>
+							En livraison
+						</option>
+
+						<option
+							value="livrée"
+							{% if commande.commandeStatut == 'livrée' %}
+								selected
+							{% endif %}
+						>
+							Livrée
+						</option>
+
+						<option
+							value="annulée"
+							{% if commande.commandeStatut == 'annulée' %}
+								selected
+							{% endif %}
+						>
+							Annulée
+						</option>
+
+					</select>
+
+				</div>
+
+				<div class="col-12 col-md-auto">
+
+					<input
+						type="hidden"
+						name="_token"
+						value="{{ csrf_token('commande_status' ~ commande.id) }}"
+					>
+
+					<button
+						type="submit"
+						class="btn btn-primary"
+					>
+						Mettre à jour le statut
+					</button>
+
+				</div>
+
+			</form>
+
 		</div>
 
 	</div>
