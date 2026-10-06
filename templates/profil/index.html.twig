@@ -20,10 +20,7 @@
 				</p>
 			</div>
 
-			<a
-				href="{{ path('app_profil_edit') }}"
-				class="btn btn-primary"
-			>
+			<a href="{{ path('app_profil_edit') }}" class="btn btn-primary">
 				Modifier mon profil
 			</a>
 		</div>
@@ -82,6 +79,74 @@
 					</div>
 
 				</div>
+			</div>
+		</div>
+
+		{# Informations concernant les données personnelles. #}
+		<div class="card front-card mt-4">
+			<div class="card-header">
+				<h2 class="h5 mb-0">
+					Mes données personnelles
+				</h2>
+			</div>
+
+			<div class="card-body">
+				<p>
+					Wacdo conserve les informations nécessaires au fonctionnement de votre compte :
+					votre nom, votre prénom, votre adresse email, votre mot de passe sous forme hachée
+					et les commandes associées à votre compte.
+				</p>
+
+				<p>
+					Ces informations sont utilisées pour vous identifier, sécuriser votre connexion,
+					gérer votre profil et vous permettre de consulter vos commandes.
+				</p>
+
+				<p>
+					Le projet Wacdo ne transmet pas vos données personnelles à un service tiers.
+				</p>
+
+				<p class="mb-0">
+					Vous pouvez consulter vos informations depuis cette page, les modifier avec le bouton
+					« Modifier mon profil » ou supprimer définitivement votre compte.
+				</p>
+			</div>
+		</div>
+
+		{# Suppression du compte. #}
+		<div class="card front-card mt-4">
+			<div class="card-header">
+				<h2 class="h5 mb-0">
+					Supprimer mon compte
+				</h2>
+			</div>
+
+			<div class="card-body">
+				<p>
+					La suppression de votre compte est définitive.
+					Vos informations personnelles ne seront plus associées à votre compte.
+				</p>
+
+				<p class="text-muted">
+					Les commandes déjà enregistrées peuvent être conservées dans l'application,
+					mais elles ne seront plus rattachées à votre compte utilisateur.
+				</p>
+
+				<form
+					method="post"
+					action="{{ path('app_profil_delete') }}"
+					onsubmit="return confirm('Voulez-vous vraiment supprimer définitivement votre compte ?');"
+				>
+					<input
+						type="hidden"
+						name="_token"
+						value="{{ csrf_token('profil_delete' ~ utilisateur.id) }}"
+					>
+
+					<button type="submit" class="btn btn-danger">
+						Supprimer définitivement mon compte
+					</button>
+				</form>
 			</div>
 		</div>
 

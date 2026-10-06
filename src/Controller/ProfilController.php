@@ -9,54 +9,111 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 // ====================================================== //
 // ====================== ROUTES ======================== //
 // ====================================================== //
+
 class ProfilController extends AbstractController
 {
     #[Route('/profil', name: 'app_profil', methods: ['GET'])]
 
-// ====================================================== //
-// ====================== METHODES ====================== //
-// ====================================================== //
+    // ====================================================== //
+    // ====================== METHODES ====================== //
+    // ====================================================== //
 
-// Affiche le profil de l'utilisateur connecté.
+    // Affiche le profil de l'utilisateur connecté.
 
-    public function index(): Response{
+    public function index(): Response
+    {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
 
         $utilisateur = $this->getUser();
 
-        if (!$utilisateur instanceof Utilisateur) {throw $this->createAccessDeniedException();}
-        return $this->render('profil/index.html.twig', ['utilisateur' => $utilisateur,]);
+        if (!$utilisateur instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $this->render('profil/index.html.twig', [
+            'utilisateur' => $utilisateur,
+        ]);
     }
 
     #[Route('/profil/modifier', name: 'app_profil_edit', methods: ['GET', 'POST'])]
-    
-// Permet à l'utilisateur de modifier son profil.
-    
-    public function edit(Request $request,EntityManagerInterface $entityManager): Response {
+
+    // Permet à l'utilisateur de modifier son profil.
+
+    public function edit(Request $request, EntityManagerInterface $entityManager): Response
+    {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
-        
+
         $utilisateur = $this->getUser();
 
-        if (!$utilisateur instanceof Utilisateur) {throw $this->createAccessDeniedException();}
-        $form = $this->createForm(ProfilType::class,$utilisateur);
-        $form->handleRequest($request);
-
-// Modifie le mot de passe uniquement si un nouveau mot de passe est saisi.
-
-        if ($form->isSubmitted() && $form->isValid()) {$plainPassword = $form->get('plain_password')->getData();
-            if (!empty($plainPassword)) {$hashedPassword = password_hash($plainPassword,PASSWORD_BCRYPT);
-
-                $utilisateur->setUtilisateurPassword($hashedPassword);
-            }
-            $entityManager->flush();$this->addFlash('success','Votre profil a été modifié avec succès.');
-
-        return $this->redirectToRoute('app_profil',[],Response::HTTP_SEE_OTHER);
+        if (!$utilisateur instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
         }
 
-        return $this->render('profil/edit.html.twig', ['utilisateur' => $utilisateur,'form' => $form,]);
+        $form = $this->createForm(ProfilType::class, $utilisateur);
+        $form->handleRequest($request);
+
+        // Modifie le mot de passe uniquement si un nouveau mot de passe est saisi.
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plainPassword = $form->get('plain_password')->getData();
+
+            if (!empty($plainPassword)) {
+                $hashedPassword = password_hash($plainPassword, PASSWORD_BCRYPT);
+                $utilisateur->setUtilisateurPassword($hashedPassword);
+            }
+
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre profil a été modifié avec succès.');
+
+            return $this->redirectToRoute('app_profil', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('profil/edit.html.twig', [
+            'utilisateur' => $utilisateur,
+            'form' => $form,
+        ]);
+    }
+
+    #[Route('/profil/supprimer', name: 'app_profil_delete', methods: ['POST'])]
+
+    // Supprime définitivement le compte de l'utilisateur connecté.
+
+    public function delete(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TokenStorageInterface $tokenStorage
+    ): Response {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED');
+
+        $utilisateur = $this->getUser();
+
+        if (!$utilisateur instanceof Utilisateur) {
+            throw $this->createAccessDeniedException();
+        }
+
+        if (!$this->isCsrfTokenValid(
+            'profil_delete' . $utilisateur->getId(),
+            $request->getPayload()->getString('_token')
+        )) {
+            $this->addFlash('danger', 'La suppression du compte a échoué.');
+
+            return $this->redirectToRoute('app_profil');
+        }
+
+        $entityManager->remove($utilisateur);
+        $entityManager->flush();
+
+        // Déconnecte l'utilisateur après la suppression de son compte.
+
+        $tokenStorage->setToken(null);
+        $request->getSession()->invalidate();
+
+        return $this->redirectToRoute('app_front_home');
     }
 }
