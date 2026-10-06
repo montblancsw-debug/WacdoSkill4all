@@ -1,20 +1,31 @@
 {% extends 'base-backend.html.twig' %}
 
 {% block title %}
-	Gestion des commandes | Wacdo
+	{% if modePreparation %}
+		Commandes à préparer | Wacdo
+	{% else %}
+		Gestion des commandes | Wacdo
+	{% endif %}
 {% endblock %}
-
 {% block body %}
 
 	{# En-tête de la page. #}
 	<div class="d-flex justify-content-between align-items-center mb-4">
 		<div>
 			<h1 class="h3 mb-1">
-				Gestion des commandes
+				{% if modePreparation %}
+					Commandes à préparer
+				{% else %}
+					Gestion des commandes
+				{% endif %}
 			</h1>
 
 			<p class="text-muted mb-0">
-				Consultez et gérez les commandes Wacdo.
+				{% if modePreparation %}
+					Les commandes sont triées par heure de livraison croissante.
+				{% else %}
+					Consultez et gérez les commandes Wacdo.
+				{% endif %}
 			</p>
 		</div>
 
@@ -29,13 +40,16 @@
 	</div>
 
 	<div class="card">
-
 		<div class="card-header">
 			<h5 class="card-title mb-0">
-				Liste des commandes
+				{% if modePreparation %}
+					Liste des commandes en attente de préparation
+				{% else %}
+					Liste des commandes
+				{% endif %}
 			</h5>
-		</div>
 
+		</div>
 		<div class="card-body">
 
 			{# Recherche et tri des commandes. #}
@@ -54,20 +68,34 @@
 					>
 				</div>
 
-				<div class="col-12 col-md-5 col-xl-3">
-					<select
-						id="commande-sort"
-						class="form-select"
-					>
-						<option value="desc">
-							Plus récentes d'abord
-						</option>
+				{% if not modePreparation %}
 
-						<option value="asc">
-							Plus anciennes d'abord
-						</option>
-					</select>
-				</div>
+					<div class="col-12 col-md-5 col-xl-3">
+						<select
+							id="commande-sort"
+							class="form-select"
+						>
+							<option value="desc">
+								Plus récentes d'abord
+							</option>
+							<option value="asc">
+								Plus anciennes d'abord
+							</option>
+						</select>
+					</div>
+
+				{% else %}
+
+					<div class="col-12 col-md-5 col-xl-3">
+						<input
+							type="text"
+							class="form-control"
+							value="Livraison : ordre croissant"
+							disabled
+						>
+					</div>
+
+				{% endif %}
 
 				<div class="col-6 col-md-auto">
 					<button
@@ -76,8 +104,8 @@
 					>
 						Rechercher
 					</button>
-				</div>
 
+				</div>
 				<div class="col-6 col-md-auto">
 					<a
 						id="commande-reset"
@@ -95,20 +123,21 @@
 					id="commandes-table"
 					class="table table-hover align-middle"
 				>
+
 					<thead>
 						<tr>
 							<th>N°</th>
 							<th>Date</th>
+							<th>Livraison prévue</th>
 							<th>Utilisateur</th>
 							<th>Statut</th>
 							<th>Articles</th>
 							<th>Total</th>
 							<th class="text-end">Actions</th>
 						</tr>
+
 					</thead>
-
 					<tbody id="commandes-table-body">
-
 						{% for commande in commandes %}
 							<tr
 								class="commande-row"
@@ -119,14 +148,23 @@
 										#{{ commande.id }}
 									</strong>
 								</td>
-
 								<td>
 									{{ commande.commandeDate
 										? commande.commandeDate|date('d/m/Y H:i')
 										: 'Non renseignée'
 									}}
 								</td>
-
+								<td>
+									{% if commande.commandeHoraireLivraison %}
+										<strong>
+											{{ commande.commandeHoraireLivraison|date('d/m/Y H:i') }}
+										</strong>
+									{% else %}
+										<span class="text-muted">
+											Non renseignée
+										</span>
+									{% endif %}
+								</td>
 								<td>
 									{% if commande.utilisateur %}
 										{{ commande.utilisateur.utilisateurPrenom }}
@@ -137,7 +175,6 @@
 										</span>
 									{% endif %}
 								</td>
-
 								<td>
 									{% if commande.commandeStatut == 'en attente' %}
 										<span class="badge bg-warning">
@@ -169,166 +206,161 @@
 										</span>
 									{% endif %}
 								</td>
-
 								<td>
 									{{ commande.details|length }}
 								</td>
-
 								<td>
 									<strong>
 										{{ commande.commandeTotal|number_format(2, ',', ' ') }}
 										€
 									</strong>
 								</td>
-
 								<td class="text-end">
-
-									<a
-										href="{{ path('app_admin_commande_show', {'id': commande.id}) }}"
-										class="btn btn-info btn-sm"
-									>
+									<a href="{{ path('app_admin_commande_show', {'id': commande.id}) }}" class="btn btn-info btn-sm">
 										Voir
 									</a>
-
 									{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_ACCUEIL') %}
-										<a
-											href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}"
-											class="btn btn-warning btn-sm"
-										>
+										<a href="{{ path('app_admin_commande_edit', {'id': commande.id}) }}" class="btn btn-warning btn-sm">
 											Modifier
 										</a>
 									{% endif %}
-
 									{% if is_granted('ROLE_ADMIN') %}
 										{{ include('admin_commande/_delete_form.html.twig') }}
 									{% endif %}
-
 								</td>
 							</tr>
 
 						{% else %}
 
 							<tr>
-								<td
-									colspan="7"
-									class="text-center text-muted"
-								>
+								<td colspan="8" class="text-center text-muted">
 									{% if search|default('') %}
 										Aucune commande ne correspond à votre recherche.
+									{% elseif modePreparation %}
+										Aucune commande n'est actuellement à préparer.
 									{% else %}
 										Aucune commande enregistrée.
 									{% endif %}
 								</td>
 							</tr>
-
 						{% endfor %}
-
 					</tbody>
-
 				</table>
 			</div>
-
 		</div>
-
 	</div>
 
 {% endblock %}
 
 {% block javascripts %}
 
-	<script>
-		document.addEventListener('DOMContentLoaded', function () {
+	{% if not modePreparation %}
 
-			// Récupère les éléments nécessaires au tri.
-			const sortSelect = document.getElementById(
-				'commande-sort'
-			);
+		<script>
+			document.addEventListener(
+				'DOMContentLoaded',
+				function () {
 
-			const tableBody = document.getElementById(
-				'commandes-table-body'
-			);
+					// Récupère les éléments nécessaires au tri.
 
-			const resetButton = document.getElementById(
-				'commande-reset'
-			);
-
-			if (!sortSelect || !tableBody) {
-				return;
-			}
-
-			// Récupère le dernier tri utilisé.
-			const savedSort = localStorage.getItem(
-				'wacdo-commande-sort'
-			);
-
-			if (
-				savedSort === 'asc'
-				|| savedSort === 'desc'
-			) {
-				sortSelect.value = savedSort;
-			}
-
-			// Trie les commandes selon leur date.
-			function sortCommandes() {
-				const rows = Array.from(
-					tableBody.querySelectorAll(
-						'.commande-row'
-					)
-				);
-
-				const direction = sortSelect.value;
-
-				rows.sort(function (
-					firstRow,
-					secondRow
-				) {
-					const firstDate = Number(
-						firstRow.dataset.date || 0
+					const sortSelect = document.getElementById(
+						'commande-sort'
 					);
 
-					const secondDate = Number(
-						secondRow.dataset.date || 0
+					const tableBody = document.getElementById(
+						'commandes-table-body'
 					);
 
-					if (direction === 'asc') {
-						return firstDate - secondDate;
+					const resetButton = document.getElementById(
+						'commande-reset'
+					);
+
+					if (!sortSelect || !tableBody) {
+						return;
 					}
 
-					return secondDate - firstDate;
-				});
+					// Récupère le dernier tri utilisé.
 
-				rows.forEach(function (row) {
-					tableBody.appendChild(row);
-				});
-			}
-
-			// Enregistre le tri sélectionné.
-			sortSelect.addEventListener(
-				'change',
-				function () {
-					localStorage.setItem(
-						'wacdo-commande-sort',
-						sortSelect.value
+					const savedSort = localStorage.getItem(
+						'wacdo-commande-sort'
 					);
 
+					if (
+						savedSort === 'asc'
+						|| savedSort === 'desc'
+					) {
+						sortSelect.value = savedSort;
+					}
+
+					// Trie les commandes selon leur date de création.
+
+					function sortCommandes() {
+						const rows = Array.from(
+							tableBody.querySelectorAll(
+								'.commande-row'
+							)
+						);
+
+						const direction = sortSelect.value;
+
+						rows.sort(
+							function (
+								firstRow,
+								secondRow
+							) {
+								const firstDate = Number(
+									firstRow.dataset.date || 0
+								);
+								const secondDate = Number(
+									secondRow.dataset.date || 0
+								);
+								if (direction === 'asc') {
+									return firstDate - secondDate;
+								}
+								return secondDate - firstDate;
+							}
+						);
+
+						rows.forEach(
+							function (row) {
+								tableBody.appendChild(
+									row
+								);
+							}
+						);
+					}
+
+					// Enregistre le tri sélectionné.
+
+					sortSelect.addEventListener(
+						'change',
+						function () {
+							localStorage.setItem(
+								'wacdo-commande-sort',
+								sortSelect.value
+							);
+							sortCommandes();
+						}
+					);
+
+					// Réinitialise le tri enregistré.
+
+					if (resetButton) {
+						resetButton.addEventListener(
+							'click',
+							function () {
+								localStorage.removeItem(
+									'wacdo-commande-sort'
+								);
+							}
+						);
+					}
 					sortCommandes();
 				}
 			);
 
-			// Réinitialise le tri enregistré.
-			if (resetButton) {
-				resetButton.addEventListener(
-					'click',
-					function () {
-						localStorage.removeItem(
-							'wacdo-commande-sort'
-						);
-					}
-				);
-			}
+		</script>
 
-			sortCommandes();
-		});
-	</script>
+	{% endif %}
 
 {% endblock %}

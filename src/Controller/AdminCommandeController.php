@@ -37,7 +37,21 @@ final class AdminCommandeController extends AbstractController
             )
         );
 
-        if ($search !== '') {
+        $modePreparation = $this->isGranted(
+            'ROLE_PREPARATEUR'
+        )
+            && !$this->isGranted(
+                'ROLE_ADMIN'
+            )
+            && !$this->isGranted(
+                'ROLE_ACCUEIL'
+            );
+
+        if ($modePreparation) {
+            $commandes = $commandeRepository->findForPreparation(
+                $search
+            );
+        } elseif ($search !== '') {
             $commandes = $commandeRepository->search(
                 $search
             );
@@ -45,6 +59,7 @@ final class AdminCommandeController extends AbstractController
             $commandes = $commandeRepository->findBy(
                 [],
                 [
+                    'commande_date' => 'DESC',
                     'id' => 'DESC',
                 ]
             );
@@ -55,6 +70,7 @@ final class AdminCommandeController extends AbstractController
             [
                 'commandes' => $commandes,
                 'search' => $search,
+                'modePreparation' => $modePreparation,
             ]
         );
     }
@@ -190,7 +206,9 @@ final class AdminCommandeController extends AbstractController
 
         $statut = $request
             ->getPayload()
-            ->getString('commande_statut');
+            ->getString(
+                'commande_statut'
+            );
 
         if (
             !$this->canUpdateStatus(
@@ -341,7 +359,9 @@ final class AdminCommandeController extends AbstractController
 
         $produitId = $request
             ->getPayload()
-            ->getInt('produit_id');
+            ->getInt(
+                'produit_id'
+            );
 
         $quantite = max(
             1,
@@ -489,7 +509,8 @@ final class AdminCommandeController extends AbstractController
         }
 
         $detail->setDetailQuantite(
-            ($detail->getDetailQuantite() ?? 0) + 1
+            ($detail->getDetailQuantite() ?? 0)
+            + 1
         );
 
         $this->updateDetailTotal(
@@ -546,7 +567,8 @@ final class AdminCommandeController extends AbstractController
             ($detail->getDetailQuantite() ?? 0) > 1
         ) {
             $detail->setDetailQuantite(
-                $detail->getDetailQuantite() - 1
+                $detail->getDetailQuantite()
+                - 1
             );
 
             $this->updateDetailTotal(
@@ -771,7 +793,9 @@ final class AdminCommandeController extends AbstractController
         EntityManagerInterface $entityManager
     ): Detail {
         $detail = $entityManager
-            ->getRepository(Detail::class)
+            ->getRepository(
+                Detail::class
+            )
             ->find(
                 $detailId
             );
