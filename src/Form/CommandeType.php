@@ -34,7 +34,6 @@ class CommandeType extends AbstractType
                 [
                     'label' => 'Statut',
                     'required' => true,
-
                     'choices' => [
                         'En attente' => 'en attente',
                         'En préparation' => 'en préparation',
@@ -46,26 +45,42 @@ class CommandeType extends AbstractType
 
                     'placeholder' => 'Choisir un statut',
 
-                    // L'accueil ne modifie pas directement
-                    // l'avancement depuis le formulaire d'édition.
-                    'disabled' => $options['status_disabled'],
+                    // L'accueil ne modifie pas directement l'avancement depuis le formulaire d'édition.
 
+                    'disabled' => $options['status_disabled'],
                     'attr' => [
                         'class' => 'form-select',
                     ],
                 ]
             )
 
-            // Ajoute le champ de date et d'heure de la commande.
+            // Ajoute la date et l'heure de création de la commande.
 
             ->add(
                 'commande_date',
                 DateTimeType::class,
                 [
-                    'label' => 'Date et heure',
+                    'label' => 'Date et heure de la commande',
                     'required' => true,
                     'widget' => 'single_text',
+                    'html5' => true,
+                    'attr' => [
+                        'class' => 'form-control',
+                    ],
+                ]
+            )
 
+            // Ajoute l'heure prévue pour la livraison.
+
+            ->add(
+                'commande_horaire_livraison',
+                DateTimeType::class,
+                [
+                    'label' => 'Livraison prévue',
+                    'required' => true,
+                    'widget' => 'single_text',
+                    'html5' => true,
+                    'help' => 'Indiquez la date et l\'heure prévues pour la remise de la commande.',
                     'attr' => [
                         'class' => 'form-control',
                     ],
@@ -84,9 +99,7 @@ class CommandeType extends AbstractType
                     'scale' => 2,
                     'html5' => true,
                     'disabled' => true,
-
                     'help' => 'Le total est calculé automatiquement à partir des articles.',
-
                     'attr' => [
                         'class' => 'form-control',
                         'step' => '0.01',
@@ -102,7 +115,6 @@ class CommandeType extends AbstractType
                 EntityType::class,
                 [
                     'class' => Utilisateur::class,
-
                     'choice_label' => function (
                         Utilisateur $utilisateur
                     ): string {
@@ -116,11 +128,9 @@ class CommandeType extends AbstractType
                             . ' - '
                             . $utilisateur->getUtilisateurEmail();
                     },
-
                     'label' => 'Utilisateur',
                     'placeholder' => 'Aucun utilisateur',
                     'required' => false,
-
                     'attr' => [
                         'class' => 'form-select',
                     ],

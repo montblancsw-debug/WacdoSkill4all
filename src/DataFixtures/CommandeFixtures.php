@@ -11,7 +11,7 @@ use Doctrine\Persistence\ObjectManager;
 class CommandeFixtures extends Fixture implements DependentFixtureInterface
 {
     // ====================================================== //
-    // ===================== CONSTANTES ====================== //
+    // ===================== CONSTANTES ===================== //
     // ====================================================== //
 
     // Références utilisées par DetailFixtures.
@@ -21,7 +21,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
     public const COMMANDE_3_REFERENCE = 'commande-3';
 
     // ====================================================== //
-    // ====================== METHODES ======================= //
+    // ====================== METHODES ====================== //
     // ====================================================== //
 
     // Crée plusieurs commandes avec différents statuts.
@@ -29,7 +29,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
     public function load(
         ObjectManager $manager
     ): void {
-        // =================== COMMANDE 1 ======================== //
+        // =================== COMMANDE 1 =================== //
 
         // Crée une commande en attente.
 
@@ -41,6 +41,10 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
 
         $commande1->setCommandeDate(
             new \DateTime('-30 minutes')
+        );
+
+        $commande1->setCommandeHoraireLivraison(
+            new \DateTime('+10 minutes')
         );
 
         $commande1->setCommandeTotal(
@@ -65,7 +69,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
             $commande1
         );
 
-        // =================== COMMANDE 2 ======================== //
+        // =================== COMMANDE 2 =================== //
 
         // Crée une commande prête.
 
@@ -77,6 +81,10 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
 
         $commande2->setCommandeDate(
             new \DateTime('-20 minutes')
+        );
+
+        $commande2->setCommandeHoraireLivraison(
+            new \DateTime('+20 minutes')
         );
 
         $commande2->setCommandeTotal(
@@ -99,7 +107,7 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
             $commande2
         );
 
-        // =================== COMMANDE 3 ======================== //
+        // =================== COMMANDE 3 =================== //
 
         // Crée une commande livrée.
 
@@ -111,6 +119,10 @@ class CommandeFixtures extends Fixture implements DependentFixtureInterface
 
         $commande3->setCommandeDate(
             new \DateTime('-10 minutes')
+        );
+
+        $commande3->setCommandeHoraireLivraison(
+            new \DateTime('+30 minutes')
         );
 
         $commande3->setCommandeTotal(

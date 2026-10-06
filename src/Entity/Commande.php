@@ -12,25 +12,37 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CommandeRepository::class)]
 class Commande
 {
-// ====================================================== //
-// ===================== PROPRIETES. ==================== //
-// ====================================================== //
+    // ====================================================== //
+    // ===================== PROPRIETES ===================== //
+    // ====================================================== //
 
-// Identifiant unique de la commande.
+    // Identifiant unique de la commande.
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-// Statut actuel de la commande.
+    // Statut actuel de la commande.
 
     #[ORM\Column(length: 50)]
-    #[Assert\NotBlank(message: 'Le statut de la commande est obligatoire.')]
-    #[Assert\Choice(choices: ['en attente','en préparation','prête','en livraison','livrée','annulée',],message: 'Le statut sélectionné est invalide.')]
+    #[Assert\NotBlank(
+        message: 'Le statut de la commande est obligatoire.'
+    )]
+    #[Assert\Choice(
+        choices: [
+            'en attente',
+            'en préparation',
+            'prête',
+            'en livraison',
+            'livrée',
+            'annulée',
+        ],
+        message: 'Le statut sélectionné est invalide.'
+    )]
     private ?string $commande_statut = null;
 
-// Date et heure de la commande.
+    // Date et heure de création de la commande.
 
     #[ORM\Column]
     #[Assert\NotNull(
@@ -38,41 +50,71 @@ class Commande
     )]
     private ?\DateTime $commande_date = null;
 
-// Montant total de la commande.
+    // Date et heure prévues pour la livraison de la commande.
 
-    #[ORM\Column(type: Types::DECIMAL,precision: 10,scale: 2)]
-    #[Assert\NotBlank(message: 'Le total de la commande est obligatoire.')]
-    #[Assert\PositiveOrZero(message: 'Le total de la commande ne peut pas être négatif.')]
+    #[ORM\Column]
+    #[Assert\NotNull(
+        message: 'L\'horaire de livraison est obligatoire.'
+    )]
+    #[Assert\GreaterThanOrEqual(
+        propertyPath: 'commande_date',
+        message: 'L\'horaire de livraison doit être postérieur ou égal à la date de la commande.'
+    )]
+    private ?\DateTime $commande_horaire_livraison = null;
+
+    // Montant total de la commande.
+
+    #[ORM\Column(
+        type: Types::DECIMAL,
+        precision: 10,
+        scale: 2
+    )]
+    #[Assert\NotBlank(
+        message: 'Le total de la commande est obligatoire.'
+    )]
+    #[Assert\PositiveOrZero(
+        message: 'Le total de la commande ne peut pas être négatif.'
+    )]
     private ?string $commande_total = null;
 
-// Utilisateur associé à la commande.
+    // Utilisateur associé à la commande.
 
     #[ORM\ManyToOne(inversedBy: 'commandes')]
 
-// L'utilisateur peut être supprimé sans supprimer la commande.
+    // L'utilisateur peut être supprimé sans supprimer la commande.
 
-    #[ORM\JoinColumn(nullable: true,onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(
+        nullable: true,
+        onDelete: 'SET NULL'
+    )]
     private ?Utilisateur $utilisateur = null;
 
-// Lignes contenant les articles de la commande.
+    // Lignes contenant les articles de la commande.
 
-    #[ORM\OneToMany(targetEntity: Detail::class,mappedBy: 'commande')]
+    #[ORM\OneToMany(
+        targetEntity: Detail::class,
+        mappedBy: 'commande'
+    )]
     private Collection $details;
 
-// ====================================================== //
-// ==================== CONSTRUCTEUR. =================== //
-// ====================================================== //
+    // ====================================================== //
+    // ==================== CONSTRUCTEUR ==================== //
+    // ====================================================== //
 
-// Initialise la collection des détails de la commande.
+    // Initialise la commande.
 
     public function __construct()
     {
         $this->details = new ArrayCollection();
+
+        $this->commande_horaire_livraison = new \DateTime(
+            '+30 minutes'
+        );
     }
 
-// ====================================================== //
-// ================== GETTERS/SETTERS. ================== //
-// ====================================================== //
+    // ====================================================== //
+    // ================== GETTERS/SETTERS =================== //
+    // ====================================================== //
 
     public function getId(): ?int
     {
@@ -101,6 +143,19 @@ class Commande
         ?\DateTime $commande_date
     ): static {
         $this->commande_date = $commande_date;
+
+        return $this;
+    }
+
+    public function getCommandeHoraireLivraison(): ?\DateTime
+    {
+        return $this->commande_horaire_livraison;
+    }
+
+    public function setCommandeHoraireLivraison(
+        ?\DateTime $commande_horaire_livraison
+    ): static {
+        $this->commande_horaire_livraison = $commande_horaire_livraison;
 
         return $this;
     }
@@ -136,32 +191,70 @@ class Commande
         return $this->details;
     }
 
-// Ajoute une ligne à la commande.
+    // ====================================================== //
+    // ====================== METHODES ====================== //
+    // ====================================================== //
 
-    public function addDetail(Detail $detail): static {
-        if (!$this->details->contains($detail)) {$this->details->add($detail);$detail->setCommande($this);}
+    // Ajoute une ligne à la commande.
+
+    public function addDetail(
+        Detail $detail
+    ): static {
+        if (!$this->details->contains($detail)) {
+            $this->details->add(
+                $detail
+            );
+
+            $detail->setCommande(
+                $this
+            );
+        }
+
         return $this;
     }
 
-// Retire une ligne de la commande.
+    // Retire une ligne de la commande.
 
-    public function removeDetail(Detail $detail): static {if ($this->details->removeElement($detail)) {if ($detail->getCommande() === $this) {$detail->setCommande(null);
+    public function removeDetail(
+        Detail $detail
+    ): static {
+        if ($this->details->removeElement($detail)) {
+            if ($detail->getCommande() === $this) {
+                $detail->setCommande(
+                    null
+                );
             }
         }
+
         return $this;
     }
 
-// Vérifie si le client peut encore modifier la commande.
+    // Vérifie si le client peut encore modifier la commande.
 
     public function isModifiableByClient(): bool
     {
-        return in_array($this->commande_statut,['en attente','en préparation',],true);
+        return in_array(
+            $this->commande_statut,
+            [
+                'en attente',
+                'en préparation',
+            ],
+            true
+        );
     }
 
-// Vérifie si le client peut encore annuler la commande.
+    // Vérifie si le client peut encore annuler la commande.
 
     public function isAnnulableByClient(): bool
     {
-        return in_array($this->commande_statut,['en attente','en préparation','prête',],true);
+        return in_array(
+            $this->commande_statut,
+            [
+                'en attente',
+                'en préparation',
+                'prête',
+            ],
+            true
+        );
     }
 }
