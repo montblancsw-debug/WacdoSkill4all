@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ProfilType extends AbstractType
 {
@@ -62,11 +63,22 @@ class ProfilType extends AbstractType
                 'required' => false,
                 'invalid_message' => 'Les deux mots de passe doivent être identiques.',
 
+                'constraints' => [
+                    new Assert\Length(
+                        min: 8,
+                        max: 72,
+                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                        maxMessage: 'Le mot de passe ne peut pas dépasser {{ limit }} caractères.'
+                    ),
+                ],
+
                 'first_options' => [
                     'label' => 'Nouveau mot de passe',
                     'attr' => [
                         'class' => 'form-control',
                         'autocomplete' => 'new-password',
+                        'minlength' => 8,
+                        'maxlength' => 72,
                         'placeholder' => 'Laisser vide pour conserver le mot de passe',
                     ],
                 ],
@@ -76,6 +88,8 @@ class ProfilType extends AbstractType
                     'attr' => [
                         'class' => 'form-control',
                         'autocomplete' => 'new-password',
+                        'minlength' => 8,
+                        'maxlength' => 72,
                         'placeholder' => 'Confirmez le nouveau mot de passe',
                     ],
                 ],
