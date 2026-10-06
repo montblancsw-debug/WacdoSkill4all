@@ -7,18 +7,13 @@
 {% block body %}
 
 	<div class="container py-5">
-
 		<div class="row justify-content-center">
-
 			<div class="col-12 col-md-8 col-lg-5">
-
 				<div class="card shadow-sm">
-
 					<div class="card-body p-4">
 
 						{# En-tête du formulaire de connexion. #}
 						<div class="text-center mb-4">
-
 							<h1 class="h3">
 								Connexion
 							</h1>
@@ -26,31 +21,20 @@
 							<p class="text-muted">
 								Accès à Wacdo
 							</p>
-
 						</div>
 
 						{# Affiche une erreur lorsque la connexion échoue. #}
 						{% if error %}
-
-							<div
-								class="alert alert-danger"
-								role="alert"
-							>
+							<div class="alert alert-danger" role="alert">
 								Adresse email ou mot de passe incorrect.
 							</div>
-
 						{% endif %}
 
 						{# Formulaire de connexion. #}
 						<form method="post">
 
-							{# Adresse email. #}
 							<div class="mb-3">
-
-								<label
-									for="inputEmail"
-									class="form-label"
-								>
+								<label for="inputEmail" class="form-label">
 									Adresse email
 								</label>
 
@@ -65,16 +49,10 @@
 									required
 									autofocus
 								>
-
 							</div>
 
-							{# Mot de passe. #}
 							<div class="mb-3">
-
-								<label
-									for="inputPassword"
-									class="form-label"
-								>
+								<label for="inputPassword" class="form-label">
 									Mot de passe
 								</label>
 
@@ -86,19 +64,15 @@
 									autocomplete="current-password"
 									required
 								>
-
 							</div>
 
-							{# Protection CSRF. #}
 							<input
 								type="hidden"
 								name="_csrf_token"
 								value="{{ csrf_token('authenticate') }}"
 							>
 
-							{# Permet de rester connecté. #}
 							<div class="form-check mb-4">
-
 								<input
 									type="checkbox"
 									name="_remember_me"
@@ -106,48 +80,40 @@
 									class="form-check-input"
 								>
 
-								<label
-									for="rememberMe"
-									class="form-check-label"
-								>
+								<label for="rememberMe" class="form-check-label">
 									Se souvenir de moi
 								</label>
-
 							</div>
 
 							<div class="d-grid">
-
-								<button
-									type="submit"
-									class="btn btn-primary"
-								>
+								<button type="submit" class="btn btn-primary">
 									Se connecter
 								</button>
-
 							</div>
 
 						</form>
 
-						{# Retour à l'accueil du site. #}
-						<div class="d-grid mt-3">
+						{# Accès à l'inscription pour un nouvel utilisateur. #}
+						<div class="text-center mt-4">
+							<span class="text-muted">
+								Vous n'avez pas encore de compte ?
+							</span>
 
-							<a
-								href="{{ path('app_front_home') }}"
-								class="btn btn-secondary"
-							>
+							<a href="{{ path('app_register') }}">
+								Créer un compte
+							</a>
+						</div>
+
+						<div class="d-grid mt-3">
+							<a href="{{ path('app_front_home') }}" class="btn btn-secondary">
 								Retour au site
 							</a>
-
 						</div>
 
 					</div>
-
 				</div>
-
 			</div>
-
 		</div>
-
 	</div>
 
 {% endblock %}

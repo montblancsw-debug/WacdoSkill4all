@@ -65,10 +65,7 @@
 						</div>
 
 						<div class="d-grid">
-							<button
-								type="submit"
-								class="btn btn-primary"
-							>
+							<button type="submit" class="btn btn-primary">
 								Créer mon compte
 							</button>
 						</div>
@@ -92,5 +89,118 @@
 		</div>
 
 	</section>
+
+{% endblock %}
+
+{% block javascripts %}
+
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+			const form = document.querySelector('form[data-live-validation="true"]');
+
+			if (!form) {
+				return;
+			}
+
+			const email = form.querySelector('input[type="email"]');
+			const passwordFields = form.querySelectorAll('input[type="password"]');
+			const password = passwordFields[0];
+			const confirmation = passwordFields[1];
+
+			// Vérifie le format de l'adresse email.
+			function validateEmail() {
+				if (!email) {
+					return;
+				}
+
+				email.setCustomValidity('');
+
+				const value = email.value.trim();
+				const emailPattern = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+
+				if (value === '') {
+					return;
+				}
+
+				if (!value.includes('@')) {
+					email.setCustomValidity(
+						"L'adresse email doit contenir un @."
+					);
+
+					return;
+				}
+
+				const parts = value.split('@');
+
+				if (
+					parts.length !== 2
+					|| parts[0].trim() === ''
+					|| parts[1].trim() === ''
+				) {
+					email.setCustomValidity(
+						'Veuillez saisir une adresse email complète.'
+					);
+
+					return;
+				}
+
+				if (!emailPattern.test(value)) {
+					email.setCustomValidity(
+						'Veuillez saisir une adresse email complète avec une extension valide, par exemple .fr, .com ou .org.'
+					);
+				}
+			}
+
+			// Vérifie la longueur et la confirmation du mot de passe.
+			function validatePasswords() {
+				if (!password || !confirmation) {
+					return;
+				}
+
+				password.setCustomValidity('');
+				confirmation.setCustomValidity('');
+
+				if (password.value !== '' && password.value.length < 8) {
+					password.setCustomValidity(
+						'Votre mot de passe doit comporter au moins 8 caractères. Il en compte actuellement '
+						+ password.value.length
+						+ '.'
+					);
+
+					return;
+				}
+
+				if (
+					password.value !== ''
+					&& confirmation.value !== ''
+					&& password.value !== confirmation.value
+				) {
+					password.setCustomValidity(
+						'Le mot de passe est différent de la confirmation.'
+					);
+
+					confirmation.setCustomValidity(
+						'La confirmation est différente du mot de passe.'
+					);
+				}
+			}
+
+			if (email) {
+				email.addEventListener('input', validateEmail);
+				email.addEventListener('blur', validateEmail);
+				email.addEventListener('invalid', validateEmail);
+			}
+
+			if (password && confirmation) {
+				password.addEventListener('input', validatePasswords);
+				password.addEventListener('blur', validatePasswords);
+				password.addEventListener('invalid', validatePasswords);
+
+				confirmation.addEventListener('input', validatePasswords);
+				confirmation.addEventListener('blur', validatePasswords);
+				confirmation.addEventListener('invalid', validatePasswords);
+			}
+		});
+	</script>
 
 {% endblock %}
