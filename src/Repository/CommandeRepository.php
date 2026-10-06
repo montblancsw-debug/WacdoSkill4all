@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Commande;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+
 class CommandeRepository extends ServiceEntityRepository
 {
 // ====================================================== //
@@ -13,7 +14,9 @@ class CommandeRepository extends ServiceEntityRepository
 
 // Initialise le repository de l'entité Commande.
 
-    public function __construct(ManagerRegistry $registry) {parent::__construct($registry,Commande::class);
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Commande::class);
     }
 
 // ====================================================== //
@@ -22,30 +25,37 @@ class CommandeRepository extends ServiceEntityRepository
 
 // Recherche une commande par son identifiant, son statut ou son utilisateur.
 
-    public function search(string $value): array {$value = trim($value);
+    public function search(string $value): array
+    {
+        $value = trim($value);
 
 // Prépare la recherche avec l'utilisateur associé à la commande.
 
         $queryBuilder = $this
             ->createQueryBuilder('c')
-            ->leftJoin('c.utilisateur','u')
-            ->andWhere('c.commande_statut LIKE :valOR u.utilisateur_nom LIKE :valOR u.utilisateur_prenom LIKE :valOR u.utilisateur_email LIKE :val')
-            ->setParameter('val','%' . $value . '%');
+            ->leftJoin('c.utilisateur', 'u')
+            ->andWhere(
+                'c.commande_statut LIKE :val
+                OR u.utilisateur_nom LIKE :val
+                OR u.utilisateur_prenom LIKE :val
+                OR u.utilisateur_email LIKE :val'
+            )
+            ->setParameter('val', '%' . $value . '%');
 
 // Permet également de rechercher une commande par son identifiant.
 
-        $idValue = ltrim($value,'#');
+        $idValue = ltrim($value, '#');
 
         if (ctype_digit($idValue)) {
             $queryBuilder
                 ->orWhere('c.id = :id')
-                ->setParameter('id',(int) $idValue);
+                ->setParameter('id', (int) $idValue);
         }
 
 // Trie les commandes par identifiant décroissant.
 
         return $queryBuilder
-            ->orderBy('c.id','DESC')
+            ->orderBy('c.id', 'DESC')
             ->getQuery()
             ->getResult();
     }

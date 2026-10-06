@@ -21,7 +21,7 @@
 
 {# Charge les styles personnalisés du front-office. #}
 
-		<link rel="stylesheet" href="{{ asset('css/front-wacdo.css') }}"> 
+		<link rel="stylesheet" href="{{ asset('css/front-wacdo.css') }}?v=20260822-1"> {# Le v- sert à éviter que le navigateur conserve une ancienne version du CSS en cache le code proviens de cloud panel #}
 		{% block stylesheets %}
 		{% endblock %}
 
