@@ -78,13 +78,22 @@ final class AdminCommandeController extends AbstractController
             new \DateTime()
         );
 
+        $commande->setCommandeStatut(
+            'en attente'
+        );
+
         $commande->setCommandeTotal(
             '0.00'
         );
 
         $form = $this->createForm(
             CommandeType::class,
-            $commande
+            $commande,
+            [
+                'status_disabled' => !$this->isGranted(
+                    'ROLE_ADMIN'
+                ),
+            ]
         );
 
         $form->handleRequest(
@@ -148,7 +157,7 @@ final class AdminCommandeController extends AbstractController
         );
     }
 
-    // Modifie uniquement le statut d'une commande.
+    // Modifie le statut d'une commande selon le rôle de l'utilisateur.
 
     #[Route(
         '/{id}/statut',
@@ -183,25 +192,15 @@ final class AdminCommandeController extends AbstractController
             ->getPayload()
             ->getString('commande_statut');
 
-        $statutsAutorises = [
-            'en attente',
-            'en préparation',
-            'prête',
-            'en livraison',
-            'livrée',
-            'annulée',
-        ];
-
         if (
-            !in_array(
-                $statut,
-                $statutsAutorises,
-                true
+            !$this->canUpdateStatus(
+                $commande,
+                $statut
             )
         ) {
             $this->addFlash(
                 'danger',
-                'Le statut sélectionné est invalide.'
+                'Vous ne pouvez pas appliquer ce statut à cette commande.'
             );
 
             return $this->redirectToRoute(
@@ -252,7 +251,12 @@ final class AdminCommandeController extends AbstractController
 
         $form = $this->createForm(
             CommandeType::class,
-            $commande
+            $commande,
+            [
+                'status_disabled' => !$this->isGranted(
+                    'ROLE_ADMIN'
+                ),
+            ]
         );
 
         $form->handleRequest(
@@ -286,6 +290,7 @@ final class AdminCommandeController extends AbstractController
             [
                 'commande' => $commande,
                 'form' => $form,
+
                 'produitsDisponibles' => $produitRepository->findBy(
                     [
                         'produit_stock' => true,
@@ -376,7 +381,7 @@ final class AdminCommandeController extends AbstractController
             as $detail
         ) {
             if (
-                $detail->getProduit()
+                $detail->getProduit() !== null
                 && $detail
                     ->getProduit()
                     ->getId() === $produit->getId()
@@ -389,7 +394,7 @@ final class AdminCommandeController extends AbstractController
 
         if ($detailExistant !== null) {
             $detailExistant->setDetailQuantite(
-                $detailExistant->getDetailQuantite()
+                ($detailExistant->getDetailQuantite() ?? 0)
                 + $quantite
             );
 
@@ -484,7 +489,7 @@ final class AdminCommandeController extends AbstractController
         }
 
         $detail->setDetailQuantite(
-            $detail->getDetailQuantite() + 1
+            ($detail->getDetailQuantite() ?? 0) + 1
         );
 
         $this->updateDetailTotal(
@@ -538,7 +543,7 @@ final class AdminCommandeController extends AbstractController
         }
 
         if (
-            $detail->getDetailQuantite() > 1
+            ($detail->getDetailQuantite() ?? 0) > 1
         ) {
             $detail->setDetailQuantite(
                 $detail->getDetailQuantite() - 1
@@ -683,7 +688,7 @@ final class AdminCommandeController extends AbstractController
     // ================= METHODES PRIVEES ================== //
     // ====================================================== //
 
-    // Vérifie que l'utilisateur peut modifier une commande.
+    // Vérifie que l'utilisateur peut créer ou modifier une commande.
 
     private function denyUnlessCommandeEditable(): void
     {
@@ -697,6 +702,67 @@ final class AdminCommandeController extends AbstractController
         }
     }
 
+    // Vérifie si le changement de statut est autorisé.
+
+    private function canUpdateStatus(
+        Commande $commande,
+        string $nouveauStatut
+    ): bool {
+        $statutsExistants = [
+            'en attente',
+            'en préparation',
+            'prête',
+            'en livraison',
+            'livrée',
+            'annulée',
+        ];
+
+        if (
+            !in_array(
+                $nouveauStatut,
+                $statutsExistants,
+                true
+            )
+        ) {
+            return false;
+        }
+
+        // L'administrateur peut gérer tous les statuts.
+
+        if ($this->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        // Le préparateur fait progresser la commande jusqu'à l'état prête.
+
+        if ($this->isGranted('ROLE_PREPARATEUR')) {
+            if (
+                $commande->getCommandeStatut() === 'en attente'
+                && $nouveauStatut === 'en préparation'
+            ) {
+                return true;
+            }
+
+            if (
+                $commande->getCommandeStatut() === 'en préparation'
+                && $nouveauStatut === 'prête'
+            ) {
+                return true;
+            }
+
+            return false;
+        }
+
+        // L'accueil remet au client une commande prête.
+
+        if ($this->isGranted('ROLE_ACCUEIL')) {
+            return $commande->getCommandeStatut() === 'prête'
+                && $nouveauStatut === 'livrée';
+        }
+
+        return false;
+    }
+
     // Recherche une ligne appartenant à la commande.
 
     private function findDetail(
@@ -706,7 +772,9 @@ final class AdminCommandeController extends AbstractController
     ): Detail {
         $detail = $entityManager
             ->getRepository(Detail::class)
-            ->find($detailId);
+            ->find(
+                $detailId
+            );
 
         if (
             $detail === null
@@ -735,12 +803,20 @@ final class AdminCommandeController extends AbstractController
 
         $detail->setDetailTotal(
             number_format(
-                $prixUnitaire * $quantite,2,'.',''));
+                $prixUnitaire * $quantite,
+                2,
+                '.',
+                ''
+            )
+        );
     }
 
     // Recalcule le montant total de la commande.
 
-    private function recalculateCommandeTotal(Commande $commande): void {$total = 0.0;
+    private function recalculateCommandeTotal(
+        Commande $commande
+    ): void {
+        $total = 0.0;
 
         foreach (
             $commande->getDetails()

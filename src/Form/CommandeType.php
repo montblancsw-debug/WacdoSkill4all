@@ -14,18 +14,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CommandeType extends AbstractType
 {
-// ====================================================== //
-// ====================== METHODES ====================== //
-// ====================================================== //
+    // ====================================================== //
+    // ====================== METHODES ====================== //
+    // ====================================================== //
 
-// Construit le formulaire de création et de modification d'une commande.
+    // Construit le formulaire de création et de modification d'une commande.
 
-    public function buildForm(FormBuilderInterface $builder,array $options): void {
+    public function buildForm(
+        FormBuilderInterface $builder,
+        array $options
+    ): void {
         $builder
 
-// Ajoute le choix du statut de la commande.
+            // Ajoute le choix du statut de la commande.
 
-            ->add('commande_statut',ChoiceType::class,
+            ->add(
+                'commande_statut',
+                ChoiceType::class,
                 [
                     'label' => 'Statut',
                     'required' => true,
@@ -39,28 +44,39 @@ class CommandeType extends AbstractType
                         'Annulée' => 'annulée',
                     ],
 
-                    'placeholder' =>'Choisir un statut',
+                    'placeholder' => 'Choisir un statut',
 
-                    'attr' => ['class' => 'form-select',
+                    // L'accueil ne modifie pas directement
+                    // l'avancement depuis le formulaire d'édition.
+                    'disabled' => $options['status_disabled'],
+
+                    'attr' => [
+                        'class' => 'form-select',
                     ],
                 ]
             )
 
-// Ajoute le champ de date et d'heure de la commande.
+            // Ajoute le champ de date et d'heure de la commande.
 
-            ->add('commande_date',DateTimeType::class,
+            ->add(
+                'commande_date',
+                DateTimeType::class,
                 [
                     'label' => 'Date et heure',
                     'required' => true,
                     'widget' => 'single_text',
 
-                    'attr' => ['class' => 'form-control',],
+                    'attr' => [
+                        'class' => 'form-control',
+                    ],
                 ]
             )
 
-// Affiche le total calculé automatiquement.
+            // Affiche le total calculé automatiquement.
 
-            ->add('commande_total',NumberType::class,
+            ->add(
+                'commande_total',
+                NumberType::class,
                 [
                     'label' => 'Total (€)',
                     'required' => false,
@@ -68,7 +84,8 @@ class CommandeType extends AbstractType
                     'scale' => 2,
                     'html5' => true,
                     'disabled' => true,
-                    'help' =>'Le total est calculé automatiquement à partir des articles.',
+
+                    'help' => 'Le total est calculé automatiquement à partir des articles.',
 
                     'attr' => [
                         'class' => 'form-control',
@@ -78,30 +95,54 @@ class CommandeType extends AbstractType
                 ]
             )
 
-// Ajoute le choix de l'utilisateur associé à la commande.
+            // Ajoute le choix de l'utilisateur associé à la commande.
 
-            ->add('utilisateur',EntityType::class,
+            ->add(
+                'utilisateur',
+                EntityType::class,
                 [
                     'class' => Utilisateur::class,
-                    'choice_label' => function (Utilisateur $utilisateur): string {
 
-// Construit le nom affiché dans la liste des utilisateurs.
+                    'choice_label' => function (
+                        Utilisateur $utilisateur
+                    ): string {
+                        $identite = trim(
+                            ($utilisateur->getUtilisateurPrenom() ?? '')
+                            . ' '
+                            . ($utilisateur->getUtilisateurNom() ?? '')
+                        );
 
-                        $identite = trim(($utilisateur->getUtilisateurPrenom() ?? ''). ' '. ($utilisateur->getUtilisateurNom() ?? ''));
-
-                        return $identite. ' - '. $utilisateur->getUtilisateurEmail();},
+                        return $identite
+                            . ' - '
+                            . $utilisateur->getUtilisateurEmail();
+                    },
 
                     'label' => 'Utilisateur',
                     'placeholder' => 'Aucun utilisateur',
                     'required' => false,
 
-                    'attr' => ['class' => 'form-select',],
+                    'attr' => [
+                        'class' => 'form-select',
+                    ],
                 ]
             );
     }
 
-// Associe le formulaire à l'entité Commande.
+    // Configure l'entité utilisée et les options du formulaire.
 
-    public function configureOptions(OptionsResolver $resolver): void {$resolver->setDefaults(['data_class' => Commande::class,]);
+    public function configureOptions(
+        OptionsResolver $resolver
+    ): void {
+        $resolver->setDefaults(
+            [
+                'data_class' => Commande::class,
+                'status_disabled' => false,
+            ]
+        );
+
+        $resolver->setAllowedTypes(
+            'status_disabled',
+            'bool'
+        );
     }
 }
