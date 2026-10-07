@@ -9,11 +9,9 @@ use PHPUnit\Framework\TestCase;
 final class ProduitTest extends TestCase
 {
     // Vérifie les principales informations d'un produit.
-
     public function testProduitInformations(): void
     {
         $produit = new Produit();
-
         $produit
             ->setProduitNom('Produit test')
             ->setProduitDescription('Description du produit')
@@ -27,12 +25,10 @@ final class ProduitTest extends TestCase
     }
 
     // Vérifie qu'un produit peut être ajouté à un menu.
-
     public function testProduitCanBeAddedToMenu(): void
     {
         $produit = new Produit();
         $menu = new Menu();
-
         $produit->addMenu($menu);
 
         self::assertCount(1, $produit->getMenus());
@@ -42,12 +38,10 @@ final class ProduitTest extends TestCase
     }
 
     // Vérifie qu'un produit peut être retiré d'un menu.
-
     public function testProduitCanBeRemovedFromMenu(): void
     {
         $produit = new Produit();
         $menu = new Menu();
-
         $produit->addMenu($menu);
         $produit->removeMenu($menu);
 
