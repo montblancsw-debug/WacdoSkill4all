@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class AdminCategorieController extends AbstractController
 {
+
     // ====================================================== //
     // ====================== METHODES ====================== //
     // ====================================================== //

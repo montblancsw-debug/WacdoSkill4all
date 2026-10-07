@@ -13,73 +13,65 @@ use Vich\UploaderBundle\Mapping\Attribute as Vich;
 
 #[ORM\Entity(repositoryClass: ProduitRepository::class)]
 #[Vich\Uploadable]
+
 class Produit
 {
+
 // ====================================================== //
 // ===================== PROPRIETES. ==================== //
 // ====================================================== //
 
-// Identifiant unique du produit.
-
+    // Identifiant unique du produit.
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-// Nom du produit.
-
+    // Nom du produit.
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le nom du produit est obligatoire.',normalizer: 'trim')]
     #[Assert\Length(min: 2,max: 255,minMessage: 'Le nom du produit doit contenir au moins {{ limit }} caractères.',maxMessage: 'Le nom du produit ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $produit_nom = null;
 
-// Description du produit.
-
+    // Description du produit.
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $produit_description = null;
 
-// Prix du produit.
-
+    // Prix du produit.
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Le prix du produit est obligatoire.')]
     #[Assert\Positive(message: 'Le prix du produit doit être supérieur à 0 €.')]
     private ?string $produit_prix = null;
 
-// Indique si le produit est disponible.
-
+    // Indique si le produit est disponible.
     #[ORM\Column]
     #[Assert\NotNull(message: 'La disponibilité du produit doit être renseignée.')]
     private ?bool $produit_stock = null;
 
-// Nom du fichier image enregistré.
-
+    // Nom du fichier image enregistré.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255,maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $produit_image = null;
 
-// Fichier image envoyé depuis le formulaire.
-
+        // Fichier image envoyé depuis le formulaire.
     #[Vich\UploadableField(mapping: 'produits',fileNameProperty: 'produitImage')]
     #[Assert\Image(maxSize: '2M',mimeTypes: ['image/jpeg','image/png','image/webp'],mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.')]
     private ?File $imageFile = null;
 
-// Date de la dernière modification de l'image.
-
+    // Date de la dernière modification de l'image.
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-// Catégorie à laquelle appartient le produit.
-
+    // Catégorie à laquelle appartient le produit.
     #[ORM\ManyToOne(inversedBy: 'produits')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Categorie $categorie = null;
 
-// Lignes de commande contenant ce produit.
+    // Lignes de commande contenant ce produit.
     #[ORM\OneToMany(targetEntity: Detail::class,mappedBy: 'produit')]
     private Collection $details;
 
-// Menus contenant ce produit.
-
+    // Menus contenant ce produit.
     #[ORM\ManyToMany(targetEntity: Menu::class, mappedBy: 'produits')]
     private Collection $menus;
 
@@ -87,8 +79,7 @@ class Produit
 // ==================== CONSTRUCTEUR. =================== //
 // ====================================================== //
 
-// Initialise les collections des détails et des menus.
-
+    // Initialise les collections des détails et des menus.
     public function __construct()
     {
         $this->details = new ArrayCollection();
@@ -164,13 +155,12 @@ class Produit
         return $this->imageFile;
     }
 
-// Met à jour la date lorsqu'une nouvelle image est envoyée.
-
+    // Met à jour la date lorsqu'une nouvelle image est envoyée.
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
-
-        if ($imageFile !== null) {
+        if ($imageFile !== null)
+        {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
@@ -206,23 +196,24 @@ class Produit
 // ====================== METHODES ====================== //
 // ====================================================== //
 
-// Ajoute une ligne de commande contenant ce produit.
-
+    // Ajoute une ligne de commande contenant ce produit.
     public function addDetail(Detail $detail): static
     {
-        if (!$this->details->contains($detail)) {
+        if (!$this->details->contains($detail))
+        {
             $this->details->add($detail);
             $detail->setProduit($this);
         }
         return $this;
     }
 
-// Retire une ligne de commande liée à ce produit.
-
+    // Retire une ligne de commande liée à ce produit.
     public function removeDetail(Detail $detail): static
     {
-        if ($this->details->removeElement($detail)) {
-            if ($detail->getProduit() === $this) {
+        if ($this->details->removeElement($detail))
+        {
+            if ($detail->getProduit() === $this)
+            {
                 $detail->setProduit(null);
             }
         }
@@ -234,22 +225,22 @@ class Produit
         return $this->menus;
     }
 
-// Ajoute le produit à un menu.
-
+    // Ajoute le produit à un menu.
     public function addMenu(Menu $menu): static
     {
-        if (!$this->menus->contains($menu)) {
+        if (!$this->menus->contains($menu))
+        {
             $this->menus->add($menu);
             $menu->addProduit($this);
         }
         return $this;
     }
 
-// Retire le produit d'un menu.
-
+    // Retire le produit d'un menu.
     public function removeMenu(Menu $menu): static
     {
-        if ($this->menus->removeElement($menu)) {
+        if ($this->menus->removeElement($menu))
+        {
             $menu->removeProduit($this);
         }
         return $this;

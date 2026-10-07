@@ -10,59 +10,52 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use Vich\UploaderBundle\Mapping\Attribute as Vich;
-
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 #[Vich\Uploadable]
+
 class Categorie
 {
+
 // ====================================================== //
 // ===================== PROPRIETES. ==================== //
 // ====================================================== //
 
-// Identifiant unique de la catégorie.
-
+    // Identifiant unique de la catégorie.
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-// Nom de la catégorie.
-
+    // Nom de la catégorie.
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le nom de la catégorie est obligatoire.',normalizer: 'trim')]
     #[Assert\Length(min: 2,max: 255,minMessage: 'Le nom de la catégorie doit contenir au moins {{ limit }} caractères.',maxMessage: 'Le nom de la catégorie ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $categorie_nom = null;
 
-// Description de la catégorie.
-
+    // Description de la catégorie.
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $categorie_description = null;
 
-// Nom du fichier image enregistré.
-
+    // Nom du fichier image enregistré.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255,maxMessage: 'Le nom du fichier ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $categorie_nomdefichier = null;
 
-// Nom de l'image de la catégorie.
-
+    // Nom de l'image de la catégorie.
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255,maxMessage: 'Le nom de l\'image ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $categorie_image = null;
 
-// Fichier image envoyé depuis le formulaire.
-
+    // Fichier image envoyé depuis le formulaire.
     #[Vich\UploadableField(mapping: 'categories',fileNameProperty: 'categorieNomdefichier')]
     #[Assert\Image(maxSize: '2M',mimeTypes: ['image/jpeg','image/png','image/webp'],mimeTypesMessage: 'Veuillez choisir une image au format JPG, PNG ou WEBP.')]
     private ?File $imageFile = null;
 
-// Date de la dernière modification de l'image.
-
+    // Date de la dernière modification de l'image.
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
-// Produits appartenant à cette catégorie.
-
+    // Produits appartenant à cette catégorie.
     #[ORM\OneToMany(targetEntity: Produit::class, mappedBy: 'categorie')]
     private Collection $produits;
 
@@ -70,8 +63,7 @@ class Categorie
 // ==================== CONSTRUCTEUR. =================== //
 // ====================================================== //
 
-// Initialise la collection des produits.
-
+    // Initialise la collection des produits.
     public function __construct()
     {
         $this->produits = new ArrayCollection();
@@ -135,13 +127,13 @@ class Categorie
         return $this->imageFile;
     }
 
-// Met à jour la date lorsqu'une nouvelle image est envoyée.
+        // Met à jour la date lorsqu'une nouvelle image est envoyée.
 
     public function setImageFile(?File $imageFile = null): void
     {
         $this->imageFile = $imageFile;
-
-        if ($imageFile !== null) {
+        if ($imageFile !== null)
+        {
             $this->updatedAt = new \DateTimeImmutable();
         }
     }
@@ -166,23 +158,24 @@ class Categorie
 // ====================== METHODES ====================== //
 // ====================================================== //
 
-// Ajoute un produit à la catégorie.
-
+    // Ajoute un produit à la catégorie.
     public function addProduit(Produit $produit): static
     {
-        if (!$this->produits->contains($produit)) {
+        if (!$this->produits->contains($produit))
+        {
             $this->produits->add($produit);
             $produit->setCategorie($this);
         }
         return $this;
     }
 
-// Retire un produit de la catégorie.
-
+    // Retire un produit de la catégorie.
     public function removeProduit(Produit $produit): static
     {
-        if ($this->produits->removeElement($produit)) {
-            if ($produit->getCategorie() === $this) {
+        if ($this->produits->removeElement($produit))
+        {
+            if ($produit->getCategorie() === $this)
+            {
                 $produit->setCategorie(null);
             }
         }

@@ -7,55 +7,50 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: DetailRepository::class)]
+
 class Detail
 {
+
 // ====================================================== //
 // ===================== PROPRIETES. ==================== //
 // ====================================================== //
 
-// Identifiant unique de la ligne de commande.
-
+    // Identifiant unique de la ligne de commande.
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-// Quantité commandée pour cet article.
-
+    // Quantité commandée pour cet article.
     #[ORM\Column]
     #[Assert\NotNull(message: 'La quantité est obligatoire.')]
     #[Assert\Positive(message: 'La quantité doit être supérieure à 0.')]
     private ?int $detail_quantite = null;
 
-// Prix unitaire enregistré lors de la commande.
-
+    // Prix unitaire enregistré lors de la commande.
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Le prix unitaire est obligatoire.')]
     #[Assert\Positive(message: 'Le prix unitaire doit être supérieur à 0 €.')]
     private ?string $detail_unitaire = null;
 
-// Commande à laquelle appartient cette ligne.
-
+    // Commande à laquelle appartient cette ligne.
     #[ORM\ManyToOne(inversedBy: 'details')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: 'La commande est obligatoire.')]
     private ?Commande $commande = null;
 
-// Produit associé à la ligne si elle contient un produit.
-
+    // Produit associé à la ligne si elle contient un produit.
     #[ORM\ManyToOne(inversedBy: 'details')]
     #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?Produit $produit = null;
 
-// Montant total de la ligne.
-
+    // Montant total de la ligne.
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Le total de la ligne est obligatoire.')]
     #[Assert\Positive(message: 'Le total de la ligne doit être supérieur à 0 €.')]
     private ?string $detail_total = null;
 
-// Menu associé à la ligne si elle contient un menu.
-
+    // Menu associé à la ligne si elle contient un menu.
     #[ORM\ManyToOne(inversedBy: 'details')]
     private ?Menu $menu = null;
 
@@ -131,7 +126,6 @@ class Detail
     public function setMenu(?Menu $menu): static
     {
         $this->menu = $menu;
-
         return $this;
     }
 }

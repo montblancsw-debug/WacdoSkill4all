@@ -12,54 +12,51 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class CategorieType extends AbstractType
 {
+
 // ====================================================== //
 // ====================== METHODES ====================== //
 // ====================================================== //
 
-// Construit le formulaire de création et de modification d'une catégorie.
-
+    // Construit le formulaire de création et de modification d'une catégorie.
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-// Ajoute le champ du nom de la catégorie.
-
-            ->add('categorie_nom', TextType::class, [
+            // Ajoute le champ du nom de la catégorie.
+            ->add('categorie_nom', TextType::class,
+            [
                 'label' => 'Nom de la catégorie',
                 'required' => true,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'placeholder' => 'Exemple : Burgers',
                     'minlength' => 2,
                     'maxlength' => 255,
                 ],
             ])
-
-// Ajoute le champ de description avec CKEditor.
-
-            ->add('categorie_description', CKEditorType::class, [
+            // Ajoute le champ de description avec CKEditor.
+            ->add('categorie_description', CKEditorType::class,
+            [
                 'label' => 'Description',
                 'required' => false,
                 'config_name' => 'main_config',
             ])
-
-// Ajoute le champ permettant de sélectionner une image.
-
-            ->add('imageFile', FileType::class, [
+            // Ajoute le champ permettant de sélectionner une image.
+            ->add('imageFile', FileType::class,
+            [
                 'label' => 'Image de la catégorie',
                 'required' => false,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'accept' => 'image/jpeg,image/png,image/webp',
                 ],
             ]);
     }
 
-// Associe le formulaire à l'entité Categorie.
-
+    // Associe le formulaire à l'entité Categorie.
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Categorie::class,
-        ]);
+        $resolver->setDefaults(['data_class' => Categorie::class,]);
     }
 }

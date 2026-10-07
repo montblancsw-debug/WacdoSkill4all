@@ -9,6 +9,7 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 class ProduitFixtures extends Fixture implements DependentFixtureInterface
 {
+
 // ====================================================== //
 // ===================== CONSTANTES ====================== //
 // ====================================================== //
@@ -33,127 +34,79 @@ class ProduitFixtures extends Fixture implements DependentFixtureInterface
 
 // ======================= BURGERS ======================= //
 
-// Crée le produit WacFat.
-
+        // Crée le produit WacFat.
         $wacfat = new Produit();
         $wacfat->setProduitNom('WacFat');
         $wacfat->setProduitDescription('Un Classique Burger ! Ce Burgers est composé de : salades, tomates, oignons, cornichons, emental et de deux steack hachés');
         $wacfat->setProduitPrix('8.50');
         $wacfat->setProduitStock(true);
-        $wacfat->setCategorie(
-            $this->getReference(
-                CategorieFixtures::BURGERS_REFERENCE,
-                Categorie::class
-            )
-        );
+        $wacfat->setCategorie($this->getReference(CategorieFixtures::BURGERS_REFERENCE,Categorie::class));
         $manager->persist($wacfat);
 
-// Enregistre les références utilisées par les autres Fixtures.
-
+        // Enregistre les références utilisées par les autres Fixtures.
         $this->addReference(self::WACFAT_REFERENCE, $wacfat);
 
-// Crée le produit Tommeawac.
-
+        // Crée le produit Tommeawac.
         $tommeawac = new Produit();
         $tommeawac->setProduitNom('Tommeawac');
         $tommeawac->setProduitDescription('Attention ça va chauffer ! Ce Burgers est composé de : Tomme Pimenté, salade, tomates, oignons, cornichons, deux steack hachés');
         $tommeawac->setProduitPrix('6.50');
         $tommeawac->setProduitStock(true);
-        $tommeawac->setCategorie(
-            $this->getReference(
-                CategorieFixtures::BURGERS_REFERENCE,
-                Categorie::class
-            )
-        );
+        $tommeawac->setCategorie($this->getReference(CategorieFixtures::BURGERS_REFERENCE,Categorie::class));
         $manager->persist($tommeawac);
-
         $this->addReference(self::TOMMEAWAC_REFERENCE, $tommeawac);
 
 // ====================== BOISSONS ======================= //
 
-// Crée le produit Wacoco.
-
+        // Crée le produit Wacoco.
         $wacoco = new Produit();
         $wacoco->setProduitNom('Wacoco');
         $wacoco->setProduitDescription('Sodas à la noix de coco.');
         $wacoco->setProduitPrix('2.50');
         $wacoco->setProduitStock(true);
-        $wacoco->setCategorie(
-            $this->getReference(
-                CategorieFixtures::BOISSONS_REFERENCE,
-                Categorie::class
-            )
-        );
+        $wacoco->setCategorie($this->getReference(CategorieFixtures::BOISSONS_REFERENCE,Categorie::class));
         $manager->persist($wacoco);
-
         $this->addReference(self::WACOCO_REFERENCE, $wacoco);
 
-// Crée le produit Eau.
-
+        // Crée le produit Eau.
         $eau = new Produit();
         $eau->setProduitNom('Eau');
         $eau->setProduitDescription('Bouteille d’eau minérale.');
         $eau->setProduitPrix('1.50');
         $eau->setProduitStock(true);
-        $eau->setCategorie(
-            $this->getReference(
-                CategorieFixtures::BOISSONS_REFERENCE,
-                Categorie::class
-            )
-        );
+        $eau->setCategorie($this->getReference(CategorieFixtures::BOISSONS_REFERENCE,Categorie::class));
         $manager->persist($eau);
-
         $this->addReference(self::EAU_REFERENCE, $eau);
 
 // =================== ACCOMPAGNEMENTS =================== //
 
-// Crée le produit Wacadele.
-
+        // Crée le produit Wacadele.
         $wacadele = new Produit();
         $wacadele->setProduitNom('Wacadele');
         $wacadele->setProduitDescription('Une Ch’tite Frites ?');
         $wacadele->setProduitPrix('3.00');
         $wacadele->setProduitStock(true);
-        $wacadele->setCategorie(
-            $this->getReference(
-                CategorieFixtures::ACCOMPAGNEMENTS_REFERENCE,
-                Categorie::class
-            )
-        );
+        $wacadele->setCategorie($this->getReference(CategorieFixtures::ACCOMPAGNEMENTS_REFERENCE,Categorie::class));
         $manager->persist($wacadele);
-
         $this->addReference(self::WACADELE_REFERENCE, $wacadele);
 
 // ====================== DESSERTS ======================= //
 
-// Crée le produit Wacadamia.
-
+        // Crée le produit Wacadamia.
         $wacadamia = new Produit();
         $wacadamia->setProduitNom('Wacadamia');
         $wacadamia->setProduitDescription('Glace wacadamia. Idéal pour une crème glacée onctueuse parsemée d’éclats de noix de macadamia caramélisées');
         $wacadamia->setProduitPrix('3.50');
         $wacadamia->setProduitStock(true);
-        $wacadamia->setCategorie(
-            $this->getReference(
-                CategorieFixtures::DESSERTS_REFERENCE,
-                Categorie::class
-            )
-        );
+        $wacadamia->setCategorie($this->getReference(CategorieFixtures::DESSERTS_REFERENCE,Categorie::class));
         $manager->persist($wacadamia);
-
         $this->addReference(self::WACADAMIA_REFERENCE, $wacadamia);
 
-// Enregistre tous les produits dans la base de données.
-
+        // Enregistre tous les produits dans la base de données.
         $manager->flush();
     }
 
-// Indique que les catégories doivent être créées avant les produits.
-
-    public function getDependencies(): array
-    {
-        return [
-            CategorieFixtures::class,
-        ];
+        // Indique que les catégories doivent être créées avant les produits.
+    public function getDependencies(): array{return[CategorieFixtures::class,];
     }
 }

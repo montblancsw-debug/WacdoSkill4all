@@ -16,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class ProduitType extends AbstractType
 {
+
 // ====================================================== //
 // ====================== METHODES ====================== //
 // ====================================================== //
@@ -25,12 +26,13 @@ class ProduitType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-// Ajoute le champ du nom du produit.
-
-            ->add('produit_nom', TextType::class, [
+        // Ajoute le champ du nom du produit.
+            ->add('produit_nom', TextType::class,
+            [
                 'label' => 'Nom du produit',
                 'required' => true,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'placeholder' => 'Ex : WacFat',
                     'minlength' => 2,
@@ -39,22 +41,23 @@ class ProduitType extends AbstractType
             ])
 
 // Ajoute le champ de description avec CKEditor.
-
-            ->add('produit_description', CKEditorType::class, [
+            ->add('produit_description', CKEditorType::class,
+            [
                 'label' => 'Description',
                 'required' => false,
                 'config_name' => 'main_config',
             ])
 
 // Ajoute le champ du prix du produit.
-
-            ->add('produit_prix', NumberType::class, [
+            ->add('produit_prix', NumberType::class,
+            [
                 'label' => 'Prix (€)',
                 'required' => true,
                 'input' => 'string',
                 'scale' => 2,
                 'html5' => true,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'step' => '0.01',
                     'min' => '0.01',
@@ -62,47 +65,47 @@ class ProduitType extends AbstractType
                 ],
             ])
 
-// Ajoute le choix de disponibilité du produit.
-
-            ->add('produit_stock', CheckboxType::class, [
+            // Ajoute le choix de disponibilité du produit.
+            ->add('produit_stock', CheckboxType::class,
+            [
                 'label' => 'Produit disponible en stock',
                 'required' => false,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-check-input',
                 ],
             ])
 
-// Ajoute le champ permettant de sélectionner une image.
-
-            ->add('imageFile', FileType::class, [
+            // Ajoute le champ permettant de sélectionner une image.
+            ->add('imageFile', FileType::class,
+            [
                 'label' => 'Image du produit',
                 'required' => false,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'accept' => 'image/jpeg,image/png,image/webp',
                 ],
             ])
 
-// Ajoute le choix de la catégorie du produit.
-
-            ->add('categorie', EntityType::class, [
+            // Ajoute le choix de la catégorie du produit.
+            ->add('categorie', EntityType::class,
+            [
                 'class' => Categorie::class,
                 'choice_label' => 'categorie_nom',
                 'label' => 'Catégorie',
                 'placeholder' => 'Aucune catégorie',
                 'required' => false,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-select',
                 ],
             ]);
     }
 
-// Associe le formulaire à l'entité Produit.
-
+    // Associe le formulaire à l'entité Produit.
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Produit::class,
-        ]);
+        $resolver->setDefaults(['data_class' => Produit::class,]);
     }
 }

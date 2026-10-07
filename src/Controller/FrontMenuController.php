@@ -18,7 +18,8 @@ final class FrontMenuController extends AbstractController
 // ====================== METHODES ====================== //
 // ====================================================== //
 
-    public function index(MenuRepository $menuRepository): Response{
+    public function index(MenuRepository $menuRepository): Response
+    {
         return $this->render('front_menu/index.html.twig', ['menus' => $menuRepository->findActive(),]);
     }
 
@@ -32,9 +33,12 @@ final class FrontMenuController extends AbstractController
 // ====================== METHODES ====================== //
 // ====================================================== //
 
-    public function detail(int $id, MenuRepository $menuRepository): Response{
+    public function detail(int $id, MenuRepository $menuRepository): Response
+    {
         $menu = $menuRepository->findOneActive($id);
-        if ($menu === null) {throw $this->createNotFoundException('Menu introuvable.');
+        if ($menu === null)
+        {
+            throw $this->createNotFoundException('Menu introuvable.');
         }
         return $this->render('front_menu/detail.html.twig', ['menu' => $menu]);
     }

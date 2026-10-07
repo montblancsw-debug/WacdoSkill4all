@@ -14,67 +14,69 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ProfilType extends AbstractType
 {
+
     // ====================================================== //
     // ====================== METHODES ====================== //
     // ====================================================== //
 
     // Construit le formulaire de modification du profil.
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-
             // Nom de l'utilisateur.
-
-            ->add('utilisateur_nom', TextType::class, [
+            ->add('utilisateur_nom', TextType::class,
+            [
                 'label' => 'Nom',
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'placeholder' => 'Votre nom',
                 ],
             ])
 
             // Prénom de l'utilisateur.
-
-            ->add('utilisateur_prenom', TextType::class, [
+            ->add('utilisateur_prenom', TextType::class,
+            [
                 'label' => 'Prénom',
                 'required' => false,
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'placeholder' => 'Votre prénom',
                 ],
             ])
 
             // Adresse email.
-
-            ->add('utilisateur_email', EmailType::class, [
+            ->add('utilisateur_email', EmailType::class,
+            [
                 'label' => 'Adresse email',
-                'attr' => [
+                'attr' =>
+                [
                     'class' => 'form-control',
                     'placeholder' => 'Ex : utilisateur@wacdo.fr',
                 ],
             ])
 
             // Nouveau mot de passe.
-
-            ->add('plain_password', RepeatedType::class, [
+            ->add('plain_password', RepeatedType::class,
+            [
                 'type' => PasswordType::class,
                 'mapped' => false,
                 'required' => false,
                 'invalid_message' => 'Les deux mots de passe doivent être identiques.',
-
-                'constraints' => [
+                'constraints' =>
+                [
                     new Assert\Length(
-                        min: 8,
-                        max: 72,
-                        minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
-                        maxMessage: 'Le mot de passe ne peut pas dépasser {{ limit }} caractères.'
-                    ),
+                    min: 8,
+                    max: 72,
+                    minMessage: 'Le mot de passe doit contenir au moins {{ limit }} caractères.',
+                    maxMessage: 'Le mot de passe ne peut pas dépasser {{ limit }} caractères.'),
                 ],
-
-                'first_options' => [
+                'first_options' =>
+                [
                     'label' => 'Nouveau mot de passe',
-                    'attr' => [
+                    'attr' =>
+                    [
                         'class' => 'form-control',
                         'autocomplete' => 'new-password',
                         'minlength' => 8,
@@ -82,10 +84,11 @@ class ProfilType extends AbstractType
                         'placeholder' => 'Laisser vide pour conserver le mot de passe',
                     ],
                 ],
-
-                'second_options' => [
+                'second_options' =>
+                [
                     'label' => 'Confirmer le mot de passe',
-                    'attr' => [
+                    'attr' =>
+                    [
                         'class' => 'form-control',
                         'autocomplete' => 'new-password',
                         'minlength' => 8,
@@ -97,11 +100,8 @@ class ProfilType extends AbstractType
     }
 
     // Associe le formulaire à l'entité Utilisateur.
-
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([
-            'data_class' => Utilisateur::class,
-        ]);
+        $resolver->setDefaults(['data_class' => Utilisateur::class,]);
     }
 }

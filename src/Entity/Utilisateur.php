@@ -13,34 +13,32 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
 #[UniqueEntity(fields: ['utilisateur_email'],message: 'Cette adresse email est déjà utilisée.')]
+
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
 // ====================================================== //
 // ===================== PROPRIETES. ==================== //
 // ====================================================== //
 
 // Identifiant unique de l'utilisateur.
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
 // Nom de l'utilisateur.
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le nom de l\'utilisateur est obligatoire.',normalizer: 'trim')]
     #[Assert\Length(min: 2,max: 255,minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.',maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $utilisateur_nom = null;
 
 // Prénom de l'utilisateur.
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Length(max: 255,maxMessage: 'Le prénom ne peut pas dépasser {{ limit }} caractères.')]
     private ?string $utilisateur_prenom = null;
 
 // Adresse email utilisée pour la connexion.
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'L\'adresse email est obligatoire.',normalizer: 'trim')]
     #[Assert\Email(message: 'L\'adresse email "{{ value }}" n\'est pas valide.')]
@@ -49,19 +47,16 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $utilisateur_email = null;
 
 // Mot de passe haché de l'utilisateur.
-
     #[ORM\Column(length: 72)]
     private ?string $utilisateur_password = null;
 
 // Rôle définissant les droits de l'utilisateur.
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Le rôle de l\'utilisateur est obligatoire.')]
     #[Assert\Choice(choices: ['ROLE_ADMIN','ROLE_PREPARATEUR','ROLE_ACCUEIL','ROLE_USER',],message: 'Le rôle sélectionné est invalide.')]
     private ?string $utilisateur_role = null;
 
 // Commandes associées à l'utilisateur.
-
     #[ORM\OneToMany(targetEntity: Commande::class,mappedBy: 'utilisateur')]
     private Collection $commandes;
 
@@ -69,8 +64,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 // ==================== CONSTRUCTEUR. =================== //
 // ====================================================== //
 
-// Initialise la collection des commandes de l'utilisateur.
-
+    // Initialise la collection des commandes de l'utilisateur.
     public function __construct()
     {
         $this->commandes = new ArrayCollection();
@@ -144,39 +138,52 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 // ====================== METHODES. ===================== //
 // ====================================================== //
 
-// Retourne l'adresse email utilisée pour la connexion.
-
-    public function getUserIdentifier(): string{return (string) $this->utilisateur_email;
+    // Retourne l'adresse email utilisée pour la connexion.
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->utilisateur_email;
     }
 
-// Retourne le rôle de l'utilisateur.
-
-    public function getRoles(): array{if ($this->utilisateur_role === null) {return [];
-        }return [$this->utilisateur_role,];
+    // Retourne le rôle de l'utilisateur.
+    public function getRoles(): array
+    {
+        if ($this->utilisateur_role === null)
+        {
+            return [];
+        }
+        return [$this->utilisateur_role,];
     }
 
-// Retourne le mot de passe haché.
-
-    public function getPassword(): ?string{return $this->utilisateur_password;
+    // Retourne le mot de passe haché.
+    public function getPassword(): ?string
+    {
+        return $this->utilisateur_password;
     }
 
-// Efface les données sensibles temporaires si nécessaire.
-
+    // Efface les données sensibles temporaires si nécessaire.
     public function eraseCredentials(): void {}
-    public function getCommandes(): Collection{return $this->commandes;
+    public function getCommandes(): Collection
+    {
+        return $this->commandes;
     }
 
-// Ajoute une commande à l'utilisateur.
-
+    // Ajoute une commande à l'utilisateur.
     public function addCommande(Commande $commande): static
-    {if (!$this->commandes->contains($commande)) {$this->commandes->add($commande);$commande->setUtilisateur($this);}
+    {
+        if (!$this->commandes->contains($commande))
+        {
+            $this->commandes->add($commande);$commande->setUtilisateur($this);
+        }
         return $this;
     }
 
-// Retire une commande de l'utilisateur.
-
+    // Retire une commande de l'utilisateur.
     public function removeCommande(Commande $commande): static
-    {if ($this->commandes->removeElement($commande)) {if ($commande->getUtilisateur() === $this) {$commande->setUtilisateur(null);}}
+    {
+        if ($this->commandes->removeElement($commande))
+        {
+            if ($commande->getUtilisateur() === $this) {$commande->setUtilisateur(null);}
+        }
         return $this;
     }
 }

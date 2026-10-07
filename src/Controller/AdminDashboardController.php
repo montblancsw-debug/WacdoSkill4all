@@ -23,21 +23,15 @@ final class AdminDashboardController extends AbstractController
     // ====================== METHODES ====================== //
     // ====================================================== //
 
-    public function index(
-        CategorieRepository $categorieRepository,
-        ProduitRepository $produitRepository,
-        MenuRepository $menuRepository,
-        CommandeRepository $commandeRepository,
-        UtilisateurRepository $utilisateurRepository
-        ):Response
+    public function index(CategorieRepository $categorieRepository,ProduitRepository $produitRepository,MenuRepository $menuRepository,CommandeRepository $commandeRepository,UtilisateurRepository $utilisateurRepository):Response
         {
-        return $this->render('admin_dashboard/index.html.twig',
-        [
-            'numCategorie' => $categorieRepository->count([]),
-            'numProduit' => $produitRepository->count([]),
-            'numMenu' => $menuRepository->count([]),
-            'numCommande' => $commandeRepository->count([]),
-            'numUtilisateur' => $utilisateurRepository->count([]),
-        ]);
+            return $this->render('admin_dashboard/index.html.twig',
+            [
+                'numCategorie' => $categorieRepository->count([]),
+                'numProduit' => $produitRepository->count([]),
+                'numMenu' => $menuRepository->count([]),
+                'numCommande' => $commandeRepository->count([]),
+                'numUtilisateur' => $utilisateurRepository->count([]),
+            ]);
         }
 }

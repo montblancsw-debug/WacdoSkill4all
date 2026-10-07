@@ -35,9 +35,7 @@ use Symfony\Component\Routing\Attribute\Route;
             'admin_produit/index.html.twig',
             [
                 'produits' => $produits,
-                'categories' => $categorieRepository->findBy([], [
-                    'categorie_nom' => 'ASC',
-                ]),
+                'categories' => $categorieRepository->findBy([], ['categorie_nom' => 'ASC',]),
                 'search' => $search,
                 'stock' => $stock,
                 'categorieSelectionnee' => $categorieId,
@@ -53,23 +51,20 @@ use Symfony\Component\Routing\Attribute\Route;
         $produit = new Produit();
         $form = $this->createForm(ProduitType::class, $produit);
         $form->handleRequest($request);
-        if (
-            $form->isSubmitted() && $form->isValid()
-        ) {
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $entityManager->persist($produit);
             $entityManager->flush();
             $this->addFlash('success', 'Le produit a été ajouté avec succès.');
 
             return $this->redirectToRoute('app_admin_produit_index', [], Response::HTTP_SEE_OTHER);
         }
-        return $this->render('admin_produit/new.html.twig', ['produit' => $produit, 'form' => $form,]);
+            return $this->render('admin_produit/new.html.twig', ['produit' => $produit, 'form' => $form,]);
     }
 
     #[Route('/{id}', name: 'app_admin_produit_show', methods: ['GET'])] public function show(Produit $produit): Response
     {
-
         // Affiche le détail d'un produit.
-
         return $this->render('admin_produit/show.html.twig', ['produit' => $produit,]);
     }
 
@@ -81,13 +76,13 @@ use Symfony\Component\Routing\Attribute\Route;
     {
         $form = $this->createForm(ProduitType::class, $produit);
         $form->handleRequest($request);
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid())
+        {
             $entityManager->flush();
             $this->addFlash('success', 'Le produit a été modifié avec succès.');
-
             return $this->redirectToRoute('app_admin_produit_index', [], Response::HTTP_SEE_OTHER);
         }
-        return $this->render('admin_produit/edit.html.twig', ['produit' => $produit, 'form' => $form,]);
+            return $this->render('admin_produit/edit.html.twig', ['produit' => $produit, 'form' => $form,]);
     }
 
     #[Route('/{id}', name: 'app_admin_produit_delete', methods: ['POST'])] public function delete(Request $request, Produit $produit, EntityManagerInterface $entityManager): Response
@@ -95,15 +90,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
         // Supprime un produit.
 
-        if ($this->isCsrfTokenValid('delete' . $produit->getId(), $request->getPayload()->getString('_token'))) {
-
+        if ($this->isCsrfTokenValid('delete' . $produit->getId(), $request->getPayload()->getString('_token')))
+        {
             // Recalcule le total des commandes contenant le produit supprimé.
-
-            foreach ($produit->getDetails() as $detail) {
+            foreach ($produit->getDetails() as $detail)
+            {
                 $commande = $detail->getCommande();
-                if ($commande === null) {
-                    continue;
-                }
+                if ($commande === null) {continue;}
                 $totalActuel = (float) $commande->getCommandeTotal();
                 $montantLigne = (float) $detail->getDetailTotal();
                 $nouveauTotal = max(0, $totalActuel - $montantLigne);
@@ -112,7 +105,7 @@ use Symfony\Component\Routing\Attribute\Route;
             $entityManager->remove($produit);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Le produit a été supprimé avec succès.');
+        $this->addFlash('success', 'Le produit a été supprimé avec succès.');
         } else {
             $this->addFlash('danger', 'La suppression du produit a échoué.');
         }
