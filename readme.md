@@ -27,7 +27,6 @@ Une interface d'administration sous forme de dashboard, permet également de gé
 - [Fixtures](#fixtures)
 - [Tests](#tests)
 - [Structure du projet](#structure-du-projet)
-- [Limites du projet](#limites-du-projet)
 
 ---
 
