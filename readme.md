@@ -1,6 +1,6 @@
 # Wacdo
 
-Wacdo est une application Web de restauration développée dans le cadre du projet de la formation Développeur Web fullstuck option ux/ui design pour le module back-end.
+Wacdo est une application Web de restauration développée dans le cadre du projet de la formation Développeur Web fullstack option ux/ui design pour le module back-end.
 
 L'application permet aux clients de consulter les catégories, produits et menus proposés, de créer un compte, de gérer un panier et de passer des commandes.
 
